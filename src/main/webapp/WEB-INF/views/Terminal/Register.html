@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo/barclays.png" type="image/png">
+    
+</head>
+<body class="body1">
+
+<header>
+    <div class="menu1">
+        <img class="logomenu" src="logo/Barclays-PLC.png">
+    </div>
+    <div >
+        <img  id="backg" src="pics/ocean.jpg">
+        <img  id="backg1" src="pics/ocean.jpg">
+    </div>
+</header>
+
+<div class="regform">
+<form id="register">
+    <div class="register-form">
+
+        <div class="Mainreg"><h2>Registration</h2></div>
+
+        <label><b>Full name</b></label>
+        <div class="r1"><input type="text"  placeholder="Name Surname" required pattern="^([А-Я]{1}[а-яё]{1,23}|[A-Z]{1}[a-z]{1,23})$"></div>
+
+        <label><b>Passport</b></label>
+        <div class="r1"><input type="text"  placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
+
+        <label for="Birthday"><b>Birth</b></label>
+        <div class="r1"><input type="date" id="Birthday" required></div>
+
+        <label for="Phonenumber"><b>Phone number</b></label>
+        <div class="r1"><input type="tel" id="Phonenumber" required></div>
+
+        <label for="Currency" ><b>Currency</b></label>
+        <div class="r1">
+            <select id="Currency" required>
+                <option>BYN</option>
+                <option>USD</option>
+                <option>EURO</option>
+                <option>RUB</option>
+            </select>
+        </div>
+
+        <button class="butregister">Register</button>
+
+    </div>
+</form>
+</div>
+
+<div class="slogan">
+<strong>The Future's Bright; The Future's Barclays</strong>
+</div>
+
+</body>
+</html>

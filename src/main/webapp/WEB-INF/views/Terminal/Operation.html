@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transaction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="logo/barclays.png" type="image/png">
+
+</head>
+
+<body class="body2">
+
+<div class="dd">
+  <img id="pc1" src="pics/storm-3.jpg">
+  <div class="menuaut1">
+    <img class="logomenu1" src="logo/Barclays-PLC.png">
+  </div>
+</div>
+
+
+<button class="open" onclick="openForm()">Cash Transfer</button>
+<script>
+  function openForm(){
+  document.getElementById("cashtransfer").style.display = "block";
+
+  }
+</script>
+
+<button class="open1" onclick="openForm1()">Deposit</button>
+<script>
+  function openForm1(){
+  document.getElementById("deposit").style.display = "block";
+
+  }
+</script>
+
+<button class="open2" onclick="openForm2()">Convert</button>
+<script>
+  function openForm2(){
+  document.getElementById("convert").style.display = "block";
+  }
+</script>
+
+<button class="open3" onclick="openForm3()">Cash Extradition</button>
+<script>
+  function openForm3(){
+  document.getElementById("cashextradition").style.display = "block";
+  }
+</script>
+
+
+<div class="overlay">
+<div class="form-pop" id="cashtransfer">
+  <form action="#" class="con">
+    <h2>#Cash Transfer#</h2>
+    <label>Recipient</label>
+    <br>
+    <input type="text" placeholder="XXXX XXXX XXXX XXXX" pattern="^(\d{4}\s){3}\d{4}$">
+    <br>
+    <label>Summa</label>
+    <br>
+    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$">
+    <br>
+    <label>Pin code</label>
+    <br>
+    <input type="password" placeholder="****" pattern="^\d{4}$">
+    <br>
+    <br>
+    <button class="bb" onclick="closeForm()">Accomplish</button>
+  </form>
+</div>
+</div>
+<script>
+function closeForm(){
+  document.getElementById("cashtransfer").style.display = "none";
+  }
+</script>
+
+
+<div class="form-pop" id="deposit">
+  <form action="#" class="con">
+    <h2>#Deposit#</h2>
+    <label>Currency</label>
+    <br>
+
+    <select>
+      <option>BYN</option>
+      <option>USD</option>
+      <option>EURO</option>
+      <option>RUB</option>
+    </select>
+
+    <br>
+    <label>Summa</label>
+    <br>
+
+    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$">
+    <br>
+
+    <label>Pin code</label>
+    <br>
+    <input type="password" placeholder="****" pattern="^\d{4}$">
+    <br>
+    <br>
+    <button type="submit" class="bb" onclick="">Accomplish</button>
+  </form>
+</div>
+
+
+<div class="form-pop" id="convert">
+  <form action="#" class="con">
+    <h2>#Convert#</h2>
+    <label>Currency</label>
+    <br>
+
+    <select>
+      <option>BYN</option>
+      <option>USD</option>
+      <option>EURO</option>
+      <option>RUB</option>
+    </select>
+
+    <br>
+    <label>Summa</label>
+    <br>
+
+    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$">
+    <br>
+
+    <label>Pin code</label>
+    <br>
+    <input type="password" placeholder="****" pattern="^\d{4}$">
+    <br>
+    <br>
+    <button type="submit" class="bb" onclick="">Accomplish</button>
+  </form>
+</div>
+
+
+
+<div class="form-pop" id="cashextradition">
+  <form action="#" class="con">
+    <h2>#Cash extradition#</h2>
+
+    <br>
+    <label>Summa</label>
+    <br>
+
+    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$">
+    <br>
+
+    <label>Pin code</label>
+    <br>
+    <input type="password" placeholder="****" pattern="^\d{4}$">
+    <br>
+    <br>
+    <button type="submit" class="bb" onclick="">Accomplish</button>
+  </form>
+</div>
+
+</body>
+
+</html>
