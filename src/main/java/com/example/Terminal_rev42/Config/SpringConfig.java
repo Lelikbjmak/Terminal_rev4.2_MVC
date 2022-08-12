@@ -30,7 +30,7 @@ public class SpringConfig implements WebMvcConfigurer {
     public SpringResourceTemplateResolver templateResolver(){
         SpringResourceTemplateResolver springResourceTemplateResolver = new SpringResourceTemplateResolver();
         springResourceTemplateResolver.setApplicationContext(appl);
-        springResourceTemplateResolver.setPrefix("/WEB-INF/views/Terminal/");
+        springResourceTemplateResolver.setPrefix("/WEB-INF/views/Terminal/pages/");
         springResourceTemplateResolver.setSuffix(".html");
         springResourceTemplateResolver.setTemplateMode(TemplateMode.HTML);
         springResourceTemplateResolver.setCacheable(true);
@@ -54,19 +54,9 @@ public class SpringConfig implements WebMvcConfigurer {
         resolverRegistry.viewResolver(resolver);
     }
 
-
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("").addResourceLocations("webapp/WEB-INF/views/Terminal/css/");
-////        registry.addResourceHandler("/*.png").addResourceLocations("/WEB-INF/views/Terminal/logo");
-//////        registry.addResourceHandler("/").addResourceLocations("/WEB-INF/views/Terminal/pics");
-////        registry.addResourceHandler("/*.html").addResourceLocations("/WEB-INF/views/Terminal");
-//    }
-
-//    @Override
-//    public void configureDefaultServletHandling(
-//            DefaultServletHandlerConfigurer configurer) {
-//        configurer.enable();
-//    }
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/Terminal/**").addResourceLocations("/WEB-INF/views/Terminal/");
+    }
 
 }
