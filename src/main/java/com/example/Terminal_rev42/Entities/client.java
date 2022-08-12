@@ -37,8 +37,11 @@ public class client implements Serializable {
     @NonNull
     private Date Birth;
 
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "client")
     private bill bill;
 
-
 }
+
+
+

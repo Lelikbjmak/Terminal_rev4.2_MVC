@@ -1,18 +1,20 @@
 package com.example.Terminal_rev42.Entities;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NonNull;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 @Data
 @Entity
 public class bill implements Serializable {
+
 
     bill(){}
 
