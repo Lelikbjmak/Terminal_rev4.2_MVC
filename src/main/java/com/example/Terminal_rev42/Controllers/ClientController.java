@@ -1,27 +1,33 @@
 package com.example.Terminal_rev42.Controllers;
 
+import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Repositories.BillRepository;
 import com.example.Terminal_rev42.Servicies.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/client")
+@Controller
+@RequestMapping("/Barclays/client")
 public class ClientController {
 
     @Autowired
     private clientService clientService;
 
-    @GetMapping()
-    public String hello(){
-        return "Hello user";
-    }
+    @Autowired
+    private BillRepository billRepository;
 
     @PostMapping("/add")
-    public ResponseEntity add(@RequestBody client client){
-        return clientService.addclient(client);
+    public String add(@ModelAttribute("client") client client, Model model){
+        clientService.addclient(client);
+        System.err.println(clientService.findByPassportAndName(client.getName(), client.getPassport()).toString());
+        model.addAttribute("currentClient", clientService.findByName(client.getName()));
+        return "";
     }
+
 
     @GetMapping("findById/{id}")
     public client findId(@PathVariable("id") int id){
@@ -73,4 +79,6 @@ public class ClientController {
             return ResponseEntity.badRequest().body("Can't accomplish operation!");
         }
     }
+
+
 }

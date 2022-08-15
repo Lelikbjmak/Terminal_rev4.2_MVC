@@ -13,13 +13,8 @@ public class clientService {
     @Autowired
     private clientRepository clientRepository;
 
-    public ResponseEntity addclient(client client){
-        try {
+    public void addclient(client client){
         clientRepository.save(client);
-        return ResponseEntity.ok(client.toString() + " is successfully added!");
-        }catch (Exception ex){
-            return ResponseEntity.badRequest().body("Client " + client.toString() + "isn't added!");
-        }
     }
 
     public ResponseEntity deleteById(int id){
@@ -53,4 +48,11 @@ public class clientService {
         return clientRepository.findAll(); // JSON format
     }
 
+    public int maxID(){
+        return clientRepository.findMaxId();
+    }
+
+    public client findByPassportAndName(String name, String passport){
+        return clientRepository.findByNameAndPassport(name, passport);
+    }
 }

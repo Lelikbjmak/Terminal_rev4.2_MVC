@@ -10,13 +10,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Data
 @Entity
 public class bill implements Serializable {
 
-
-    bill(){}
+    public bill(){
+        this.setCard(Long.toString(ThreadLocalRandom.current().nextLong(1_000_000_000_000_000L, 9_999_999_999_999_999L)).replaceAll("(.{4})", "$1 ").trim());
+        this.setLedger(0.00);
+    }
 
     @Id
     @NonNull

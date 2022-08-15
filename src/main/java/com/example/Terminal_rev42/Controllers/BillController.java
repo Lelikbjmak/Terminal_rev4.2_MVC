@@ -3,10 +3,14 @@ package com.example.Terminal_rev42.Controllers;
 import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Repositories.BillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController
-@RequestMapping("/Bill")
+@Controller
+@RequestMapping("/Barclays/bill")
 public class BillController {
 
     @Autowired
@@ -19,12 +23,7 @@ public class BillController {
 
     @PostMapping("add")
     public String addbill(@RequestBody bill bill){
-        try {
-            billRepository.save(bill);
-            return "Success!";
-        }catch (Exception ex){
-            return "Error in adding!";
-        }
-
+        billRepository.save(bill);
+        return "redirect:/Barclays";
     }
 }
