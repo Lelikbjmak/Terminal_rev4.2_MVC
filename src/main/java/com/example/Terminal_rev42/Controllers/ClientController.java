@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/client")
+@RequestMapping("/Barclays/client")
 public class ClientController {
 
     @Autowired
@@ -19,7 +19,7 @@ public class ClientController {
     public String add(@ModelAttribute("client") client client, Model model){
         clientService.addclient(client);
         System.err.println(clientService.findByPassportAndName(client.getName(), client.getPassport()));
-        return "";
+        return "redirect:/Barclays";
     }
 
     @GetMapping("findById/{id}")

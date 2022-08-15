@@ -22,28 +22,27 @@
 </header>
 
 <div class="regform">
-<form id="register" th:method="post" th:action="@{/Barclays/client/add}" >
+<form id="register" th:method="POST" th:action="@{/Barclays/client/add}" th:object="${client}">
     <div class="register-form">
 
         <div class="Mainreg"><h2>Registration</h2></div>
 
         <label><b>Full name</b></label>
-        <div class="r1"><input type="text" th:field="*{client.name}" id="name" placeholder="Name Surname" ></div>
+        <div class="r1"><input type="text" th:field="*{name}" id="name" placeholder="Name Surname" ></div>
 
         <label><b>Passport</b></label>
-        <div class="r1"><input type="text" th:field="*{client.passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
+        <div class="r1"><input type="text" th:field="*{passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
 
         <label for="bday"><b>Birth</b></label>
-        <div class="r1"><input type="date" th:field="*{client.Birth}" id="bday"></div>
+        <div class="r1"><input type="date" th:field="*{Birth}" id="bday"></div>
 
         <label for="phone"><b>Phone number</b></label>
-        <div class="r1"><input type="tel" th:field="*{client.phone}" id="phone"  required placeholder="Phone"></div>
+        <div class="r1"><input type="tel" th:field="*{phone}" id="phone"  required placeholder="Phone"></div>
 
-        <button type="submit" class="butregister" >Register</button>
+        <button type="submit" class="butregister" onclick="#">Register</button>
     </div>
 </form>
 </div>
-<div th:text="${client.name}"></div>
 
 <!--<div class="overlay">-->
 <!--<div class="regform">-->
