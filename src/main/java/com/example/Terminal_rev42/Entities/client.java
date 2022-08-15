@@ -25,11 +25,11 @@ public class client implements Serializable {
 
     @NonNull
     @Column(name = "Phone")
-    private String Phone;
+    private String phone;
 
     @NonNull
     @Column(name = "Passport_id")
-    private String Passport_id;
+    private String passport;
 
     @Column(name = "Birth")
     @Temporal(TemporalType.DATE)

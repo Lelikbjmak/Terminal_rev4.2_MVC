@@ -4,23 +4,22 @@ import com.example.Terminal_rev42.Entities.client;
 import com.example.Terminal_rev42.Servicies.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("/client")
 public class ClientController {
 
     @Autowired
     private clientService clientService;
 
-    @GetMapping()
-    public String hello(){
-        return "Hello user";
-    }
-
     @PostMapping("/add")
-    public ResponseEntity add(@ModelAttribute("client") client client){
-        return clientService.addclient(client);
+    public String add(@ModelAttribute("client") client client, Model model){
+        clientService.addclient(client);
+        System.err.println(clientService.findByPassportAndName(client.getName(), client.getPassport()));
+        return "redirect:/Barclays";
     }
 
     @GetMapping("findById/{id}")

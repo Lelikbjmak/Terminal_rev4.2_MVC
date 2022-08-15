@@ -8,4 +8,6 @@ public interface clientRepository extends CrudRepository<client, Integer> {
     client findByName(String name);
 
     void deleteByName(String name);
+
+    client findByNameAndPassport(String name,String passport);
 }
