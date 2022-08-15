@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
@@ -8,9 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/Terminal/css/style.css">
     <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
-    
 </head>
-<body class="body1">
+<body class="body1" >
 
 <header>
     <div class="menu1">
@@ -23,38 +22,48 @@
 </header>
 
 <div class="regform">
-<form id="register">
+<form id="register" th:method="post" th:action="@{/Barclays/client/add}">
     <div class="register-form">
 
         <div class="Mainreg"><h2>Registration</h2></div>
 
         <label><b>Full name</b></label>
-        <div class="r1"><input type="text"  placeholder="Name Surname" required pattern="^([А-Я]{1}[а-яё]{1,23}|[A-Z]{1}[a-z]{1,23})$"></div>
+        <div class="r1"><input type="text" th:field="*{client.name}" id="name" placeholder="Name Surname" required pattern="^([А-Я]{1}[а-яё]{1,23}[А-Я]{1}[а-яё]{1,23}| [A-Z]{1}[a-z]{1,23})$"></div>
 
         <label><b>Passport</b></label>
-        <div class="r1"><input type="text"  placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
+        <div class="r1"><input type="text" th:field="*{client.Passport_id}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
 
-        <label for="Birthday"><b>Birth</b></label>
-        <div class="r1"><input type="date" id="Birthday" required></div>
+        <label for="bday"><b>Birth</b></label>
+        <div class="r1"><input type="date" th:field="*{client.Birth}" id="bday"></div>
 
-        <label for="Phonenumber"><b>Phone number</b></label>
-        <div class="r1"><input type="tel" id="Phonenumber" required placeholder="Phone"></div>
+        <label for="phone"><b>Phone number</b></label>
+        <div class="r1"><input type="tel" th:field="*{client.Phone}" id="phone"  required placeholder="Phone"></div>
 
-        <label for="Currency" ><b>Currency</b></label>
-        <div class="r1">
-            <select id="Currency" required>
-                <option>BYN</option>
-                <option>USD</option>
-                <option>EURO</option>
-                <option>RUB</option>
-            </select>
-        </div>
-
-        <button class="butregister">Register</button>
-
+        <button type="submit" class="butregister" onclick="checkform()">Register</button>
     </div>
 </form>
 </div>
+
+
+<!--<div class="overlay">-->
+<!--<div class="regform">-->
+<!--    <form  id="registerbill" th:method="post" th:action="@{/Barclays/bill/add}" th:object="${bill}">-->
+
+<!--        <label for="Currency" ><b>Currency</b></label>-->
+<!--        <div class="r1">-->
+<!--            <select name="currency" id="Currency" th:field="*{currency}" required>-->
+<!--                <option value="BYN">BYN</option>-->
+<!--                <option selected="selected" value="USD">USD</option>-->
+<!--                <option value="EURO">EURO</option>-->
+<!--                <option value="RUB">RUB</option>-->
+<!--            </select>-->
+<!--        </div>-->
+
+<!--        <div th:field="*{client}" value="${currentClient.getID()}" >VALUE</div>-->
+
+<!--    </form>-->
+<!--</div>-->
+<!--</div>-->
 
 <div class="slogan">
 <strong>The Future's Bright; The Future's Barclays</strong>

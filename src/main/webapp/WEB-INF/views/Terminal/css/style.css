@@ -600,32 +600,38 @@ height: 100px;
 background-color:  #0096f4;
 cursor: pointer;
 outline: none;
-transition-property: box-shadow;
+color:#C1D9FD;
+transition-property: box-shadow, border, background-color, color;
 transition-duration: 2s;
 font-size:large;
-color:#C1D9FD;
 z-index:3;
 }
 
 .open:hover{
 box-shadow: -10px 5px 30px #0096f4;
+background-color: #6debfc;
+border: 2px solid #02abde;
+color: black;
 }
+
 
 
 
 .form-pop {
 box-shadow:  0px 6px 25px #0096f4;
 background-color: white;
-border: 1px solid blue;
+border: 1px solid #0096f4;
 border-radius: 35px;
 margin-top: -710px;
 margin-left: 450px;
 width: 350px;
 height: 450px;
-display:none;
 position:fixed;
+opacity: 0%;
+z-index:4;
+transition-property: opacity, z-index;
+transition-duration: 2s;
 }
-
 
 
 .con{
@@ -699,10 +705,10 @@ width: 240px;
 height: 100px;
 background-color:  #0096f4;
 cursor: pointer;
-transition-property: box-shadow;
+color:#C1D9FD;
+transition-property: box-shadow, background-color, color, border;
 transition-duration: 2s;
 font-size:large;
-color:#C1D9FD;
 z-index:3;
 }
 
@@ -717,10 +723,10 @@ width: 240px;
 height: 100px;
 background-color:  #0096f4;
 cursor: pointer;
-transition-property: box-shadow;
+color:#C1D9FD;
+transition-property: box-shadow, color, background-color, border;
 transition-duration: 2s;
 font-size:large;
-color:#C1D9FD;
 z-index:3;
 
 }
@@ -736,25 +742,34 @@ width: 240px;
 height: 100px;
 background-color:  #0096f4;
 cursor: pointer;
-transition-property: box-shadow;
+color:#C1D9FD;
+transition-property: box-shadow, color, background-color, border;
 transition-duration: 2s;
 font-size:large;
-color:#C1D9FD;
 z-index:3;
 
 }
 
 .open1:hover{
 box-shadow: -10px 5px 30px #0096f4;
+background-color: #6debfc;
+border: 2px solid #02abde;
+color: black;
 }
 
 
 .open2:hover{
 box-shadow: 10px 5px 30px #0096f4;
+background-color: #6debfc;
+border: 2px solid #02abde;
+color: black;
 }
 
 .open3:hover{
 box-shadow: 10px 5px 30px #0096f4;
+background-color: #6debfc;
+border: 2px solid #02abde;
+color: black;
 }
 
 
@@ -765,7 +780,7 @@ width: 100%;
 height: 62.5px;
 margin: 0;
 text-align:center;
-z-index: 10;
+z-index: 3;
 }
 
 
@@ -774,3 +789,18 @@ width: 250px;
 height: 150px;
 margin-top: -45px;
 }
+
+
+#ov{
+top: 0px;
+text-align:center;
+width: 100%;
+height: 100%;
+position:fixed;
+opacity: 0%;
+z-index:2;
+background-color:rgba(0, 0, 0, 0.7);
+transition-property: opacity, z-index;
+transition-duration: 2s;
+}
+
