@@ -19,7 +19,7 @@ public class ClientController {
     public String add(@ModelAttribute("client") client client, Model model){
         clientService.addclient(client);
         System.err.println(clientService.findByPassportAndName(client.getName(), client.getPassport()));
-        return "redirect:/Barclays";
+        return "";
     }
 
     @GetMapping("findById/{id}")

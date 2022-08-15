@@ -31,19 +31,19 @@
         <div class="r1"><input type="text" th:field="*{client.name}" id="name" placeholder="Name Surname" ></div>
 
         <label><b>Passport</b></label>
-        <div class="r1"><input type="text" th:field="*{client.Passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
+        <div class="r1"><input type="text" th:field="*{client.passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
 
         <label for="bday"><b>Birth</b></label>
         <div class="r1"><input type="date" th:field="*{client.Birth}" id="bday"></div>
 
         <label for="phone"><b>Phone number</b></label>
-        <div class="r1"><input type="tel" th:field="*{client.Phone}" id="phone"  required placeholder="Phone"></div>
+        <div class="r1"><input type="tel" th:field="*{client.phone}" id="phone"  required placeholder="Phone"></div>
 
         <button type="submit" class="butregister" >Register</button>
     </div>
 </form>
 </div>
-
+<div th:text="${client.name}"></div>
 
 <!--<div class="overlay">-->
 <!--<div class="regform">-->
