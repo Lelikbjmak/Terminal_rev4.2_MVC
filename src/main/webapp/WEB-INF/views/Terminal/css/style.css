@@ -76,8 +76,10 @@ transition-duration: 2s;
 
 .navbar nav ul li a:hover{
 font-size: xx-large;
+color: #6debfc;
+text-shadow: 1px 2px 5px #0096f4;
 transition-property: color, font-size, text-shadow;
-transition-duration: 2s, 1s, 2s, 2s;
+transition-duration: 1s, 1s, 2s;
 transition-timing-function: ease-in-out;
 }
 

@@ -5,6 +5,7 @@ import com.example.Terminal_rev42.Servicies.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +17,9 @@ public class ClientController {
     private clientService clientService;
 
     @PostMapping("/add")
+    @Transactional
     public String add(@ModelAttribute("client") client client, Model model){
         clientService.addclient(client);
-        System.err.println(clientService.findByPassportAndName(client.getName(), client.getPassport()));
         return "redirect:/Barclays";
     }
 
