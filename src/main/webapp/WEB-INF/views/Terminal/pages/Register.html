@@ -22,13 +22,13 @@
 </header>
 
 <div class="regform">
-<form id="register" th:method="post" th:action="@{/Barclays/client/add}">
+<form id="register" th:method="post" th:action="@{/Barclays/client/add}" >
     <div class="register-form">
 
         <div class="Mainreg"><h2>Registration</h2></div>
 
         <label><b>Full name</b></label>
-        <div class="r1"><input type="text" th:field="*{client.name}" id="name" placeholder="Name Surname" required pattern="^([А-Я]{1}[а-яё]{1,23}[А-Я]{1}[а-яё]{1,23}| [A-Z]{1}[a-z]{1,23})$"></div>
+        <div class="r1"><input type="text" th:field="*{client.name}" id="name" placeholder="Name Surname" ></div>
 
         <label><b>Passport</b></label>
         <div class="r1"><input type="text" th:field="*{client.Passport_id}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>

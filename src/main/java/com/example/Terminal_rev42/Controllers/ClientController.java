@@ -19,7 +19,7 @@ public class ClientController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity add(@RequestBody client client){
+    public ResponseEntity add(@ModelAttribute("client") client client){
         return clientService.addclient(client);
     }
 

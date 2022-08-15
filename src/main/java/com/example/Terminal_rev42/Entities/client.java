@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 public class client implements Serializable {
 
-    client(){}
+    public client(){}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
