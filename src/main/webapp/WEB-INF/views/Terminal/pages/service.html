@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet"  type="text/css" href="/Terminal/css/style.css">
+    <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
+</head>
+<body>
+
+<header>
+    <div class="dd">
+        <img id="pc1" src="/Terminal/pics/storm-2.jpg">
+        <div class="menuaut1">
+            <a href="/Barclays"><img class="logomenu1" src="/Terminal/logo/Barclays-PLC.png"></a>
+        </div>
+    </div>
+</header>
+
+<div id="ovvv"></div>
+
+
+<nav class="dws-menu">
+    <ul>
+        <li><a href="#"><i class="fa fa-hold"></i>Holdings</a>
+            <ul>
+                <li><a href="#">hold1</a></li>
+                <li><a href="#">hold1</a></li>
+                <li><a href="#">hold1</a></li>
+            </ul>
+        </li>
+
+        <li><a href="#"><i class="fa fa-cards"></i>Cards</a>
+            <ul>
+                <li><a id="goo" href="#" onclick="opencardreg();">apply</a></li>
+                <li><a href="#">card1</a></li>
+                <li><a href="#">card2</a></li>
+            </ul>
+            <script src="/Terminal/js/opencardreg.js"></script>
+        </li>
+
+        <li><a href="#"><i class="fa fa-credit"></i>Credit</a>
+            <ul>
+                <li><a href="#">apply</a></li>
+                <li><a href="#">card1</a></li>
+                <li><a href="#">card2</a></li>
+            </ul>
+        </li>
+
+        <li><a href="#"><i class="fa fa-rates"></i>Currency rates</a>
+            <ul>
+                <li><a href="#" id="cardregref" onclick="opencardreg();">apply</a></li>
+                <li><a href="#">card1</a></li>
+                <li><a href="#">card2</a></li>
+            </ul>
+        </li>
+
+        <li><a href="/Barclays/operation"><i class="fa fa-rates"></i>Operations</a></li>
+
+    </ul>
+</nav>
+
+    <form  th:method="post" th:action="@{/Barclays/bill/add}" th:object="${bill}">
+        <div class="register-form1" id="cardreg">
+            <div class="Mainreg"><h2>Card extradition</h2></div>
+
+            <label for="client1"><b>client id</b></label>
+            <div class="r1"><input type="number" th:field="*{client}" id="client1"></div>
+
+
+            <label for="type"><b>Card type</b></label>
+            <div class="r1">
+                <select id="type" th:field="*{type}">
+                    <option value="Salary">Salary card</option>
+                    <option value="Personal" selected="selected" >Personal use card</option>
+                    <option value="Corporate">Corporate card</option>
+                </select>
+            </div>
+
+            <label for="Currency" ><b>Currency</b></label>
+            <div class="r1">
+                <select id="Currency" th:field="*{currency}">
+                    <option value="BYN">BYN</option>
+                    <option selected="selected" value="USD">USD</option>
+                    <option value="EURO">EURO</option>
+                    <option value="RUB" >RUB</option>
+                </select>
+            </div>
+
+            <button class="butregister" type="submit">Register</button>
+        </div>
+    </form>
+
+
+<script src="/Terminal/js/closecardreg.js"></script>
+
+</body>
+</html>
