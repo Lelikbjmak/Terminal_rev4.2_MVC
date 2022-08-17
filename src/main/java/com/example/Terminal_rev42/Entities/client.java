@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -17,31 +19,33 @@ public class client implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     @NonNull
-    private int ID;
+    private long id;
 
     @NonNull
-    @Column(name = "Name")
+    @Column(name = "name")
     private String name;
 
     @NonNull
-    @Column(name = "Phone")
+    @Column(name = "phone")
     private String phone;
 
     @NonNull
-    @Column(name = "Passport_id")
+    @Column(name = "passport")
     private String passport;
 
-    @Column(name = "Birth")
+    @Column(name = "birth")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
     @NonNull
-    private Date Birth;
+    private Date birth;
 
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "client")
-    private bill bill;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
+    private Set<bill> bills = new HashSet();
+
 
 }
 
