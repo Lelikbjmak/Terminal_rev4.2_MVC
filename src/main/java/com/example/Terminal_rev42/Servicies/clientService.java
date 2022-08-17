@@ -1,56 +1,20 @@
 package com.example.Terminal_rev42.Servicies;
 
 import com.example.Terminal_rev42.Entities.client;
-import com.example.Terminal_rev42.Exceptions;
-import com.example.Terminal_rev42.Repositories.clientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
-@Service
-public class clientService {
+public interface clientService {
 
-    @Autowired
-    private clientRepository clientRepository;
+    public void addclient(client client);
 
-    public void addclient(client client){
-        clientRepository.save(client);
-    }
+    public void deleteById(long id);
 
-    public ResponseEntity deleteById(int id){
-        try {
-        clientRepository.deleteById(id);
-        return ResponseEntity.ok("Successfully!");
-        }catch (Exception ex){
-            return ResponseEntity.badRequest().body("can't delete client by id = " + id);
-        }
-    }
+    public void deleteByName(String name);
 
-    public ResponseEntity deleteByName(String name){
-        try {
-            clientRepository.deleteByName(name);
-            return ResponseEntity.ok("Successful delete!");
-        }catch (Exception ex){
-            return ResponseEntity.badRequest().body("Can't delete client with name: " + name);
-        }
-    }
+    public Object findByID(long id);
 
-    public client findByID(int id){
-        return clientRepository.findById(id).orElseThrow(Exceptions::new);
-    }
+    public client findByName(String name);
 
-    public client findByName(String name){
-        return clientRepository.findByName(name);
-    }
-
-    public Iterable<client> getAll(){
-
-        return clientRepository.findAll(); // JSON format
-    }
-
-    public client findByPassportAndName(String name, String passport){
-        return clientRepository.findByNameAndPassport(name, passport);
-    }
+    public Iterable<client> getAll();
 
 
 }

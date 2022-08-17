@@ -3,7 +3,7 @@ package com.example.Terminal_rev42.Repositories;
 import com.example.Terminal_rev42.Entities.client;
 import org.springframework.data.repository.CrudRepository;
 
-public interface clientRepository extends CrudRepository<client, Integer> {
+public interface clientRepository extends CrudRepository<client, Long> {
 
     client findByName(String name);
 
