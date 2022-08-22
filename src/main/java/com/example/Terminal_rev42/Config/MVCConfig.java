@@ -18,12 +18,12 @@ import org.thymeleaf.templatemode.TemplateMode;
 @Configuration
 @ComponentScan("com.example.Terminal_rev42")
 @EnableWebMvc
-public class SpringConfig implements WebMvcConfigurer {
+public class MVCConfig implements WebMvcConfigurer {
 
     private final ApplicationContext appl;
 
     @Autowired
-    public SpringConfig(ApplicationContext applicationContext){
+    public MVCConfig(ApplicationContext applicationContext){
         this.appl = applicationContext;
     }
 
