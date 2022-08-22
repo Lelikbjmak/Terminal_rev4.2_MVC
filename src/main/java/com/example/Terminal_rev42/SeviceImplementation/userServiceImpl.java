@@ -8,7 +8,9 @@ import com.example.Terminal_rev42.Servicies.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,15 +23,13 @@ public class userServiceImpl implements userService {
     @Autowired
     private RoleDAO roleDAO;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+//    @Autowired
+//    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public void save(user user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        Set<Role> roleSet = new HashSet<>();
-        roleSet.add(roleDAO.getOne(Long.valueOf(1)));
-        user.setRoleSet(roleSet);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setRoleset(new HashSet<>(Arrays.asList(roleDAO.findByRole("ROLE_USER"))));
         userDAO.save(user);
     }
 

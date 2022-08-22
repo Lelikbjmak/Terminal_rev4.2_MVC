@@ -20,7 +20,8 @@ public class SecurityServiceImpl implements SecurityService {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    //private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
+
 
     @Override
     public String findLoggedInUserName() {
@@ -33,11 +34,18 @@ public class SecurityServiceImpl implements SecurityService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(login);
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+
         authenticationManager.authenticate(token);
+
         if(token.isAuthenticated()){
             SecurityContextHolder.getContext().setAuthentication(token);
             System.out.println("successfully " + login + " auto logged in");
-            //logger.debug("Successfully " + login + " auto logged in");
+            logger.debug(String.format("Auto login %s successfully!", login));
         }
+    }
+
+    @Override
+    public String getAuthenticatedUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
