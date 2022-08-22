@@ -6,7 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Set;
 
 public interface BillRepository extends CrudRepository<bill, String> {
-
-    Iterable<bill> findByClient_id(long id);
-
+    Set<bill> findByClient_id(long id);
 }

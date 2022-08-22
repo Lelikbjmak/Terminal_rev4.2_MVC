@@ -14,9 +14,9 @@ public class clientServiceImpl implements clientService {
     @Autowired
     private clientRepository clientRepository;
 
-
     @Override
     public void addclient(client client) {
+
         clientRepository.save(client);
     }
 
@@ -43,5 +43,10 @@ public class clientServiceImpl implements clientService {
     @Override
     public Iterable<client> getAll() {
         return clientRepository.findAll();
+    }
+
+    @Override
+    public client findByUser_Username(String username) {
+        return clientRepository.findByUser_Username(username);
     }
 }

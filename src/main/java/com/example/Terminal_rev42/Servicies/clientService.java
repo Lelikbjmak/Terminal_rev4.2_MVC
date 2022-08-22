@@ -16,5 +16,6 @@ public interface clientService {
 
     public Iterable<client> getAll();
 
+    public client findByUser_Username(String username);
 
 }
