@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Transaction</title>
@@ -41,8 +41,18 @@
 <div class="form-pop" id="cashtransfer">
   <form action="#" class="con">
     <h2>#Cash Transfer#</h2>
+    <label>Your card</label>
+
+    <br>
+    <select>
+      <option th:each="bill : ${session.bills}" th:text="${bill.card} + '<br />' + '(' + ${bill.currency} + ') ' + ${bill.ledger}" >
+      </option>
+    </select>
+
+    <br>
     <label>Recipient</label>
     <br>
+
     <input type="text" placeholder="XXXX XXXX XXXX XXXX" pattern="^(\d{4}\s){3}\d{4}$">
     <br>
     <label>Summa</label>

@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/Terminal/css/style.css">
+    <link rel="stylesheet" href="/Terminal/css/style.css" type="text/css">
     <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
 </head>
 <body class="body1" >
@@ -23,68 +23,69 @@
 
 <div class="ov" id="ovvv"></div>
 
-    <form>  <!-- Enter th:method and th:action -->
+    <form th:action="@{/Barclays/client/add}" th:method="post" >  <!-- Enter th:method and th:action -->
+
         <div class="register-form" id="user">
 
             <div class="Mainreg"><h2>Registration</h2></div>
 
             <label><b>Login</b></label>
-            <div class="r1"><input type="text" id="login" ></div>
+            <div class="r1"><input type="text" id="login" th:field="*{user.username}"></div>
 
             <label><b>Password</b></label>
-            <div class="r1"><input type="password"  id="password" ></div>
+            <div class="r1"><input type="password"  id="password" th:field="*{user.password}"></div>
 
-            <button class="butregister" onclick="openclientregform();">Continue</button>
+            <label><b>Confirm password</b></label>
+            <div class="r1"><input type="password"  id="confirmpassword" th:field="*{user.confirmedpassword}"></div>
+
+            <button type="button" class="butregister" onclick="openclientregform();">Continue</button>
         </div>
+
+        <div class="register-form" id="client">
+            <label><b>Full name</b></label>
+            <div class="r1"><input type="text" th:field="*{client.name}" id="name" placeholder="Name Surname" ></div>
+
+            <label><b>Passport</b></label>
+            <div class="r1"><input type="text" th:field="*{client.passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
+
+            <label for="bday"><b>Birth</b></label>
+            <div class="r1"><input type="date" th:field="*{client.birth}" id="bday"></div>
+
+            <label for="phone"><b>Phone number</b></label>
+            <div class="r1"><input type="tel" th:field="*{client.phone}" id="phone"  required placeholder="Phone"></div>
+
+            <button type="submit" class="butregister" >Register</button>
+        </div>
+
     </form>
 
-<button id="butp" onclick="openclientregform();" >Press</button>
+<!--<button id="butp" onclick="openclientregform();" >Press</button>-->
 <script src="/Terminal/js/clientregformopen.js"></script>
 
 
 
-<form id="register" th:method="POST" th:action="@{/Barclays/client/add}" th:object="${client}">
-    <div class="register-form" id="client">
+<!--<form id="register" th:method="POST" th:action="@{/Barclays/client/add}" th:object="${client}">-->
+<!--    <div class="register-form" id="client">-->
 
-        <div class="Mainreg"><h2>Registration</h2></div>
+<!--        <div class="Mainreg"><h2>Registration</h2></div>-->
 
-        <label><b>Full name</b></label>
-        <div class="r1"><input type="text" th:field="*{name}" id="name" placeholder="Name Surname" ></div>
+<!--        <label><b>Full name</b></label>-->
+<!--        <div class="r1"><input type="text" th:field="*{name}" id="name" placeholder="Name Surname" ></div>-->
 
-        <label><b>Passport</b></label>
-        <div class="r1"><input type="text" th:field="*{passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>
+<!--        <label><b>Passport</b></label>-->
+<!--        <div class="r1"><input type="text" th:field="*{passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>-->
 
-        <label for="bday"><b>Birth</b></label>
-        <div class="r1"><input type="date" th:field="*{birth}" id="bday"></div>
+<!--        <label for="bday"><b>Birth</b></label>-->
+<!--        <div class="r1"><input type="date" th:field="*{birth}" id="bday"></div>-->
 
-        <label for="phone"><b>Phone number</b></label>
-        <div class="r1"><input type="tel" th:field="*{phone}" id="phone"  required placeholder="Phone"></div>
+<!--        <label for="phone"><b>Phone number</b></label>-->
+<!--        <div class="r1"><input type="tel" th:field="*{phone}" id="phone"  required placeholder="Phone"></div>-->
 
-        <button type="submit" class="butregister" >Register</button>
-    </div>
-</form>
+<!--        <button type="submit" class="butregister" >Register</button>-->
+<!--    </div>-->
+<!--</form>-->
 
 <script src="/Terminal/js/clientformregclose.js"></script>
-
-<!--<div class="overlay">-->
-<!--<div class="regform">-->
-<!--    <form  id="registerbill" th:method="post" th:action="@{/Barclays/bill/add}" th:object="${bill}">-->
-
-<!--        <label for="Currency" ><b>Currency</b></label>-->
-<!--        <div class="r1">-->
-<!--            <select name="currency" id="Currency" th:field="*{currency}" required>-->
-<!--                <option value="BYN">BYN</option>-->
-<!--                <option selected="selected" value="USD">USD</option>-->
-<!--                <option value="EURO">EURO</option>-->
-<!--                <option value="RUB">RUB</option>-->
-<!--            </select>-->
-<!--        </div>-->
-
-<!--        <div th:field="*{client}" value="${currentClient.getID()}" >VALUE</div>-->
-
-<!--    </form>-->
-<!--</div>-->
-<!--</div>-->
 
 <div class="slogan">
 <strong>The Future's Bright; The Future's Barclays</strong>

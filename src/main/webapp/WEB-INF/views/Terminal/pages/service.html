@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <link rel="stylesheet"  type="text/css" href="/Terminal/css/style.css">
+    <link rel="stylesheet" href="/Terminal/css/style.css" type="text/css">
     <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
 </head>
 <body>
@@ -66,10 +66,6 @@
     <form  th:method="post" th:action="@{/Barclays/bill/add}" th:object="${bill}">
         <div class="register-form1" id="cardreg">
             <div class="Mainreg"><h2>Card extradition</h2></div>
-
-            <label for="client1"><b>client id</b></label>
-            <div class="r1"><input type="number" th:field="*{client}" id="client1"></div>
-
 
             <label for="type"><b>Card type</b></label>
             <div class="r1">
