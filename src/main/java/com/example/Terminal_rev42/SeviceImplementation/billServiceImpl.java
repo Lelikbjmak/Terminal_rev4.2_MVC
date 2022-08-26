@@ -5,7 +5,6 @@ import com.example.Terminal_rev42.Repositories.BillRepository;
 import com.example.Terminal_rev42.Servicies.billService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.Set;
 
@@ -22,8 +21,8 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public String findById(String card) {
-        return billRepository.findById(card).get().toString();
+    public bill findByCard(String card) {
+        return billRepository.findByCard(card);
     }
 
     @Override

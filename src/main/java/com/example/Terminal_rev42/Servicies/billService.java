@@ -8,7 +8,9 @@ public interface billService {
 
     public void addbill(bill bill);
 
-    public String findById(String card);
+    public bill findByCard(String card);
 
     public Set<bill> AllBillsById(long id);
+
+
 }
