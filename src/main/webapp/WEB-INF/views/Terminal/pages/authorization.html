@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Authorization</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/Terminal/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/Terminal/css/style.css">
   <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
 
 </head>
 
 <body>
-<header class="hh1">
+<header class="hh1"  >
 
     <div class="menuaut">
         <a href="/Barclays"><img class="logomenu" src="/Terminal/logo/Barclays-PLC.png"></a>
@@ -44,18 +44,23 @@
 </header>
 
 <div class="box">
-    <form class="aut">
+    <form class="aut" th:action="@{/Barclays/authorisation}"  th:method="post">
 
         <label for="login" >Login</label>
+
+        <div th:if="${param.error}">
+            Invalid Username or password
+        </div>
+
         <div>
-            <input id="login" type="text" placeholder="login" >
+            <input id="login" type="text" placeholder="login" name="username">
         </div>
 
         <label for="password">Password</label>
         <div>
-            <input  id="password" type="password" placeholder="*************">
+            <input  id="password" type="password" placeholder="*************" name="password">
         </div>
-        <button class="buttonlogin" onclick="">Submit</button>
+        <button class="buttonlogin" >Submit</button>
 
     </form>
 </div>
