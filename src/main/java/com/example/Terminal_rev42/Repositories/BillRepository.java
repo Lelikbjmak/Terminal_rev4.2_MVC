@@ -7,4 +7,6 @@ import java.util.Set;
 
 public interface BillRepository extends CrudRepository<bill, String> {
     Set<bill> findByClient_id(long id);
+
+    bill findByCard(String card);
 }
