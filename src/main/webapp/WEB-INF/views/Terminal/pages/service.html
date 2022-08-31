@@ -16,6 +16,13 @@
         <img id="pc1" src="/Terminal/pics/storm-2.jpg">
         <div class="menuaut1">
             <a href="/Barclays"><img class="logomenu1" src="/Terminal/logo/Barclays-PLC.png"></a>
+
+            <div class="curruser">
+                <span th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span>
+                <br>
+                <span><a href="/logout" class="signout">Log out</a></span>
+            </div>
+
         </div>
     </div>
 </header>
@@ -81,7 +88,7 @@
                 <select id="Currency" th:field="*{currency}">
                     <option value="BYN">BYN</option>
                     <option selected="selected" value="USD">USD</option>
-                    <option value="EURO">EURO</option>
+                    <option value="EURO">EUR</option>
                     <option value="RUB" >RUB</option>
                 </select>
             </div>
