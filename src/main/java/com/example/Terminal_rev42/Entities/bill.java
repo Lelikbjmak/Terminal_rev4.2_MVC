@@ -11,6 +11,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
@@ -51,12 +52,14 @@ public class bill implements Serializable {
     @NonNull
     private LocalDate validity;
 
-//
-//    @NonNull
-//    private String cvv;
-
     @NonNull
     private boolean active;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billfrom")
+    private Set<receipts> receipts;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billto")
+    private Set<receipts> receiptss;
 
     @Override
     public String toString(){
