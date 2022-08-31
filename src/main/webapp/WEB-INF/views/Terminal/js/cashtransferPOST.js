@@ -5,6 +5,8 @@ $(document).ready(
 
                 event.preventDefault();
 
+                $('.wrap').css({'opacity':'100%', 'z-index':'12'});
+
                 var billfrom = $("#billfrom").val();
                 var billto = $("#billto").val();
                 var summa = $("#summa").val();
@@ -17,23 +19,39 @@ $(document).ready(
                     summa: summa,
                     pin: pin
                 }, function(data) {
-                    var json = JSON.parse(data);
-                }).done(function(){
-                }).fail(function(xhr, textStatus, errorThrown) {
-                }).complete(function(){
 
-                   var wins = document.querySelectorAll(".form-pop");
+                 }).done(function(data, textStatus, jqXHR){
+                        setTimeout(() => {
+                     $('div.message').text(jqXHR.responseText);
+                     $('.loader').css({'opacity':'0%', 'z-index':'0'});
+                     $('.bl').css({'opacity':'100%', 'z-index':'12'})
+                     }, 3000);
 
-                   var ov = document.getElementById('ov');
+                }).fail(function(jqXHR, exception, textStatus, errorThrown) {
+                    var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connect. Verify Network.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Requested page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal Server Error [500].';
+                    }else if (jqXHR.status == 400) {
+                        msg = jqXHR.responseText;
+                    }else if (exception === 'parsererror') {
+                        msg = 'Requested JSON parse failed.';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time out error.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request aborted.';
+                    } else {
+                        msg = 'Uncaught Error. ' + jqXHR.responseText;
+                    }
 
-                   for(var i = 0; i < wins.length; i++){
-                   wins[i].style.opacity = '0%';
-                   wins[i].style.zIndex = '0';
-                   }
-                   ov.style.opacity = '0%';
-                   ov.style.zIndex = '0';
-
-
+                    setTimeout(() => {
+                    $('div.message').text(msg);
+                    $('.loader').css('opacity','0%');
+                    $('.bl').css({'opacity':'100%', 'z-index':'12'})
+                    }, 3000);
                 });
 
         });
