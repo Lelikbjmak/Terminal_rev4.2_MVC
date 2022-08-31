@@ -14,6 +14,14 @@
 <header>
     <div class="menu">
         <img class="logomenu" src="/Terminal/logo/Barclays-PLC.png">
+
+        <div class="curruser">
+            <span id="logg" th:if="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}"><a href="/Barclays/authorisation" class="sign">Sign in</a></span>
+            <span th:unless="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}" th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span>
+            <br>
+            <span th:unless="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}"><a href="/logout" class="signout">Log out</a></span>
+        </div>
+
     </div>
     <div class="back">
         <img id="headerback" src="/Terminal/pics/1.jpg">
@@ -28,7 +36,7 @@
     <nav>
         <ul>
             <div class="r">
-                <li><strong><a href="/Barclays/reg" target="_blank">Become a client</a></strong></li>
+                <li><strong><a href="/Barclays/reg" target="_parent">Become a client</a></strong></li>
             </div>
 
             <div class="r">

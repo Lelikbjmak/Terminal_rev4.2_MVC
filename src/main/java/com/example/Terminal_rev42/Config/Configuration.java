@@ -6,16 +6,18 @@ public class Configuration extends AbstractAnnotationConfigDispatcherServletInit
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return null;
+        //return null;
+        return new Class<?>[]{MVCConfig.class, SecurityConfig.class};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] {SpringConfig.class};
+        return new Class[] {MVCConfig.class, SecurityConfig.class};
     }
 
     @Override
     protected String[] getServletMappings() {
         return new String[] {"/"};
     }
+
 }

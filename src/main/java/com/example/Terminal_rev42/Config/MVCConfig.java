@@ -59,4 +59,5 @@ public class MVCConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/Terminal/**").addResourceLocations("/WEB-INF/views/Terminal/");
     }
 
+
 }
