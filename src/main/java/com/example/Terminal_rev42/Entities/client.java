@@ -2,7 +2,6 @@ package com.example.Terminal_rev42.Entities;
 
 import com.example.Terminal_rev42.Model.user;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 import lombok.NonNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
