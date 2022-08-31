@@ -9,7 +9,6 @@ ov.addEventListener('click', function(){
 
 userwin.style.opacity = '100%';
 
-
 win.style.opacity = '0%';
 win.style.zIndex = '2';
 
