@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Qualifier("UserDetailsServiceImpl")
+    @Qualifier("UserDetailsServiceImpl")  // our ovverride userdetilsSerice (implementing of UDS)
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //permit any identity to visit that pages
                 //.antMatchers("/Barclays", "/Barclays/reg", "/Barclays/client/add").not().fullyAuthenticated()
-                .antMatchers("/","/Barclays", "/Barclays/reg", "/Barclays/client/add", "/Terminal/**").permitAll()
+                .antMatchers("/","/Barclays", "/Barclays/reg", "/Barclays/client/add", "/Terminal/**", "/Barclays/client/checkUsername").permitAll()
                 .antMatchers("/Barclays/service/**").hasAnyRole("USER", "ADMIN")
                 //.antMatchers("/", "/Terminal/css", "/Terminal/") for static resources
                 .anyRequest().authenticated()
@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .formLogin()
                 .loginPage("/Barclays/authorisation")
-                .defaultSuccessUrl("/Barclays/service")
+                .defaultSuccessUrl("/Barclays")
                 .permitAll()
                 .and()
                 .logout()
