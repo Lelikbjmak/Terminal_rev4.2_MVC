@@ -1,5 +1,4 @@
 const form1 = document.getElementById("cashtransfer"); // form
-const but1 = document.getElementById("bb1");   // button to submit form
 
 const billfrom = document.getElementById("billfrom");
 const billto = document.getElementById("billto");
@@ -11,8 +10,7 @@ form1.addEventListener('submit', (e) => {
 
     e.preventDefault();
 
-    if(check()){
-    alert("All fields are correct");
+    if(check1()){
 
     $(document).ready(
         function($) {
@@ -36,7 +34,7 @@ form1.addEventListener('submit', (e) => {
                     setTimeout(() => {
                  $('div.message').text(jqXHR.responseText);
                  $('.loader').css({'opacity':'0%', 'z-index':'0'});
-                 $('.bl').css({'opacity':'100%', 'z-index':'12'})
+                 $('.bl').css({'opacity':'100%', 'z-index':'12'});
                  }, 3000);
 
             }).fail(function(jqXHR, exception, textStatus, errorThrown) {
@@ -62,7 +60,7 @@ form1.addEventListener('submit', (e) => {
                 setTimeout(() => {
                 $('div.message').text(msg);
                 $('.loader').css('opacity','0%');
-                $('.bl').css({'opacity':'100%', 'z-index':'12'})
+                $('.bl').css({'opacity':'100%', 'z-index':'12'});
                 }, 3000);
             });
 
@@ -73,7 +71,7 @@ form1.addEventListener('submit', (e) => {
 
 });
 
-function check(){
+function check1(){
     let flag = true;
 
     var billfromvalue = billfrom.value.trim();
@@ -123,9 +121,9 @@ function check(){
         const xhr = new XMLHttpRequest();
         xhr.open("GET", url, false);
         xhr.send();
-        var ledger = xhr.response;
+        var ledger = +(xhr.response);
 
-        if(ledger < summavalue){ // indicates that this bill isn't exist
+        if(ledger < +(summavalue)){ // indicates that this bill isn't exist
            setErrorFor(summa, "Scarcity of money on your ledger");
            flag = false;
         }else{
