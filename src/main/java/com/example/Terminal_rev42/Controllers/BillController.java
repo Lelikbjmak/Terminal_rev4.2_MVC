@@ -46,6 +46,30 @@ public class BillController {
     @Autowired
     userServiceImpl userService;
 
+    @GetMapping("checkBill")
+    @ResponseBody
+    public boolean checkBill(@RequestParam("card") String card){
+        if(billService.findByCard(card) != null)
+            return true;
+        else return false;
+    }
+
+    @GetMapping("checkLedger")
+    @ResponseBody
+    public BigDecimal checkLedger(@RequestParam("card") String card){
+        System.out.println("Check ledger active: " + card);
+        return billService.findByCard(card).getLedger();
+    }
+
+    @GetMapping("checkPin")
+    @ResponseBody
+    public boolean checkPin(@RequestParam("card") String card, @RequestParam("pin") short pin){
+        System.out.println("Check pin active...\n" + card);
+        if(billService.findByCard(card).getPin() == pin)
+            return true;
+        else return false;
+    }
+
     @PostMapping("add")
     public String addbill(@ModelAttribute("bill") bill bill, @SessionAttribute("bills") Set<bill> bills) {
         client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
@@ -94,7 +118,7 @@ public class BillController {
             receipts receipt = new receipts("Cash transfer " + billf.getCurrency().concat(billt.getCurrency()),billf, billt, summa, billf.getCurrency());
             receiptsService.save(receipt);  // save receipt
 
-            return ResponseEntity.ok("success");
+            return ResponseEntity.ok("Successful!");
         }
 
         return ResponseEntity.badRequest().body("incorrect pin");
