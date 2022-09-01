@@ -36,24 +36,24 @@
             <div class="r1">
                 <input type="text" id="username" name="username">
                 <br>
-                <small>Error message</small>
+                <small></small>
             </div>
 
             <label><b>Password</b></label>
             <div class="r1">
                 <input type="password" name="password" id="password">
                 <br>
-                <small>Error message</small>
+                <small></small>
             </div>
 
             <label><b>Confirm password</b></label>
             <div class="r1">
                 <input type="password" name="confirmpassword" id="confirmpassword" >
                 <br>
-                <small>Error message</small>
+                <small></small>
             </div>
 
-            <button type="button" class="butregister" id="go">Continue</button>
+            <button type="button" class="butregister" id="go" >Continue</button>
         </div>
 
         <div class="register-form" id="client">
@@ -61,57 +61,43 @@
             <div class="r1">
                 <input type="text" name="name" id="name" placeholder="Name Surname" >
                 <br>
-                <small>Error message</small>
+                <small></small>
             </div>
 
             <label><b>Passport</b></label>
             <div class="r1">
-                <input type="text" name="passport" id="passport" placeholder="Passport number" pattern="^[A-Z]{2}\d{7}$">
+                <input type="text" name="passport" id="passport" placeholder="XX*******">
                 <br>
-                <small>Error message</small>
+                <small></small>
             </div>
 
             <label for="bday"><b>Birth</b></label>
             <div class="r1">
                 <input type="date" name="bday" id="bday">
                 <br>
-                <small>Error message</small>
+                <small></small>
             </div>
 
             <label for="phone"><b>Phone number</b></label>
-            <div class="r1"><input type="tel" name="phone" id="phone" placeholder="Phone"></div>
+            <div class="r1">
+                <input type="tel" name="phone" id="phone" placeholder="**********">
+                <br>
+                <small></small>
+            </div>
 
             <button type="submit" class="butregister" id="reg" >Register</button>
         </div>
 
     </form>
 <script src="/Terminal/js/regvalid.js"></script>
-
-<!--<script src="/Terminal/js/Register.js"></script>-->
-
-
-<!--<form id="register" th:method="POST" th:action="@{/Barclays/client/add}" th:object="${client}">-->
-<!--    <div class="register-form" id="client">-->
-
-<!--        <div class="Mainreg"><h2>Registration</h2></div>-->
-
-<!--        <label><b>Full name</b></label>-->
-<!--        <div class="r1"><input type="text" th:field="*{name}" id="name" placeholder="Name Surname" ></div>-->
-
-<!--        <label><b>Passport</b></label>-->
-<!--        <div class="r1"><input type="text" th:field="*{passport}" id="passport" placeholder="Passport number" required pattern="^[A-Z]{2}\d{7}$"></div>-->
-
-<!--        <label for="bday"><b>Birth</b></label>-->
-<!--        <div class="r1"><input type="date" th:field="*{birth}" id="bday"></div>-->
-
-<!--        <label for="phone"><b>Phone number</b></label>-->
-<!--        <div class="r1"><input type="tel" th:field="*{phone}" id="phone"  required placeholder="Phone"></div>-->
-
-<!--        <button type="submit" class="butregister" >Register</button>-->
-<!--    </div>-->
-<!--</form>-->
-
 <script src="/Terminal/js/clientformregclose.js"></script>
+
+
+<div class="wrap" id="wrap">
+    <div class="message" id="message"></div>
+    <div class="loader"></div>
+</div>
+
 
 <div class="slogan">
 <strong>The Future's Bright; The Future's Barclays</strong>
