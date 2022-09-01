@@ -215,9 +215,12 @@ cursor: pointer;
 }
 
 .butregister:hover {
-background-color: rgba(0, 104, 255, 1);
-box-shadow: 0 0 20px rgba(0, 136, 255, 1);
+border: 2px solid rgba(0,0,0,0.6);
+background-color: rgb(109, 235, 252, 1);
+box-shadow: 0 0 10px rgb(109, 235, 252, 1);
 }
+
+
 
 select {
 width: 100%;
@@ -696,16 +699,60 @@ text-align:center;
 font-size: large;
 }
 
+#deposit{
+height: 470px;
+margin-top: -740px;
+opacity: 0%;
+z-index: 0;
+transition-property: opacity, z-index;
+transition-duration: 2s, 3s;
+}
+
+#bb2{
+margin-top: 15px;
+}
 
 .con select{
 text-align: center;
 font-size: 15px;
+margin-bottom: 0px;
 width:260px;
 height: 50px;
 color: #385983;
 line-height:16px;
 border: 2px solid #E9F2FF;
 }
+
+.r2{
+margin-bottom: 6px;
+}
+.r2 small{
+visibility: hidden;
+margin-left: 5px;
+color: rgba(255, 83, 83, 0.5);
+}
+
+.r2.success input{
+border-color: rgba(0, 255, 255, 0.25);
+}
+
+.r2.success select{
+border-color: rgba(0, 255, 255, 0.25);
+}
+
+.r2.error select{
+border-color: rgba(255, 0, 0, 0.37);
+}
+
+.r2.error input{
+border-color: rgba(255, 0, 0, 0.37);
+}
+
+.r2.error small{
+visibility: visible;
+}
+
+
 
 #cashextradition{
 margin-top: -725px;
@@ -727,8 +774,6 @@ border: 2px solid #C1D9FD;
 
 .con input{
 border-radius: 5px;
-margin-bottom: 18px;
-margin-top: 10px;
 text-align: center;
 width:250px;
 height: 40px;
@@ -744,8 +789,12 @@ outline: none;
 border: 2px solid #C1D9FD;
 }
 
+.con small{
+text-align: left;
+}
 
 .con button{
+margin-top: 10px;
 width:250px;
 height: 40px;
 line-height:16px;
