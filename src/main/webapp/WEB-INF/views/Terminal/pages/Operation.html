@@ -48,72 +48,90 @@
 
 
 <div class="form-pop" id="cashtransfer">
+
   <form class="con">
+
     <h2>#Cash Transfer#</h2>
     <label>Your card</label>
+    <div class="r2">
+      <select id="billfrom">
+          <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+          </option>
+      </select>
+      <br>
+      <small></small>
+    </div>
 
-    <br>
-    <select id="billfrom">
-      <option th:each="bill : ${session.bills}" th:text="${bill.card}">
-      </option>
-    </select>
 
-    <br>
     <label>Recipient</label>
-    <br>
+    <div class="r2">
+        <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" id="billto">
+        <br>
+        <small></small>
+    </div>
 
-    <input type="text" placeholder="XXXX XXXX XXXX XXXX" pattern="^(\d{4}\s){3}\d{4}$" id="billto">
-    <br>
     <label>Summa</label>
-    <br>
-    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$" id="summa">
-    <br>
+    <div class="r2">
+        <input type="text" placeholder="00.00" id="summa">
+        <br>
+        <small></small>
+    </div>
+
+
     <label>Pin code</label>
-    <br>
-    <input type="password" placeholder="****" pattern="^\d{4}$" id="pin">
-    <br>
-    <br>
+    <div class="r2">
+        <input type="password" placeholder="****"  maxlength="4" id="pin">
+        <br>
+        <small></small>
+    </div>
+
     <button class="bb" id="bb1">Accomplish</button>
   </form>
+  <script src="/Terminal/js/cashtransferPOST.js"></script>
 </div>
-<script src="/Terminal/js/cashtransferPOST.js"></script>
+
+
 
 <div class="form-pop" id="deposit">
   <form class="con">
-    <h2>#Deposit#</h2>
 
+    <h2>#Deposit#</h2>
     <label>Your card</label>
 
-    <br>
+    <div class="r2">
     <select id="billfrom2">
       <option th:each="bill : ${session.bills}" th:text="${bill.card}">
       </option>
     </select>
-
-    <br>
+      <br>
+      <small></small>
+    </div>
 
     <label>Currency</label>
-    <br>
+    <div class="r2">
+      <select id="currency2">
+        <option>BYN</option>
+        <option>USD</option>
+        <option>EUR</option>
+        <option>RUB</option>
+      </select>
+        <br>
+        <small></small>
+    </div>
 
-    <select id="currency2">
-      <option>BYN</option>
-      <option>USD</option>
-      <option>EUR</option>
-      <option>RUB</option>
-    </select>
 
-    <br>
     <label>Summa</label>
-    <br>
+    <div class="r2">
+      <input type="text" placeholder="00.00" id="summa2">
+      <br>
+      <small></small>
+    </div>
 
-    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$" id="summa2">
-    <br>
 
-    <br>
-    <button type="submit" class="bb" id="bb2">Accomplish</button>
+    <button class="bb" id="bb2">Accomplish</button>
   </form>
+  <script src="/Terminal/js/depositPOST.js"></script>
 </div>
-<script src="/Terminal/js/depositPOST.js"></script>
 
 
 <div class="form-pop" id="convert">
@@ -121,72 +139,84 @@
     <h2>#Convert#</h2>
     <label>Your card</label>
 
-    <br>
+    <div class="r2">
     <select id="billfrom3">
       <option th:each="bill : ${session.bills}" th:text="${bill.card}" >
       </option>
     </select>
+      <br>
+      <small></small>
+    </div>
 
-    <br>
 
     <label>Currency</label>
-    <br>
+    <div class="r2">
+      <select id="currency3">
+        <option>BYN</option>
+        <option>USD</option>
+        <option>EUR</option>
+        <option>RUB</option>
+      </select>
+        <br>
+        <small></small>
+      </div>
 
-    <select id="currency3">
-      <option>BYN</option>
-      <option>USD</option>
-      <option>EUR</option>
-      <option>RUB</option>
-    </select>
 
-    <br>
     <label>Summa</label>
-    <br>
-
-    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$" id="summa3">
-    <br>
+    <div class="r2">
+      <input type="text" placeholder="00.00" id="summa3">
+      <br>
+      <small></small>
+    </div>
 
     <label>Pin code</label>
-    <br>
-    <input type="password" placeholder="****" pattern="^\d{4}$" id="pin3">
+    <div class="r2">
+      <input type="password" placeholder="****" maxlength="4" id="pin3">
+      <br>
+      <small></small>
+    </div>
 
-    <br>
-    <br>
-    <button type="submit" class="bb" id="bb3">Accomplish</button>
+    <button class="bb" id="bb3">Accomplish</button>
   </form>
+  <script src="/Terminal/js/convertPOST.js"></script>
 </div>
-<script src="/Terminal/js/convertPOST.js"></script>
 
 
 <div class="form-pop" id="cashextradition">
   <form  class="con">
     <h2>#Cash extradition#</h2>
-
     <label>Your card</label>
 
-    <br>
+    <div class="r2">
     <select id="billfrom4">
       <option th:each="bill : ${session.bills}" th:text="${bill.card}">
       </option>
     </select>
+      <br>
+      <small></small>
+    </div>
 
-    <br>
 
     <label>Summa</label>
-    <br>
+    <div class="r2">
+    <input type="text" placeholder="00.00" id="summa4">
+      <br>
+      <small></small>
+    </div>
 
-    <input type="text" placeholder="00.00" pattern="^\d+(\.\d{2})?$" id="summa4">
-    <br>
 
     <label>Pin code</label>
-    <br>
-    <input type="password" placeholder="****" pattern="^\d{4}$" id="pin4">
-    <br>
-    <br>
-    <button type="submit" class="bb" id="bb4">Accomplish</button>
+    <div class="r2">
+    <input type="password" placeholder="****" maxlength="4" id="pin4">
+      <br>
+      <small></small>
+    </div>
+
+    <button class="bb" id="bb4">Accomplish</button>
   </form>
+  <script src="/Terminal/js/cashextraditionPOST.js"></script>
 </div>
-<script src="/Terminal/js/cashextraditionPOST.js"></script>
+
 
 <div class="wrap" id="wrap">
   <div class="message" id="message"></div>
