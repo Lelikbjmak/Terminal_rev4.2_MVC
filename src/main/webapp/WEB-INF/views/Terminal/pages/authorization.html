@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Authorization</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="/Terminal/css/style.css">
@@ -12,7 +13,7 @@
 </head>
 
 <body>
-<header class="hh1"  >
+<header class="hh1">
 
     <div class="menuaut">
         <a href="/Barclays"><img class="logomenu" src="/Terminal/logo/Barclays-PLC.png"></a>
@@ -43,28 +44,26 @@
     </div>
 </header>
 
+
 <div class="box">
-    <form class="aut" th:action="@{/Barclays/authorisation}"  th:method="post">
+    <form class="aut" th:action="@{/Barclays/authorisation}"  th:method="post" id="aut">
 
-        <label for="login" >Login</label>
-
-        <div th:if="${param.error}">
+        <div class="error" th:if="${param.error}">
             Invalid Username or password
         </div>
 
-        <div>
+        <label for="login" >Login</label>
+        <div class="r2">
             <input id="login" type="text" placeholder="login" name="username">
         </div>
 
         <label for="password">Password</label>
-        <div>
-            <input  id="password" type="password" placeholder="*************" name="password">
+        <div class="r2">
+            <input id="password" type="password" placeholder="*************" name="password">
         </div>
-        <button class="buttonlogin" >Submit</button>
-
+        <button class="buttonlogin" id="loggin">Submit</button>
     </form>
 </div>
-
 
 </body>
 </html>
