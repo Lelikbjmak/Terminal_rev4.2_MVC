@@ -17,6 +17,27 @@ var again = document.getElementById('again');
 
 ov.addEventListener('click', function(){
 
+const rr = document.getElementsByClassName('r2 success');
+
+const rrr = document.getElementsByClassName('r2 error');
+
+for (let r of rrr) {
+      r.classList.remove('error');
+    }
+
+for (let r of rrr) {
+      r.classList.remove('error');
+    }
+
+for (let r of rr) {
+      r.classList.remove('success');
+    }
+
+for (let r of rr) {
+      r.classList.remove('success');
+    }
+
+
 ov.style.opacity = '0%';
 ov.style.zIndex = '0';
 
@@ -40,6 +61,27 @@ form[i].reset();
 });
 
 bl.addEventListener('click', function(){
+
+const rr = document.getElementsByClassName('r2 success');
+
+const rrr = document.getElementsByClassName('r2 error');
+
+for (let r of rrr) {
+      r.classList.remove('error');
+    }
+
+for (let r of rrr) {
+      r.classList.remove('error');
+    }
+
+for (let r of rr) {
+      r.classList.remove('success');
+    }
+
+for (let r of rr) {
+      r.classList.remove('success');
+    }
+
 
 ov.style.opacity = '0%';
 ov.style.zIndex = '0';

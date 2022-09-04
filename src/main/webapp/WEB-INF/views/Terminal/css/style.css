@@ -75,11 +75,10 @@ transition-duration: 2s;
 }
 
 .navbar nav ul li a:hover{
-font-size: xx-large;
 color: #6debfc;
 text-shadow: 1px 2px 5px #0096f4;
-transition-property: color, font-size, text-shadow;
-transition-duration: 1s, 1s, 2s;
+transition-property: color, text-shadow;
+transition-duration: 0.5s, 0.8s;
 transition-timing-function: ease-in-out;
 }
 
@@ -114,7 +113,7 @@ height: 100%;
 position:fixed;
 background-color:rgba(0, 0, 0, 0.7);
 transition-property: opacity;
-transition-duration: 3.5s;
+transition-duration: 1.5s;
 }
 
 .register-form{
@@ -158,7 +157,7 @@ border: 2px solid #C1D9FD;
 
 #user{
 transition-property: opacity;
-transition-duration: 2s;
+transition-duration: 1s;
 }
 
 
@@ -166,7 +165,7 @@ transition-duration: 2s;
 z-index: 2;
 opacity:0%;
 transition-property: opacity;
-transition-duration: 2s;
+transition-duration: 1s;
 }
 
 
@@ -322,7 +321,7 @@ margin-right: auto;
 text-align: center;
 border-radius:50px;
 background-color:rgba(0,0,0,0.6);
-transition-duration: 4s;
+transition-duration: 2s;
 }
 
 
@@ -330,20 +329,20 @@ transition-duration: 4s;
 box-shadow: 0px 0px 20px #0096f4;
 opacity: 1;
 transition-property: opacity, box-shadow;
-transition-duration: 2.5s, 4s;
+transition-duration: 1.5s, 2s;
 }
 
 .fullbox:hover .mm2{
 box-shadow: 0px 0px 20px #0096f4;
 opacity: 1;
 transition-property: opacity, box-shadow;
-transition-duration: 3s, 4s;
+transition-duration: 1.5s, 2s;
 }
 
 .fullbox:hover .ch1{
 transition-delay: 2s;
 opacity: 1;
-transition-duration: 2s;
+transition-duration: 1.5s;
 }
 
 
@@ -351,21 +350,21 @@ transition-duration: 2s;
 box-shadow: 0px 0px 20px #0096f4;
 opacity: 1;
 transition-property: opacity, box-shadow;
-transition-duration: 3s, 4s;
+transition-duration: 1.5s, 2s;
 }
 
 .mm4:hover {
 box-shadow: 0px 0px 20px #0096f4;
 opacity: 1;
 transition-property: opacity, box-shadow;
-transition-duration: 4s, 4s;
+transition-duration: 1.5s, 2s;
 }
 
 .mm5:hover {
 box-shadow: 0px 0px 20px #0096f4;
 opacity: 1;
 transition-property: opacity, box-shadow;
-transition-duration: 4s, 4s;
+transition-duration: 1.5s, 2s;
 }
 
 
@@ -422,7 +421,7 @@ height: 260px;
 background-color: rgba(0,0,0,0.6);
 border-radius: 20px;
 opacity: 0;
-transition-duration: 4s;
+transition-duration: 2s;
 }
 .mm5 span{
 color: #0096f4;
@@ -441,7 +440,7 @@ margin-left: auto;
 margin-right: auto;
 opacity: 0;
 transition-delay: 1s;
-transition-duration: 4s;
+transition-duration: 2s;
 }
 
 
@@ -541,7 +540,7 @@ position:absolute;
 width: 1000px;
 color: #0096f4;
 margin-left: 200px;
-margin-top: 189px;
+margin-top: 255px;
 }
 
 #v6{
@@ -568,15 +567,16 @@ z-index:1;
 
 .box{
 position: relative;
+z-index: 2;
 margin-left: auto;
 margin-right: auto;
 margin-top: -1150px;
 text-align:center;
 border-radius: 35px;
 width: 450px;
-height: 375px;
+height: 420px;
 box-shadow: 0 0 20px #0096f4;
-background-color: rgba(255, 255, 255, 0.8);
+background-color: rgba(255, 255, 255, 0.7);
 }
 
 
@@ -586,7 +586,7 @@ height: 45px;
 border: 2px solid #E9F2FF;
 color: #385983;
 margin-top: 10px;
-margin-bottom: 25px;
+margin-bottom: 10px;
 text-align: center;
 }
 
@@ -629,6 +629,12 @@ box-shadow: 0 0 25px rgba(0, 136, 255, 1);
 cursor: pointer;
 }
 
+.error{
+font-family: Roboto;
+font-size: 20px;
+color: rgba(255, 0, 0, 0.6);
+margin-bottom: 30px;
+}
 
 .slogan{
 position: absolute;
@@ -691,7 +697,7 @@ opacity: 0%;
 position:fixed;
 z-index: 0;
 transition-property: opacity, z-index;
-transition-duration: 2s, 3s;
+transition-duration: 1s, 1.5s;
 }
 
 .form-pop{
@@ -705,7 +711,7 @@ margin-top: -740px;
 opacity: 0%;
 z-index: 0;
 transition-property: opacity, z-index;
-transition-duration: 2s, 3s;
+transition-duration: 1s, 1.5s;
 }
 
 #bb2{
@@ -726,6 +732,7 @@ border: 2px solid #E9F2FF;
 .r2{
 margin-bottom: 6px;
 }
+
 .r2 small{
 visibility: hidden;
 margin-left: 5px;
@@ -752,6 +759,25 @@ border-color: rgba(255, 0, 0, 0.37);
 visibility: visible;
 }
 
+.r3{
+margin-bottom: 30px;
+}
+
+#convertor{
+opacity: 0%;
+color: rgba(35, 35, 35, 1);
+z-index: 1;
+position: relative;
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+margin-top: -350px;
+width: 455px;
+height: 400px;
+display: fixed;
+transition-property: opacity, z-index;
+transition-duration: 1s, 1.5s;
+}
 
 
 #cashextradition{
@@ -894,7 +920,7 @@ color: black;
 .opopen{
 z-index: 3;
 transition-property: z-index;
-transition-duration: 4.5s;
+transition-duration: 2s;
 }
 
 .menuaut1{
@@ -907,7 +933,15 @@ text-align:center;
 z-index: 3;
 }
 
-
+#ledgermenu{
+position: relative;
+height: 355px;
+margin-top: 10px;
+margin-left:auto;
+margin-right:auto;
+text-align: center;
+z-index: 0;
+}
 
 .logomenu1{
 width: 250px;
@@ -926,7 +960,7 @@ position:fixed;
 opacity: 0%;
 background-color:rgba(0, 0, 0, 0.7);
 transition-property: opacity, z-index;
-transition-duration: 2s, 3s;
+transition-duration: 1s, 1.5s;
 }
 
 
@@ -1024,9 +1058,9 @@ padding-right: 30px;
 padding-top: 15px;
 padding-bottom: 25px;
 opacity:0%;
-z-index:3;
+z-index:0;
 transition-property: opacity;
-transition-duration: 2s;
+transition-duration: 1s;
 }
 
 .register-form1 input{
@@ -1154,7 +1188,7 @@ transition-duration: 1.5s
 }
 
 #prev{
-background-color: rgba(150, 150, 150, 1);
+background-color: rgba(110, 110, 110, 1);
 margin-left: 25px;
 border:  none;
 transition-property: background-color;
@@ -1216,6 +1250,7 @@ transition-duration: 1.5s
   left: 0;
   content: '';
 }
+
 .loader:after {
   background: white;
   width: 75%;
