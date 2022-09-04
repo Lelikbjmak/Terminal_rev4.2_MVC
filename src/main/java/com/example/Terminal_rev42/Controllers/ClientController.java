@@ -67,10 +67,20 @@ public class ClientController {
     @GetMapping("checkUsername")
     @ResponseBody
     public boolean check(@RequestParam("username") String username){
-        System.out.println("Checking username: " + username);
+        System.out.println("Checking username: " + username + "...");
         if (userService.findByUsername(username) != null)
             return false;
         else return true;
     }
 
+    @GetMapping("checkPassword")
+    @ResponseBody
+    public boolean check1(@RequestParam("username") String username, @RequestParam("password") String password){
+        System.out.println("Checking " + username + " password...");
+        if(userService.findByUsername(username).getPassword().equals(password)){
+            return true;
+        }else
+            return false;
+
+    }
 }
