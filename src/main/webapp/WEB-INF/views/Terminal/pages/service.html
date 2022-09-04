@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Services</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
@@ -27,8 +28,7 @@
     </div>
 </header>
 
-<div id="ovvv"></div>
-
+<div class="ov" id="ov"></div>
 
 <nav class="dws-menu">
     <ul>
@@ -42,26 +42,25 @@
 
         <li><a href="#"><i class="fa fa-cards"></i>Cards</a>
             <ul>
-                <li><a id="goo" href="#" onclick="opencardreg();">apply</a></li>
-                <li><a href="#">card1</a></li>
-                <li><a href="#">card2</a></li>
+                <li><a id="goo" onclick="opencardreg()">apply</a></li>
+                <li><a id="ledger">Check Ledger</a></li>
             </ul>
             <script src="/Terminal/js/opencardreg.js"></script>
+            <script src="/Terminal/js/ledger.js"></script>
         </li>
 
         <li><a href="#"><i class="fa fa-credit"></i>Credit</a>
             <ul>
-                <li><a href="#">apply</a></li>
-                <li><a href="#">card1</a></li>
-                <li><a href="#">card2</a></li>
+                <li><a href="#">credit1</a></li>
+                <li><a href="#">credit2</a></li>
+                <li><a href="#">credit3</a></li>
             </ul>
         </li>
 
         <li><a href="#"><i class="fa fa-rates"></i>Currency rates</a>
             <ul>
-                <li><a href="#" id="cardregref" onclick="opencardreg();">apply</a></li>
-                <li><a href="#">card1</a></li>
-                <li><a href="#">card2</a></li>
+                <li><a href="#">Rates</a></li>
+                <li><a id="convert">Convertor</a></li>
             </ul>
         </li>
 
@@ -69,14 +68,15 @@
 
     </ul>
 </nav>
+<script src="/Terminal/js/Convertoropenclose.js"></script>
 
-    <form  th:method="post" th:action="@{/Barclays/bill/add}" th:object="${bill}">
+    <form id="cardapply">
         <div class="register-form1" id="cardreg">
             <div class="Mainreg"><h2>Card extradition</h2></div>
 
             <label for="type"><b>Card type</b></label>
             <div class="r1">
-                <select id="type" th:field="*{type}">
+                <select id="type">
                     <option value="Salary">Salary card</option>
                     <option value="Personal" selected="selected" >Personal use card</option>
                     <option value="Corporate">Corporate card</option>
@@ -85,10 +85,10 @@
 
             <label for="Currency" ><b>Currency</b></label>
             <div class="r1">
-                <select id="Currency" th:field="*{currency}">
+                <select id="Currency">
                     <option value="BYN">BYN</option>
                     <option selected="selected" value="USD">USD</option>
-                    <option value="EURO">EUR</option>
+                    <option value="EUR">EUR</option>
                     <option value="RUB" >RUB</option>
                 </select>
             </div>
@@ -96,7 +96,68 @@
             <button class="butregister" type="submit">Register</button>
         </div>
     </form>
+<script src="/Terminal/js/cardextradition.js"></script>
 
+
+<div class="form-pop" id="ledgermenu">
+    <form  class="con">
+        <h2>#Ledger#</h2>
+
+        <label>Card</label>
+        <div class="r2">
+            <select id="bill">
+                <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+                </option>
+            </select>
+            <br>
+            <small></small>
+        </div>
+
+        <label>Pin code</label>
+        <div class="r2">
+            <input type="password" placeholder="****" maxlength="4" id="pincode">
+            <br>
+            <small></small>
+        </div>
+
+        <button class="bb" id="b">Check</button>
+    </form>
+    <script src="/Terminal/js/checkLedgerValidation.js"></script>
+</div>
+
+
+<div class="form-pop" id="convertor">
+    <form  class="con">
+        <h2>#Convertor#</h2>
+
+        <div class="r3">
+            USD  <input type="number" id="usd">
+        </div>
+
+        <div class="r3">
+            BYN  <input type="number" id="byn">
+        </div>
+
+        <div class="r3">
+            EUR  <input type="number" id="eur">
+        </div>
+
+        <div class="r3">
+            RUB  <input type="number" id="rub">
+        </div>
+
+    </form>
+    <script src="/Terminal/js/convertot.js">
+    </script>
+</div>
+
+
+<div class="wrap" id="wrap">
+    <div class="message" id="message"></div>
+    <div class="loader"></div>
+    <a th:href="@{/Barclays/bill/card}"><button class="bl" id="rec">Get card</button></a>
+    <button class="bl" id="prev">back</button>
+</div>
 
 <script src="/Terminal/js/closecardreg.js"></script>
 

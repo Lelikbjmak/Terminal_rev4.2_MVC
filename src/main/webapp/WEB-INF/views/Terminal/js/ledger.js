@@ -1,7 +1,11 @@
-function opencardreg(){
+const led = document.getElementById('ledger');
+
+led.addEventListener('click', getledger);
+
+function getledger(){
 
 var ov = document.getElementById('ov');
-var win = document.getElementById('cardreg');
+var win = document.getElementById('ledgermenu');
 var buts = document.querySelectorAll('.dws-menu');
 var header = document.querySelectorAll('.menuaut1');
 
