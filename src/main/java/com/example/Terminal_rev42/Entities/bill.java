@@ -123,4 +123,9 @@ public class bill implements Serializable {
         this.active = active;
     }
 
+    @NonNull
+    public LocalDate getValidity() {
+        return validity;
+    }
+
 }
