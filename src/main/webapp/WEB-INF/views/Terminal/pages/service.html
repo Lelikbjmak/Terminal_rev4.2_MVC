@@ -59,15 +59,15 @@
 
         <li><a href="#"><i class="fa fa-rates"></i>Currency rates</a>
             <ul>
-                <li><a href="#">Rates</a></li>
-                <li><a id="convert">Convertor</a></li>
+                <li><a id="rates">Rates</a></li>
+                <li><a id="convertt">Convertor</a></li>
             </ul>
         </li>
 
         <li><a href="/Barclays/operation"><i class="fa fa-rates"></i>Operations</a></li>
-
     </ul>
 </nav>
+<script src="/Terminal/js/rates.js"></script>
 <script src="/Terminal/js/Convertoropenclose.js"></script>
 
     <form id="cardapply">
@@ -125,30 +125,83 @@
     <script src="/Terminal/js/checkLedgerValidation.js"></script>
 </div>
 
+<div id="currencyrates">
+
+    <br>
+    <div id="rateslogan"><u>#Rates#</u></div>
+
+    <div>
+        <ul class="lk">
+
+            <li>
+                <div class="byn"><i>BYN</i>
+                    <br>
+                    <br>
+                <a class="b"><small><u>buy</u></small></a>
+                    <div class="buy"><marquee direction="right" scrollamount="3.5" onmouseover="this.stop();" onmouseout="this.start();" id="buybyn">00.00</marquee></div>
+                    <br>
+                <a class="s"><small><u>sell</u></small></a>
+                    <div class="sell"><marquee direction="right" scrollamount="3.5" onmouseover="this.stop();" onmouseout="this.start();" id="sellbyn">00.00</marquee></div>
+                </div>
+            </li>
+
+            <li>
+                <div class="eur"><i>EUR</i>
+                    <br>
+                    <br>
+                    <a class="b"><small><u>buy</u></small></a>
+                    <div class="buy"><marquee direction="right" scrollamount="3.5" onmouseover="this.stop();" onmouseout="this.start();" id="buyeur">00.00</marquee></div>
+                    <br>
+                    <a class="s"><small><u>sell</u></small></a>
+                    <div class="sell"><marquee direction="right" scrollamount="3.5" onmouseover="this.stop();" onmouseout="this.start();" id="selleur">00.00</marquee></div>
+                </div>
+            </li>
+
+            <li>
+                <div class="rub"><i>RUB</i>
+                    <br>
+                    <br>
+                    <a class="b"><small><u>buy</u></small></a>
+                    <div class="buy"><marquee direction="right" scrollamount="3.5" onmouseover="this.stop();" onmouseout="this.start();" id="buyrub">00.00</marquee></div>
+                    <br>
+                    <a class="s"><small><u>sell</u></small></a>
+                    <div class="sell"><marquee direction="right" scrollamount="3.5" onmouseover="this.stop();" onmouseout="this.start();" id="sellrub">00.00</marquee></div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+    <div>
+        <div id="currdate"></div>
+        <div id="currtime"></div>
+        <div id="addit"><small>*all rates based on USD</small></div>
+    </div>
+
+</div>
 
 <div class="form-pop" id="convertor">
     <form  class="con">
         <h2>#Convertor#</h2>
 
         <div class="r3">
-            USD  <input type="number" id="usd">
+            <i>USD</i>  <input type="number" id="usd">
         </div>
 
         <div class="r3">
-            BYN  <input type="number" id="byn">
+            <i>BYN</i>  <input type="number" id="byn">
         </div>
 
         <div class="r3">
-            EUR  <input type="number" id="eur">
+            <i>EUR</i>  <input type="number" id="eur">
         </div>
 
         <div class="r3">
-            RUB  <input type="number" id="rub">
+            <i>RUB</i>  <input type="number" id="rub">
         </div>
 
     </form>
-    <script src="/Terminal/js/convertot.js">
-    </script>
+    <script src="/Terminal/js/convertot.js"></script>
 </div>
 
 
