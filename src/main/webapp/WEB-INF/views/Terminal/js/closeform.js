@@ -46,6 +46,7 @@ wins[i].style.opacity = '0%';
 wins[i].style.zIndex = '0';
 }
 
+
 for(var i = 0; i< buts.length; i++){
 buts[i].style.zIndex = '3';
 }

@@ -22,8 +22,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.http.HttpClient;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -83,6 +83,7 @@ public class BillController {
         bill.setCurrency(currency);
         bill.setType(type);
         bill.setClient(client);
+        System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
         billService.addbill(bill);
         bills.add(bill);
         return ResponseEntity.ok("Successful card registration");
@@ -269,7 +270,20 @@ public class BillController {
     }
 
     @GetMapping("card")
-    public void downloadcard(HttpServletResponse response, @ModelAttribute("bill") bill bill) throws IOException {
+    public void downloadcard(HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills) throws IOException {
+
+        Set<String> cards = new HashSet<>();
+        bills.forEach(p -> cards.add(p.getCard()));
+
+
+        bill bill = billService.getRegBill(cards);
+        if (bill != null) {
+            System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
+        }else{
+            System.err.println("bill is not found!");
+            return;
+        }
+
 
         File file = new File(bill.getCard() + ".txt");
         file.deleteOnExit();
