@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Holdings</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Terminal/css/style.css" type="text/css">
+    <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
+</head>
+
+<body>
+
+<header>
+    <div class="dd">
+        <div class="menu">
+            <a href="/Barclays"><img class="logomenu1" src="/Terminal/logo/Barclays-PLC.png"></a>
+
+            <div class="curruser">
+                <span th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span>
+                <br>
+                <span><a href="/logout" class="signout">Log out</a></span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="back">
+        <img id="headerback" src="/Terminal/pics/r1.jpg">
+        <img id="headback" src="/Terminal/pics/r1.jpg" >
+        <img id="headerback1" src="/Terminal/pics/r1.jpg">
+    </div>
+
+</header>
+
+<div class="fixedholding">
+
+    <div class="fixed">
+
+        <div>Fixed holdings</div>
+
+        <div>
+            A fixed percentage rate on a deposit is a simpler and more stable, although not always large, income. The advantage of a fixed interest rate is that when concluding an agreement, it prescribes its level, which cannot be changed throughout the entire period of the deposit. This guarantees the investor protection from any fluctuations in the foreign exchange market, and an accurate representation of the level of his income.
+        </div>
+
+    </div>
+
+    <button class="opopen" id="fixedbut">Open fixed hold</button>
+
+</div>
+
+<div class="ch2"></div>
+
+<div class="capitalizationhold">
+
+    <div class="fixed">
+
+        <div>Capitalisation</div>
+
+        <div>
+            Capitalization of interest is the addition of interest accrued during the period to the principal amount of the deposit and the subsequent accrual of income on the amount of the deposit and the amount of interest added to it. In other words, the calculation of interest on interest.
+        </div>
+
+    </div>
+
+    <button class="opopen" id="cplb">Open hold with capitalisation</button>
+
+</div>
+
+<div class="ch2"></div>
+
+<div class="floathold">
+
+    <div class="fixed">
+
+        <div>Floating</div>
+
+        <div>
+            Capitalization of interest is the addition of interest accrued during the period to the principal amount of the deposit and the subsequent accrual of income on the amount of the deposit and the amount of interest added to it. In other words, the calculation of interest on interest.
+        </div>
+
+    </div>
+
+    <button class="opopen" id="floatbut">Open hold with capitalisation</button>
+
+</div>
+
+<div class="ov" id="ov"></div>
+
+
+    <form class="con" id="fixed1">
+
+        <div class="form-pop" id="fixinvest">
+            <h2><u>#FixedHolding#</u></h2>
+
+            <label>Type</label>
+            <div class="r2">
+                <input type="text" disabled="disabled" value="Fixed" id="type1">
+                <br>
+                <small></small>
+            </div>
+
+            <label>Currency</label>
+            <div class="r2">
+                <select id="Currency">
+                    <option value="BYN">BYN</option>
+                    <option selected="selected" value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="RUB" >RUB</option>
+                </select>
+                <br>
+                <small></small>
+            </div>
+
+            <label>Percentage %</label>
+            <div class="r2">
+                <input type="text" disabled="disabled" placeholder="waiting for currency..." id="percentage">
+                <br>
+                <small></small>
+            </div>
+
+            <label>Term</label>
+            <div class="r2">
+                <select id="term">
+                    <option value="6">6 month</option>
+                    <option selected="selected" value="12">12 month</option>
+                    <option value="24">24 month</option>
+                    <option value="36" >36 month</option>
+                </select>
+                <br>
+                <small></small>
+            </div>
+
+            <label>Payment</label>
+            <br>
+
+            <div class="form_radio_btn">
+                <div class="r2">
+                    <input id="radio-1" type="radio" name="radio" value="cash" checked>
+                    <label for="radio-1">cash</label>
+                </div>
+            </div>
+
+
+            <div class="form_radio_btn">
+                <div class="r2">
+                    <input id="radio-2" type="radio" name="radio" value="card">
+                    <label for="radio-2">card</label>
+                </div>
+            </div>
+
+            <button type="button" class="bb" id="b">Invest</button>
+
+            <br>
+            <div class="addit"><small>*Annual interest rate</small></div>
+
+        </div>
+
+        <div class="form-pop" id="fixcash">
+            <h2><u>#Payment#</u></h2>
+
+            <label>Currency</label>
+            <div class="r2">
+                <select id="Currencyfrom">
+                    <option value="BYN">BYN</option>
+                    <option selected="selected" value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="RUB" >RUB</option>
+                </select>
+                <br>
+                <small></small>
+            </div>
+
+            <label>Deposit</label>
+            <div class="r2">
+                <input type="number" placeholder="00.00" id="dep1">
+                <br>
+                <small></small>
+            </div>
+
+            <button type="submit" class="bb" id="fixinv1">Invest</button>
+        </div>
+
+
+        <div class="form-pop" id="fixcard">
+            <h2><u>#Payment#</u></h2>
+
+            <label>Card</label>
+            <div class="r2">
+                <select id="billfrom">
+                    <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+                    </option>
+                </select>
+                <br>
+                <small></small>
+            </div>
+
+            <label>Deposit</label>
+            <div class="r2">
+                <input type="number" placeholder="00.00" id="dep2">
+                <br>
+                <small></small>
+            </div>
+
+            <label>Pin code</label>
+            <div class="r2">
+                <input type="password" placeholder="****" maxlength="4" id="pin">
+                <br>
+                <small></small>
+            </div>
+
+            <button type="submit" class="bb" id="fixinv2">Invest</button>
+
+        </div>
+
+    </form>
+
+<script src="/Terminal/js/fixedholding.js"></script>
+
+<div class="wrap" id="wrap">
+    <div class="message" id="message"></div>
+    <div class="loader"></div>
+    <button class="bl" id="prev">back</button>
+</div>
+
+<script src="/Terminal/js/holdsOpenClose.js"></script>
+
+</body>
+
+
+</html>
