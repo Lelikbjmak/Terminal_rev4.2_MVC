@@ -116,10 +116,20 @@ transition-property: opacity;
 transition-duration: 1.5s;
 }
 
+#regg{
+margin-top: -1100px;
+position: relative;
+margin-left: auto;
+margin-right: auto;
+width: 450px;
+height: 500px;
+}
+
+
 .register-form{
-position: absolute;
-margin-left: 375px;
-margin-top: -1300px;
+position: relative;
+margin-left: auto;
+margin-right: auto;
 margin-bottom: 25px;
 background: white;
 width: 450px;
@@ -162,6 +172,7 @@ transition-duration: 1s;
 
 
 #client{
+margin-top: -520px;
 z-index: 2;
 opacity:0%;
 transition-property: opacity;
@@ -472,6 +483,7 @@ margin-top: 2800px;
 color: #0096f4;
 }
 
+
 .socialmedia a img{
 width: 100px;
 height: 100px;
@@ -637,9 +649,9 @@ margin-bottom: 30px;
 }
 
 .slogan{
-position: absolute;
-margin-left: 180px;
-margin-top: -500px;
+position: relative;
+margin-top: -650px;
+text-align: center;
 color: #0096f4;
 font-size: 50px;
 text-shadow: 1px 1px 5px #ffffff;
@@ -650,6 +662,13 @@ z-index:1;
 width:100%;
 height:100%;
 opacity: 45%;
+}
+
+#pc2{
+z-index:1;
+width:100%;
+height:100%;
+opacity: 50%;
 }
 
 #dd{
@@ -689,12 +708,10 @@ box-shadow:  0px 6px 25px #0096f4;
 background-color: white;
 border: 1px solid #0096f4;
 border-radius: 35px;
-margin-top: -770px;
-margin-left: 450px;
 width: 350px;
 height: 530px;
 opacity: 0%;
-position:fixed;
+position: relative;
 z-index: 0;
 transition-property: opacity, z-index;
 transition-duration: 1s, 1.5s;
@@ -707,11 +724,39 @@ font-size: large;
 
 #deposit{
 height: 470px;
-margin-top: -740px;
-opacity: 0%;
-z-index: 0;
-transition-property: opacity, z-index;
-transition-duration: 1s, 1.5s;
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+position: relative;
+margin-top: -480px;
+}
+
+#cashtransfer{
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+position: relative;
+margin-top: -775px;
+}
+
+#convert{
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+position: relative;
+margin-top: -525px;
+}
+
+#cashextradition{
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+position: relative;
+top: 250px;
+}
+
+.bb{
+color:white;
 }
 
 #bb2{
@@ -764,17 +809,17 @@ margin-bottom: 30px;
 }
 
 #convertor{
-opacity: 0%;
 color: rgba(35, 35, 35, 1);
-z-index: 1;
 position: relative;
 margin-left: auto;
 margin-right: auto;
 text-align: center;
-margin-top: -350px;
-width: 455px;
-height: 400px;
+margin-top: -480px;
+width: 550px;
+height: 500px;
 display: fixed;
+opacity: 0%;
+z-index: 1;
 transition-property: opacity, z-index;
 transition-duration: 1s, 1.5s;
 }
@@ -936,11 +981,19 @@ z-index: 3;
 #ledgermenu{
 position: relative;
 height: 355px;
-margin-top: 10px;
+width: 400px;
+margin-top: -400px;
 margin-left:auto;
 margin-right:auto;
 text-align: center;
 z-index: 0;
+}
+
+#cardreg{
+position: relative;
+margin-left: auto;
+margin-right: auto;
+text-align: center;
 }
 
 .logomenu1{
@@ -1197,13 +1250,13 @@ transition-duration: 1.5s
 
 #prev:hover{
 cursor: pointer;
-background-color:rgba(255, 0, 0, 0.65);
+background-color: rgba(255, 0, 0, 1);
 transition-property: background-color;
 transition-duration: 1.5s
 }
 
 #again{
-background-color: rgba(126, 123, 251, 1);
+background-color: rgba(112, 112, 214, 1);
 margin-left: 25px;
 border:  none;
 transition-property: background-color;
@@ -1212,7 +1265,7 @@ transition-duration: 1.5s
 
 #again:hover{
 cursor: pointer;
-background-color: rgba(126, 123, 251, 0.65);
+background-color: rgba(194, 194, 255, 1);
 transition-property: background-color;
 transition-duration: 1.5s
 }
@@ -1284,3 +1337,366 @@ transition-duration: 1.5s
     transform: rotate(360deg);
   }
 }
+
+
+.convertotcl{
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+height: 320px;
+width: 420px;
+border-radius: 10px;
+box-shadow: 0 0 15px rgba(0, 211, 211, 0.6);
+border:1px solid rgba(1, 189, 189, 1);
+padding-top: 40px;
+}
+
+
+.convertotcl input{
+margin-left: 5px;
+}
+
+#currencyrates{
+height: 475px;
+width: 685px;
+box-shadow:  0px 10px 30px #0096f4;
+background-color: white;
+border: 1px solid #0096f4;
+border-radius: 35px;
+position: relative;
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+margin-top: -355px;
+background-color: #ffffff;
+opacity: 0%;
+transition-property: opacity, z-index;
+transition-duration: 1s, 1.5s;
+}
+
+#rateslogan{
+font-size: x-large;
+color: black;
+margin-bottom: 5px;
+}
+
+.lk{
+margin-top: 50px;
+margin-bottom: 35px;
+list-style: none;
+display: flex;
+text-align: center;
+}
+
+.lk li{
+text-align: center;
+padding-top: 15px;
+width: 170px;
+height: 250px;
+border-radius: 10px;
+box-shadow: 0 0 15px rgba(0, 211, 211, 0.6);
+border:1px solid rgba(1, 189, 189, 1);
+}
+
+
+.lk > li:nth-child(2){
+margin-left: 45px;
+margin-right: 45px;
+}
+
+.b:hover{
+cursor: pointer;
+color: rgba(100, 236, 100, 1);
+transition-property: color;
+transition-duration: 1s;
+}
+
+.b{
+color: black;
+transition-property: color;
+transition-duration: 1s;
+}
+
+
+.s:hover{
+cursor: pointer;
+color: rgba(255, 0, 0, 0.65);
+transition-property: color;
+transition-duration: 1s;
+}
+
+.s{
+color: black;
+transition-property: color;
+transition-duration: 1s;
+}
+
+#currdate{
+color: rgba(114, 114, 114, 1);
+}
+#currtime{
+color: rgba(96, 96, 96, 1);
+}
+
+.addit{
+text-align: left;
+margin-left: 10px;
+color: rgba(208, 208, 208, 1);
+}
+
+
+.buy{
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+border: 1px solid rgba(178, 238, 255, 1);
+border-radius: 5px;
+width: 125px;
+height: 45px;
+background-color: rgba(0, 150, 244, 0.6);
+margin-bottom: 20px;
+margin-top: 5px;
+}
+
+
+.sell{
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+border: 1px solid rgba(178, 238, 255, 1);
+border-radius: 5px;
+width: 125px;
+height: 45px;
+background-color: rgba(0, 150, 244, 0.6);
+margin-top: 5px;
+}
+
+marquee{
+width: 125px;
+height: 40px;
+padding-top: 12px;
+color: white;
+}
+
+.fixedholding{
+position: relative;
+z-index: 1;
+display: block;
+margin-top: -1985px;
+}
+
+.fixed{
+position: relative;
+background-color: rgba(0, 0, 0, 0.45);
+width: 100%;
+height: 180px;
+border-radius: 20px;
+box-shadow: 0 0 4px #0096f4;
+font-size: x-large;
+color: white;
+padding-top: 15px;
+z-index: 1;
+}
+
+.fixed div:first-child{
+margin-left: 20px;
+margin-bottom: 10px;
+text-shadow: 5px 0 3px #0096f4;
+font-style: italic;
+font-size: xx-large;
+}
+
+.fixed div:nth-child(2){
+color: rgba(206, 206, 206, 1);
+margin-left: 15px;
+margin-right: 15px;
+}
+
+#fixedbut{
+border: 1px solid  #C1D9FD;
+border-radius:20px;
+margin-top: 100px;
+margin-bottom: 50px;
+display: flex;
+margin-left: auto;
+margin-right: auto;
+padding-top: 38px;
+justify-content: center;
+width: 240px;
+height: 100px;
+background-color:  #0096f4;
+cursor: pointer;
+outline: none;
+color:#C1D9FD;
+transition-property: box-shadow, background-color, color;
+transition-duration: 1s;
+font-size:large;
+}
+
+
+#fixedbut:hover{
+box-shadow: 0px 8px 15px #0096f4;
+background-color: #6debfc;
+color: black;
+}
+
+.capitalisationhold{
+position: relative;
+z-index: 1;
+
+display: block;
+}
+
+#cplb{
+position: relative;
+border: 1px solid  #C1D9FD;
+border-radius:20px;
+margin-top: 100px;
+margin-bottom: 50px;
+display: flex;
+margin-left: auto;
+margin-right: auto;
+padding-top: 28px;
+justify-content: center;
+width: 240px;
+height: 100px;
+background-color:  #0096f4;
+cursor: pointer;
+outline: none;
+color:#C1D9FD;
+transition-property: box-shadow, background-color, color;
+transition-duration: 1s;
+font-size:large;
+}
+
+#cplb:hover{
+box-shadow: 0px 8px 15px #0096f4;
+background-color: #6debfc;
+color: black;
+}
+
+.floathold{
+position: relative;
+z-index: 1;
+display: block;
+}
+
+
+#floatbut{
+border: 1px solid  #C1D9FD;
+border-radius:20px;
+margin-top: 100px;
+margin-bottom: 50px;
+display: flex;
+margin-left: auto;
+margin-right: auto;
+padding-top: 38px;
+justify-content: center;
+width: 240px;
+height: 100px;
+background-color:  #0096f4;
+cursor: pointer;
+outline: none;
+color:#C1D9FD;
+transition-property: box-shadow, background-color, color;
+transition-duration: 1s;
+font-size:large;
+}
+
+#floatbut:hover{
+box-shadow: 0px 8px 15px #0096f4;
+background-color: #6debfc;
+color: black;
+}
+
+.ch2{
+z-index: 2;
+margin-top: 75px;
+margin-bottom: 80px;
+width: 90%;
+height: 1px;
+border: solid #0096f4;
+box-shadow: 0 0 20px #0096f4;
+border-radius: 15px;
+position: relative;
+margin-left: auto;
+margin-right: auto;
+}
+
+#fixinvest{
+width: 500px;
+height: 675px;
+opacity: 0%;
+margin-left: auto;
+margin-right: auto;
+margin-top: -1640px;
+z-index: 0;
+}
+
+.form_radio_btn {
+display: inline-block;
+margin-bottom: 30px;
+margin-top: 7px;
+margin-right: 15px;
+margin-left: 15px;
+}
+
+.form_radio_btn input[type=radio] {
+	display: none;
+}
+
+
+.form_radio_btn label{
+display: inline-block;
+cursor: pointer;
+padding-top: 7px;
+height: 33px;
+width: 110px;
+border: 1px solid #E9F2FF;
+border-radius: 6px;
+user-select: none;
+}
+
+/* Checked */
+.form_radio_btn input[type=radio]:checked + label {
+	background: rgba(179, 236, 255, 1);
+	border-color: rgba(0, 255, 255, 0.25);
+}
+
+/* Hover */
+.form_radio_btn label:hover {
+	background-color: rgba(239, 251, 255, 1);
+}
+
+/* Disabled */
+.form_radio_btn input[type=radio]:disabled + label {
+	background: red;
+	color: blue;
+}
+
+#fixcard{
+width: 500px;
+height: 450px;
+opacity: 0%;
+margin-left: auto;
+margin-right: auto;
+z-index: 0;
+text-align: center;
+margin-top: -358px;
+}
+
+#fixcash{
+width: 500px;
+height: 355px;
+opacity: 0%;
+margin-left: auto;
+margin-right: auto;
+z-index: 0;
+text-align: center;
+margin-top: -540px;
+}
+
+#b{
+margin-bottom: 10px;
+}
+
