@@ -1,8 +1,9 @@
 package com.example.Terminal_rev42.resoursec;
 
-public enum Currency {
+public enum currencyenum {
+
     USD,
     BYN,
-    EURO,
+    EUR,
     RUB
 }
