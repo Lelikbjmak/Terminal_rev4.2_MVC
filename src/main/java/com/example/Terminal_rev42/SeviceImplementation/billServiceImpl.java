@@ -6,6 +6,8 @@ import com.example.Terminal_rev42.Servicies.billService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Set;
 
 @Service
@@ -28,6 +30,22 @@ public class billServiceImpl implements billService {
     @Override
     public Set<bill> AllBillsById(long id) {
         return billRepository.findByClient_id(id);
+    }
+
+    @Override
+    public bill getRegBill(Collection<String> bills) {
+        return billRepository.findFirstByCardInOrderByValidityDesc(bills);
+    }
+
+    @Override
+    public Set<bill> inActiveBills(LocalDate date) {
+        return billRepository.findByValidityLessThanAndActiveIsTrue(LocalDate.now());
+    }
+
+    @Override
+    public bill diactivateBill(bill bill) {
+        bill.setActive(false);
+        return billRepository.save(bill);
     }
 
 
