@@ -43,13 +43,15 @@ public class client implements Serializable {
     private Date birth;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many bills
     private Set<bill> bills = new HashSet();
 
     @OneToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     private user user;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many invests
+    private Set<investments> investments = new HashSet<>();
 
     public com.example.Terminal_rev42.Model.user getUser() {
         return user;
@@ -105,6 +107,14 @@ public class client implements Serializable {
 
     public void setBills(Set<bill> bills) {
         this.bills = bills;
+    }
+
+    public Set<com.example.Terminal_rev42.Entities.investments> getInvestments() {
+        return investments;
+    }
+
+    public void setInvestments(Set<com.example.Terminal_rev42.Entities.investments> investments) {
+        this.investments = investments;
     }
 
     @Override
