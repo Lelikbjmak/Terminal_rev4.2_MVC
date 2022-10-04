@@ -32,12 +32,7 @@
 
 <nav class="dws-menu">
     <ul>
-        <li><a href="#"><i class="fa fa-hold"></i>Holdings</a>
-            <ul>
-                <li><a href="#">hold1</a></li>
-                <li><a href="#">hold1</a></li>
-                <li><a href="#">hold1</a></li>
-            </ul>
+        <li><a href="/Barclays/service/holdings"><i class="fa fa-hold"></i>Holdings</a>
         </li>
 
         <li><a href="#"><i class="fa fa-cards"></i>Cards</a>
@@ -72,7 +67,7 @@
 
     <form id="cardapply">
         <div class="register-form1" id="cardreg">
-            <div class="Mainreg"><h2>Card extradition</h2></div>
+            <div class="Mainreg"><h2><u>#Card extradition#</u></h2></div>
 
             <label for="type"><b>Card type</b></label>
             <div class="r1">
@@ -101,7 +96,7 @@
 
 <div class="form-pop" id="ledgermenu">
     <form  class="con">
-        <h2>#Ledger#</h2>
+        <h2><u>#Ledger#</u></h2>
 
         <label>Card</label>
         <div class="r2">
@@ -175,32 +170,37 @@
     <div>
         <div id="currdate"></div>
         <div id="currtime"></div>
-        <div id="addit"><small>*all rates based on USD</small></div>
+        <div class="addit"><small>*all rates based on USD</small></div>
     </div>
 
 </div>
 
 <div class="form-pop" id="convertor">
     <form  class="con">
-        <h2>#Convertor#</h2>
+        <h2><u>#Convertor#</u></h2>
 
-        <div class="r3">
-            <i>USD</i>  <input type="number" id="usd">
-        </div>
+        <div class="convertotcl">
+            <div class="r3">
+                <i>USD </i>  <input type="number" id="usd">
+            </div>
 
-        <div class="r3">
-            <i>BYN</i>  <input type="number" id="byn">
-        </div>
+            <div class="r3">
+                <i>BYN </i>  <input type="number" id="byn">
+            </div>
 
-        <div class="r3">
-            <i>EUR</i>  <input type="number" id="eur">
-        </div>
+            <div class="r3">
+                <i>EUR </i>  <input type="number" id="eur">
+            </div>
 
-        <div class="r3">
-            <i>RUB</i>  <input type="number" id="rub">
+            <div class="r3">
+                <i>RUB </i>  <input type="number" id="rub">
+            </div>
         </div>
 
     </form>
+
+    <br>
+    <div class="addit"><small>*all rates are referenced to buy</small></div>
     <script src="/Terminal/js/convertot.js"></script>
 </div>
 
