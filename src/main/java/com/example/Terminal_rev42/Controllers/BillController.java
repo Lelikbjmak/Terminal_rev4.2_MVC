@@ -2,6 +2,7 @@ package com.example.Terminal_rev42.Controllers;
 
 import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Entities.investments;
 import com.example.Terminal_rev42.Entities.receipts;
 import com.example.Terminal_rev42.Model.rates;
 import com.example.Terminal_rev42.SeviceImplementation.*;
@@ -43,6 +44,9 @@ public class BillController {
 
     @Autowired
     receiptsServiceImpl receiptsService;
+
+    @Autowired
+    investServiceImpl investService;
 
     @Autowired
     rates ratess;
@@ -400,6 +404,7 @@ public class BillController {
 
         if (response.getStatusCode().value() == 200) {
             try {
+                System.out.println("Status: " + response.getStatusCode().value());
                 JSONObject data = (JSONObject) parser.parse(response.getBody().toString());
 
                 JSONObject rates = (JSONObject) data.get("quotes");
@@ -423,5 +428,163 @@ public class BillController {
     }
 
 
+    @GetMapping("PercentageForFixed")
+    @ResponseBody
+    @Transactional
+    public double getPercentageForInvest(@RequestParam("currency") String  currency, @RequestParam("term") int term) {
+
+        // 6 12 24 36
+
+        if (currency.equalsIgnoreCase("byn")) {
+
+            if(term == 6)
+                return 7.21;
+
+            if(term == 12)
+                return  10.25;
+
+            if(term == 24)
+                return 13.89;
+
+            if(term == 36)
+                return 17.12;
+
+        }
+        if (currency.equalsIgnoreCase("usd")){
+
+            if(term == 6)
+                return 2.77;
+
+            if(term == 12)
+                return  4.34;
+
+            if(term == 24)
+                return 5.98;
+
+            if(term == 36)
+                return 6.89;
+
+        }
+
+        if(currency.equalsIgnoreCase("eur")){
+
+            if(term == 6)
+                return 2.38;
+
+            if(term == 12)
+                return  4;
+
+            if(term == 24)
+                return 5.2;
+
+            if(term == 36)
+                return 6.14;
+
+        }
+
+        if(currency.equalsIgnoreCase("rub")) { // indicates that consumer picked russian ruble
+
+            if(term == 6)
+                return 5.65;
+
+            if(term == 12)
+                return  7.78;
+
+            if(term == 24)
+                return 10.14;
+
+            if(term == 36)
+                return 13.13;
+
+        }
+
+        return 0;
+    }
+
+
+
+    @PostMapping("HoldCash")
+    @ResponseBody
+    @Transactional   // with cash
+    public String applyHoldCashPayment(@RequestParam("type") String type, @RequestParam("currency") String curr1, @RequestParam("precentage") BigDecimal precent,
+                                 @RequestParam("term") short term, @RequestParam("summa") BigDecimal dep, @RequestParam("currfrom") String currfrom){
+
+        System.err.println("FixedHold starting...cash");
+
+        investments investment = new investments();
+
+        if(currfrom.equals(curr1)){  // currency of our invest equals to currency we've dep
+            investment.setContribution(dep);
+        }else {
+            System.out.println("curr from: " + currfrom + " -> " + curr1);
+            ratess.setRate(Rates(currfrom));
+            investment.setContribution(dep.multiply(BigDecimal.valueOf(ratess.getRate().get(currfrom.concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
+            System.out.println(dep + " -> " + dep.multiply(BigDecimal.valueOf(ratess.getRate().get(currfrom.concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        }
+
+        investment.setType(type);
+        investment.setClient(clientService.findByUser_Username(securityService.getAuthenticatedUsername()));
+        investment.setPercentage(precent);
+        investment.setTerm(term);
+        investment.setCurrency(curr1);
+        investService.addInvest(investment);
+
+        System.err.println("Fixed hold end...");
+
+        return "Successfully!" + "\n" + investment;
+
+    }
+
+
+    @PostMapping("HoldCard")
+    @ResponseBody
+    @Transactional   // with card
+    public String applyHoldCardPayment(@RequestParam("type") String type, @RequestParam("currency") String curr1, @RequestParam("precentage") BigDecimal precent,
+                                            @RequestParam("term") short term, @RequestParam("summa") BigDecimal dep, @RequestParam("bill") String card){
+
+        if (billService.findByCard(card) != null) {
+
+            if(billService.findByCard(card).isActive()) {
+
+                System.err.println("FixedHold starting...card");
+
+                investments investment = new investments();
+
+                bill bill = billService.findByCard(card); // bill ta pay with
+                if (bill.getCurrency().equals(curr1)) {
+                    bill.setLedger(bill.getLedger().subtract(dep));
+                    investment.setContribution(dep);
+
+                } else {
+
+                    ratess.setRate(Rates(bill.getCurrency()));
+                    System.out.println("from: " + bill.getCurrency() + " -> " + curr1);
+                    System.out.println("summa: " + dep + " -> " + dep.multiply(BigDecimal.valueOf(ratess.getRate().get(bill.getCurrency().concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
+
+                    System.out.println("ledger before: " + bill.getLedger());
+                    bill.setLedger(bill.getLedger().subtract(dep.multiply(BigDecimal.valueOf(ratess.getRate().get(bill.getCurrency().concat(curr1))))).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    System.out.println("Ledger after: " + bill.getLedger());
+                    investment.setContribution(dep.multiply(BigDecimal.valueOf(ratess.getRate().get(bill.getCurrency().concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
+
+                }
+
+                investment.setType(type);
+                investment.setClient(clientService.findByUser_Username(securityService.getAuthenticatedUsername()));
+                investment.setPercentage(precent);
+                investment.setTerm(term);
+                investment.setCurrency(curr1);
+
+                investService.addInvest(investment);
+
+                System.err.println("Fixed hold end...");
+
+                return "Successfully!\n" + investment;
+
+            }
+            return "Bill " + billService.findByCard(card) + " is inactive!";
+        }else
+            return "Bill " + billService.findByCard(card) + " doesn't exist!";
+
+    }
 
 }
