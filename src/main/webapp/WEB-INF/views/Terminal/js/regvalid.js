@@ -1,7 +1,7 @@
 const username = document.getElementById("username");
 const password = document.getElementById("password");
 const confirmpassword = document.getElementById("confirmpassword");
-
+const email = document.getElementById("email");
 const form = document.getElementById("go");
 
 const forma = document.getElementById("regg");  // our form
@@ -20,7 +20,7 @@ function check(){
     var usernamevalue = username.value.trim();
     var passwordvalue = password.value.trim();
     var confirmpasswordvalue = confirmpassword.value.trim();
-
+    var emailvalue = email.value.trim();
 
     if(usernamevalue === ""){
         // show error
@@ -41,6 +41,15 @@ function check(){
         }else{
             setSuccessFor(username);
         }
+    }
+
+
+    if(emailvalue === ""){
+            // show error
+            flag = false;
+            setErrorFor(email, "Email can't be blank");
+    }else{
+        setSuccessFor(email);
     }
 
 
@@ -122,6 +131,7 @@ $(document).ready(
 
 
         var username = $("#username").val().trim();
+        var email = $("#email").val().trim();
         var password = $("#password").val().trim();
         var confirmedpassword = $("#confirmpassword").val().trim();
         var name = $("#name").val().trim();
@@ -132,6 +142,7 @@ $(document).ready(
 
         $.post("/Barclays/client/add", {
             username: username,  //1st in Java | 2nd here
+            email: email,
             password: password,
             confirmedpassword: confirmedpassword,
             name: name,
