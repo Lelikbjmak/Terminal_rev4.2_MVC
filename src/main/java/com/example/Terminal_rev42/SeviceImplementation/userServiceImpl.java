@@ -35,6 +35,20 @@ public class userServiceImpl implements userService {
         return userDAO.findByUsername(login);
     }
 
+    @Override
+    public boolean checkUserExists(String username) {
+        return userDAO.findByUsername(username) != null ? true : false;
+    }
+
+    @Override
+    public user findByMail(String mail) {
+        return userDAO.findByMail(mail);
+    }
+
+    @Override
+    public void update(user user) {
+        userDAO.save(user);
+    }
 
 
 }
