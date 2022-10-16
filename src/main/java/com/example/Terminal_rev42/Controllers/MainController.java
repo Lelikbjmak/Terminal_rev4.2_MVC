@@ -161,4 +161,16 @@ public class MainController {
         return "holdings";
     }
 
+
+    @GetMapping("/bad")
+    public String bad(){
+        return "bad";
+    }
+
+    @GetMapping("/success")
+    public String sucess(){
+        return "Success";
+    }
+
+
 }
