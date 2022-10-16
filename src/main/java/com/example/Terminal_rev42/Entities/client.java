@@ -2,8 +2,8 @@ package com.example.Terminal_rev42.Entities;
 
 import com.example.Terminal_rev42.Model.user;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.NonNull;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,7 +41,6 @@ public class client implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
     @NonNull
     private Date birth;
-
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many bills
     private Set<bill> bills = new HashSet();

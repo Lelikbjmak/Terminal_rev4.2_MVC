@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.Entities;
 
 import com.example.Terminal_rev42.resoursec.currencyenum;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 
