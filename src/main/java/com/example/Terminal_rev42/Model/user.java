@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.Model;
 
 import com.example.Terminal_rev42.Entities.client;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -11,6 +11,7 @@ import java.util.Set;
 public class user {
 
     public user(){
+        this.enabled = false;
     }
 
     @Id
@@ -27,6 +28,13 @@ public class user {
     @Transient
     private String confirmedpassword;
 
+    @NonNull
+    @Column(unique = true)
+    private String mail;
+
+
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UsersRoles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userid") ,
@@ -84,4 +92,20 @@ public class user {
         this.roleset = roleset;
     }
 
+    @NonNull
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(@NonNull String mail) {
+        this.mail = mail;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }
