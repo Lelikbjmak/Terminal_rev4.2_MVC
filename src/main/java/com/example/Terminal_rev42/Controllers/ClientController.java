@@ -2,6 +2,7 @@ package com.example.Terminal_rev42.Controllers;
 
 import com.example.Terminal_rev42.Entities.client;
 import com.example.Terminal_rev42.EventsListeners.MailConfirmation;
+import com.example.Terminal_rev42.EventsListeners.MailConfirmationResend;
 import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.Model.user;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
@@ -72,35 +73,57 @@ public class ClientController {
             userService.save(user);
             clientService.addclient(client);
 
-            String appURL = request.getContextPath();
+            String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
             eventPublisher.publishEvent(new MailConfirmation(user, appURL));
 
             System.err.println("End of registr");
-            return ResponseEntity.ok("Verify ur email");
+            return ResponseEntity.ok("Pass verification");
         }
     }
 
+    @PostMapping("/resendConfirmation")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity resendConfirmation(HttpServletRequest request, @RequestParam("username") String username){
 
+        System.err.println("Resend confirmation... " + username);
+        String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        user user = userService.findByUsername(username);
+        System.out.println(user.getUsername() + ", id: " + user.getUserid());
+        VerificationToken token = tokenService.findByUser(user);
+
+        eventPublisher.publishEvent(new MailConfirmationResend(user, appURL, token));
+
+        return ResponseEntity.ok("Email resend");
+
+    }
 
     @GetMapping("/registrationConfirm")
     public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token){
 
-        System.err.println("Email coinfirmation...");
+        System.err.println("Email confirmation...");
         System.out.println("token: " + token);
 
         VerificationToken verificationToken = tokenService.getToken(token);
 
         if(verificationToken == null){
             System.err.println("Token is not found!");
-            return "redirect:/Barclays/bad";
+
+            model.addAttribute("ms", "Token is not found!");
+
+            return "redirect:/Barclays/bad?token=" + token;
         }
 
         user user = verificationToken.getUser();
         Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            System.err.println("authenticatiuon expired!");
-            return "redirect:/Barclays/bad";
+            System.err.println("Authentication expired!");
+
+            String message = "Authentication expired!";
+            model.addAttribute("ms", message);
+
+            return "redirect:/Barclays/bad?token=" + token;
         }
 
         user.setEnabled(true);
@@ -112,7 +135,7 @@ public class ClientController {
 
         //securityService.autoLogin(user.getUsername(), user.getPassword());
 
-        return "redirect:/Barclays/success";
+        return "redirect:/Barclays/success?token=" + token;
     }
 
 
@@ -120,9 +143,18 @@ public class ClientController {
 
     @GetMapping("checkUsername")
     @ResponseBody
-    public boolean check(@RequestParam("username") String username){
+    public boolean checkuser(@RequestParam("username") String username){
         System.out.println("Checking username: " + username + "...");
         if (userService.findByUsername(username) != null)
+            return false;
+        else return true;
+    }
+
+    @GetMapping("checkMail")
+    @ResponseBody
+    public boolean checkmail(@RequestParam("mail") String mail){
+        System.out.println("Checking mail: " + mail + "...");
+        if (userService.findByMail(mail) != null)
             return false;
         else return true;
     }
@@ -137,5 +169,7 @@ public class ClientController {
             return false;
 
     }
+
+
 
 }
