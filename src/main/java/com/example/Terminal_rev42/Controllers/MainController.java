@@ -11,9 +11,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
@@ -151,7 +149,6 @@ public class MainController {
         httpSession.getAttributeNames().asIterator().forEachRemaining(s -> System.out.println(s));
         System.err.println("Service: (SecutityContext) - " + securityContext.getAuthentication().getName());
 
-        model.addAttribute("bill", new bill());
         return "service";
     }
 
@@ -163,12 +160,14 @@ public class MainController {
 
 
     @GetMapping("/bad")
-    public String bad(){
+    public String bad(@RequestParam(value = "token", required = false) String token, Model model,  @RequestParam("ms") String ms){
+        model.addAttribute("ms", ms);
+        System.out.println(model.getAttribute("ms"));
         return "bad";
     }
 
     @GetMapping("/success")
-    public String sucess(){
+    public String success(@RequestParam(value = "token", required = false) String token, Model model){
         return "Success";
     }
 
