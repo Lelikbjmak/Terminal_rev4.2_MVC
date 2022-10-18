@@ -24,7 +24,7 @@ public class VerificationToken {
     @Column(unique = true)
     private String token;
 
-    @Column(updatable = false)
+    @Column(updatable = true)
     @Basic(optional = false)
     private Date expiryDate;
 
@@ -81,6 +81,10 @@ public class VerificationToken {
 
     public void setExpiredAt(Date expiredAt) {
         this.expiredAt = expiredAt;
+    }
+
+    public void rebuildExistingToken(){
+        this.setExpiryDate(calculateExpiryDate(VerificationToken.EXPIRATION));   // reset expired date to prolong | or use setter for expired date
     }
 
 }

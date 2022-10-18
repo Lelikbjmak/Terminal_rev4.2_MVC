@@ -44,4 +44,15 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         tokenRepository.save(token);
     }
 
+    @Override
+    public VerificationToken findByUser(user user) {
+        return tokenRepository.findByUser(user);
+    }
+
+    @Override
+    public void rebuildExistingToken(VerificationToken token) {
+        token.rebuildExistingToken();
+        tokenRepository.save(token);
+    }
+
 }

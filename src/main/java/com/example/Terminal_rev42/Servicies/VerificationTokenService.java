@@ -12,4 +12,8 @@ public interface VerificationTokenService {
     void removeTokenByEntity(VerificationToken token);
 
     void saveToken(VerificationToken token);
+
+    VerificationToken findByUser(user user);
+
+    void rebuildExistingToken(VerificationToken token);
 }
