@@ -81,12 +81,17 @@ public class BillController {
     @PostMapping("add")
     @ResponseBody
     @Transactional
-    public ResponseEntity addbill(@ModelAttribute("bill") bill bill, @SessionAttribute("bills") Set<bill> bills, @RequestParam("currency") String currency, @RequestParam("type") String type) {
+    public ResponseEntity addbill(@SessionAttribute("bills") Set<bill> bills, @RequestParam("currency") String currency, @RequestParam("type") String type) {
+
         System.out.println("Card add...");
         client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
+
+        bill bill = new bill();
+
         bill.setCurrency(currency);
         bill.setType(type);
         bill.setClient(client);
+
         System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
         billService.addbill(bill);
         bills.add(bill);
