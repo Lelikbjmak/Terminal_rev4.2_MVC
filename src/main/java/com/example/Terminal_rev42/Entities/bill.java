@@ -21,7 +21,7 @@ public class bill implements Serializable {
         this.card = Long.toString(ThreadLocalRandom.current().nextLong(1_000_000_000_000_000L, 9_999_999_999_999_999L)).replaceAll("(.{4})", "$1 ").trim();
         this.ledger = new BigDecimal((Math.random()*(3000 - 1000) + 1000)).setScale(2, BigDecimal.ROUND_HALF_UP);
         this.pin = (short) (Math.random()*(9999 - 1000) + 1000);
-        this.validity = LocalDate.now().plusYears(5);
+        this.validity = LocalDate.now().plusYears(3);
         this.active = true;
     }
 
