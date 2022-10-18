@@ -3,14 +3,15 @@ const password = document.getElementById("password");
 const confirmpassword = document.getElementById("confirmpassword");
 const email = document.getElementById("email");
 const form = document.getElementById("go");
-
 const forma = document.getElementById("regg");  // our form
+const resendButton = document.getElementById("rec");
 
 var win = document.getElementById('client');
 
 var ov = document.getElementById('ovvv');
 
 var userwin = document.getElementById('user');
+
 
 
 function check(){
@@ -49,7 +50,17 @@ function check(){
             flag = false;
             setErrorFor(email, "Email can't be blank");
     }else{
-        setSuccessFor(email);
+        var url = "/Barclays/client/checkMail?mail=" + emailvalue;
+               const xhr = new XMLHttpRequest();
+               xhr.open("GET", url, false);
+               xhr.send();
+
+               if(xhr.response === "false"){
+                   setErrorFor(email, "Email already used");
+                   flag = false;
+               }else{
+                   setSuccessFor(email);
+               }
     }
 
 
@@ -154,16 +165,18 @@ $(document).ready(
          }).done(function(data, textStatus, jqXHR){
                 setTimeout(() => {
                     $('div.message').text(jqXHR.responseText);
+                    $('div.message1').text('');
                     $('.loader').css({'opacity':'0%', 'z-index':'0'});
+                    $('.bl').css({'opacity':'100%', 'z-index':'12'});
                 }, 2500);
 
-               setTimeout(function() {
-                    document.location.href = "/Barclays";
-                    $('div.message').text('');
-                    $('.wrap').css({'opacity':'0%', 'z-index':'0'});
-                    $('.loader').css('opacity','100%');
-                    $("#regg").trigger('reset');
-               }, 5000);
+//               setTimeout(function() {
+//                    //document.location.href = "/Barclays";
+////                    $('div.message').text('');
+////                    $('.wrap').css({'opacity':'0%', 'z-index':'0'});
+////                    $('.loader').css('opacity','100%');
+////                    $("#regg").trigger('reset');
+//               }, 5000);
 
         }).fail(function(jqXHR, exception, errorThrown) {
             var msg = '';
@@ -253,3 +266,55 @@ if(phonevalue === ''){
 return flag;
 
 }
+
+
+resendButton.addEventListener('click', (e) => {
+
+    e.preventDefault();
+
+$(document).ready(
+    function($) {
+
+         $('.loader').css({'opacity':'100%', 'z-index':'12'});
+
+        var username = $("#username").val().trim();
+
+        $.post("/Barclays/client/resendConfirmation", {
+            username: username  //1st in Java | 2nd here
+        }, function(data) {
+
+         }).done(function(data, textStatus, jqXHR){
+                setTimeout(() => {
+                    $('div.message1.small').text(jqXHR.responseText);
+                    $('.loader').css({'opacity':'0%', 'z-index':'0'});
+                }, 2500);
+
+        }).fail(function(jqXHR, exception, errorThrown) {
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = 'Not connect. Verify Network.';
+            } else if (jqXHR.status == 404) {
+                msg = 'Requested page not found. [404]';
+            } else if (jqXHR.status == 500) {
+                msg = 'Internal Server Error [500].';
+            }else if (jqXHR.status == 400) {
+                msg = jqXHR.responseText;
+            }else if (exception === 'parsererror') {
+                msg = 'Requested JSON parse failed.';
+            } else if (exception === 'timeout') {
+                msg = 'Time out error.';
+            } else if (exception === 'abort') {
+                msg = 'Ajax request aborted.';
+            } else {
+                msg = 'Uncaught Error. ' + jqXHR.responseText;
+            }
+            alert(msg);
+
+        });
+
+
+
+
+    });
+
+});
