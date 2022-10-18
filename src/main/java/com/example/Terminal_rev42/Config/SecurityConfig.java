@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //permit any identity to visit that pages
                 //.antMatchers("/Barclays", "/Barclays/reg", "/Barclays/client/add").not().fullyAuthenticated()
-                .antMatchers("/","/Barclays", "/Barclays/reg", "/Barclays/client/add", "/Terminal/**", "/Barclays/client/checkUsername", "/Barclays/client/checkPassword", "/Barclays/bill/PercentageForFixed", "/Barclays/client/registrationConfirm", "/Barclays/bad", "/Barclays/success" ).permitAll()
+                .antMatchers("/","/Barclays", "/Barclays/reg", "/Barclays/client/**", "/Terminal/**", "/Barclays/bill/PercentageForFixed", "/Barclays/bad", "/Barclays/success" ).permitAll()
                 .antMatchers("/Barclays/service/**").hasAnyRole("USER", "ADMIN")
                 //.antMatchers("/", "/Terminal/css", "/Terminal/") for static resources
                 .anyRequest().authenticated()
