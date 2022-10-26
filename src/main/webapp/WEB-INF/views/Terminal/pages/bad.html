@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -17,8 +17,10 @@
 
 <div id="conf">
     <div><i class="fa-solid fa-triangle-exclamation fa-6x"></i></div>
-    <div>Something go wrong...</div>
+    <div th:text="${ms}"></div>
+
 </div>
+
 
 <footer class="footer-distributed" id="support" style="margin-top: 19.75%;">
 
