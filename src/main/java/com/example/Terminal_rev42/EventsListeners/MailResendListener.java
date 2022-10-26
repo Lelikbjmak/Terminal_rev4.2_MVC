@@ -14,7 +14,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Component
-public class MailResendListener implements ApplicationListener<MailConfirmationResend> {
+public class MailResendListener implements ApplicationListener<MailConfirmationResendEvent> {
 
 
     @Autowired
@@ -25,14 +25,14 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
 
 
     @Override
-    public void onApplicationEvent(MailConfirmationResend event) {
+    public void onApplicationEvent(MailConfirmationResendEvent event) {
 
         this.confirmRegistration(event);
 
     }
 
     @Transactional
-    private void confirmRegistration(MailConfirmationResend event) {
+    private void confirmRegistration(MailConfirmationResendEvent event) {
 
         System.err.println("Resending email..." + " to: " + event.getUser().getUsername());
         user user = event.getUser(); // get user
