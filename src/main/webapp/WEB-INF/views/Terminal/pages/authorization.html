@@ -48,10 +48,7 @@
 <div class="box">
     <form class="aut" th:action="@{/Barclays/authorisation}"  th:method="post" id="aut">
 
-        <div class="error" th:if="${param.error}">
-            Invalid Username or password
-        </div>
-
+        <div class="error" th:text="${message}"></div>
 
         <label for="login" >Login</label>
         <div class="r2">
@@ -62,7 +59,7 @@
         <div class="r2">
             <input id="password" type="password" placeholder="*************" name="password">
         </div>
-        <button class="buttonlogin" id="loggin">Submit</button>
+        <button class="buttonlogin" id="loggin" type="submit">Submit</button>
     </form>
 </div>
 
