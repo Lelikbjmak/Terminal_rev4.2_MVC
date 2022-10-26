@@ -1,8 +1,8 @@
 package com.example.Terminal_rev42.Controllers;
 
 import com.example.Terminal_rev42.Entities.client;
-import com.example.Terminal_rev42.EventsListeners.MailConfirmation;
-import com.example.Terminal_rev42.EventsListeners.MailConfirmationResend;
+import com.example.Terminal_rev42.EventsListeners.MailConfirmationEvent;
+import com.example.Terminal_rev42.EventsListeners.MailConfirmationResendEvent;
 import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.Model.user;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
@@ -75,7 +75,7 @@ public class ClientController {
 
             String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
-            eventPublisher.publishEvent(new MailConfirmation(user, appURL));
+            eventPublisher.publishEvent(new MailConfirmationEvent(user, appURL));
 
             System.err.println("End of registr");
             return ResponseEntity.ok("Pass verification");
@@ -93,7 +93,7 @@ public class ClientController {
         System.out.println(user.getUsername() + ", id: " + user.getUserid());
         VerificationToken token = tokenService.findByUser(user);
 
-        eventPublisher.publishEvent(new MailConfirmationResend(user, appURL, token));
+        eventPublisher.publishEvent(new MailConfirmationResendEvent(user, appURL, token));
 
         return ResponseEntity.ok("Email resend");
 
