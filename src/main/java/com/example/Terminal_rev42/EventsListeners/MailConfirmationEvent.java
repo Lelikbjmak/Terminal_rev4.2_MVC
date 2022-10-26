@@ -3,12 +3,12 @@ package com.example.Terminal_rev42.EventsListeners;
 import com.example.Terminal_rev42.Model.user;
 import org.springframework.context.ApplicationEvent;
 
-public class MailConfirmation extends ApplicationEvent {
+public class MailConfirmationEvent extends ApplicationEvent {
 
     private String appUrl;
     private com.example.Terminal_rev42.Model.user user;
 
-    public MailConfirmation(user user, String appUrl) {
+    public MailConfirmationEvent(user user, String appUrl) {
 
         super(user);
 
