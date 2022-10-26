@@ -51,9 +51,6 @@ public class BillController {
     @Autowired
     rates ratess;
 
-    @Autowired
-    userServiceImpl userService;
-
     @GetMapping("checkBill")
     @ResponseBody
     public boolean checkBill(@RequestParam("card") String card){
@@ -71,11 +68,11 @@ public class BillController {
 
     @GetMapping("checkPin")
     @ResponseBody
-    public boolean checkPin(@RequestParam("card") String card, @RequestParam("pin") short pin){
+    public boolean checkPin(@RequestParam("card") String card, @RequestParam("pin") String pin){
         System.out.println("Check pin active...\n" + card);
-        if(billService.findByCard(card).getPin() == pin)
-            return true;
-        else return false;
+        if(billService.checkpin(billService.findByCard(card), pin))
+            System.out.println("Pin is correct for " + card);
+        return billService.checkpin(billService.findByCard(card), pin);
     }
 
     @PostMapping("add")
@@ -92,17 +89,18 @@ public class BillController {
         bill.setType(type);
         bill.setClient(client);
 
-        System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
+        System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType() + bill.getPin());
         billService.addbill(bill);
-        bills.add(bill);
-        return ResponseEntity.ok("Successful card registration");
+
+        //bills.add(bill);
+        return ResponseEntity.ok("card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin.");
     }
 
     @PostMapping("cashtransfer")
     @ResponseBody
     @Transactional
     public ResponseEntity op1(@RequestParam("billfrom") String billlfrom, @RequestParam("billto") String billto,
-                              @RequestParam("summa") BigDecimal summa, @RequestParam("pin") short pin) {
+                              @RequestParam("summa") BigDecimal summa, @RequestParam("pin") String pin) {
 
         bill billf = billService.findByCard(billlfrom);
         bill billt = billService.findByCard(billto);
@@ -113,7 +111,7 @@ public class BillController {
 
             if (billf.isActive()) {
 
-                if (billf.getPin() == pin) {
+                if (billService.checkpin(billf, pin)) {
 
                     if(billt == null)
                         return ResponseEntity.badRequest().body("Bill " + billt.getCard() + " doesn'texist!");
@@ -206,7 +204,7 @@ public class BillController {
     @ResponseBody
     @Transactional
     public ResponseEntity op3(@RequestParam("billfrom") String billlfrom, @RequestParam("currency") String currency,
-                      @RequestParam("summa") BigDecimal summa, @RequestParam("pin") short pin){
+                      @RequestParam("summa") BigDecimal summa, @RequestParam("pin") String pin){
 
         bill billf = billService.findByCard(billlfrom);
 
@@ -214,10 +212,13 @@ public class BillController {
         if (billf != null) {
             if(billf.isActive()) {
 
-                if (billf.getPin() == pin) {
+                if (billService.checkpin(billf, pin)) {
+
                     if (billf.getCurrency().equals(currency)) {
+
                         billf.setLedger(billf.getLedger().subtract(summa));
                         System.err.println("\nConvert summa: " + summa + " " + currency);
+
                     } else {
                         billf.setLedger(billf.getLedger().subtract(summa).setScale(2, BigDecimal.ROUND_HALF_UP));  // - summa from my card
 
@@ -284,8 +285,10 @@ public class BillController {
         Set<String> cards = new HashSet<>();
         bills.forEach(p -> cards.add(p.getCard()));
 
+        cards.forEach(p -> System.out.println(p));
 
-        bill bill = billService.getRegBill(cards);
+        bill bill = billService.lastcard(cards, bills.stream().findFirst().get().getClient().getId());
+
         if (bill != null) {
             System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
         }else{
@@ -318,32 +321,39 @@ public class BillController {
             outputStream.write(buffer, 0, i);
         }
 
-        inputStream.close();;
+        inputStream.close();
         outputStream.close();
+        billService.encodePass(bill);
+
     }
 
     @PostMapping("getLedger")
     @ResponseBody
     @Transactional
-    public ResponseEntity checkbalance(@RequestParam("bill") String card){
+    public ResponseEntity checkbalance(@RequestParam("bill") String card, @RequestParam("pin") String pin){
         System.out.println("Check ledger (" + card + ")...");
-        BigDecimal ledger = billService.findByCard(card).getLedger();
-        System.out.println("Ledger: " + billService.findByCard(card).getLedger());
-        return ResponseEntity.ok("Ledger: " + ledger + " " + billService.findByCard(card).getCurrency());
+        if (billService.checkpin(billService.findByCard(card), pin)) {
+
+            BigDecimal ledger = billService.findByCard(card).getLedger();
+            System.out.println("Ledger: " + billService.findByCard(card).getLedger());
+            return ResponseEntity.ok("Ledger: " + ledger + " " + billService.findByCard(card).getCurrency());
+
+        }else
+            return ResponseEntity.badRequest().body("Incorrect pin!");
     }
 
     @PostMapping("cashextradition")
     @ResponseBody
     @Transactional
     public ResponseEntity op4(@RequestParam("billf") String billf,
-                              @RequestParam("summa") BigDecimal summa, @RequestParam("pin") short pin){
+                              @RequestParam("summa") BigDecimal summa, @RequestParam("pin") String pin){
 
         bill bill = billService.findByCard(billf);
 
         if (bill != null) {
             if (bill.isActive()) {
 
-                if (bill.getPin() == pin) {
+                if (bill.getPin().equals(pin)) {
                     bill.setLedger(bill.getLedger().subtract(summa));
 
                     System.out.println("Withdrawal amount: " + summa + " " + bill.getCurrency());
