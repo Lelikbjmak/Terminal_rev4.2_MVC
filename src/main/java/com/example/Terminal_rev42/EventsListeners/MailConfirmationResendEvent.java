@@ -4,7 +4,7 @@ import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.Model.user;
 import org.springframework.context.ApplicationEvent;
 
-public class MailConfirmationResend extends ApplicationEvent {
+public class MailConfirmationResendEvent extends ApplicationEvent {
 
     private String appUrl;
 
@@ -12,7 +12,7 @@ public class MailConfirmationResend extends ApplicationEvent {
 
     private VerificationToken token;
 
-    public MailConfirmationResend(user user,String appURL, VerificationToken token) {
+    public MailConfirmationResendEvent(user user, String appURL, VerificationToken token) {
 
         super(user);
         this.user = user;
