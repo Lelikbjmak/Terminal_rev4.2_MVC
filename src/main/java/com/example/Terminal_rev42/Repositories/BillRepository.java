@@ -3,13 +3,14 @@ package com.example.Terminal_rev42.Repositories;
 import com.example.Terminal_rev42.Entities.bill;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Set;
 
 public interface BillRepository extends CrudRepository<bill, String> {
-    Set<bill> findByClient_id(long id);
+    Set<bill> findByClient_idAndActiveIsTrue(long id);
 
     bill findByCard(String card);
 
@@ -17,4 +18,8 @@ public interface BillRepository extends CrudRepository<bill, String> {
 
     Set<bill> findByValidityLessThanAndActiveIsTrue(LocalDate localDate);
 
+    bill findByCardNotInAndClient_idAndActiveIsTrue(Set<String> bills, Long id);
+
+    @Query("select b from bill b where datediff(b.validity, now()) = :data and b.active = true")  // datediff in days
+    Set<bill> findAllByValiditySubNowIs(@Param("data") int day);
 }

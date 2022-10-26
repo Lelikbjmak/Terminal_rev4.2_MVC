@@ -8,16 +8,23 @@ import java.util.Set;
 
 public interface billService {
 
-    public void addbill(bill bill);
+    void addbill(bill bill);
 
-    public bill findByCard(String card);
+    bill findByCard(String card);
 
-    public Set<bill> AllBillsById(long id);
+    Set<bill> AllBillsByClientId(long id);
 
-    public bill getRegBill(Collection<String> bills);
+    bill getRegBill(Collection<String> bills);
 
-    public Set<bill> inActiveBills(LocalDate date);
+    Set<bill> inActiveBills(LocalDate date);
 
-    public bill diactivateBill(bill bill);
+    void diactivateBill(bill bill);
 
+    Set<bill> notifyBillsByValidityLessThan(int days);
+
+    boolean checkpin(bill bill, String pin);
+
+    void encodePass(bill bill);
+
+    bill lastcard(Set<String> bills, long id);
 }

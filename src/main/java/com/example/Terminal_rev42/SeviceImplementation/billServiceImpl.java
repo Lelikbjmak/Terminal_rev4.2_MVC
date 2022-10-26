@@ -4,6 +4,7 @@ import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Repositories.BillRepository;
 import com.example.Terminal_rev42.Servicies.billService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,6 +17,8 @@ public class billServiceImpl implements billService {
     @Autowired
     private BillRepository billRepository;
 
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public void addbill(bill bill) {
@@ -28,8 +31,8 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public Set<bill> AllBillsById(long id) {
-        return billRepository.findByClient_id(id);
+    public Set<bill> AllBillsByClientId(long id) {
+        return billRepository.findByClient_idAndActiveIsTrue(id);
     }
 
     @Override
@@ -43,9 +46,33 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public bill diactivateBill(bill bill) {
+    public void diactivateBill(bill bill) {
         bill.setActive(false);
-        return billRepository.save(bill);
+        billRepository.save(bill);
+    }
+
+    @Override
+    public Set<bill> notifyBillsByValidityLessThan(int days) {
+        return billRepository.findAllByValiditySubNowIs(days);
+    }
+
+    @Override
+    public boolean checkpin(bill bill, String pin) {
+        if(passwordEncoder.matches(pin, bill.getPin()))
+            return true;
+        else return false;
+    }
+
+    @Override
+    public void encodePass(bill bill) {
+        System.out.println("bill: " + bill.getCard() + ", pin: " + bill.getPin());
+        bill.setPin(passwordEncoder.encode(bill.getPin()));
+        billRepository.save(bill);
+    }
+
+    @Override
+    public bill lastcard(Set<String> bills, long id) {
+        return billRepository.findByCardNotInAndClient_idAndActiveIsTrue(bills, id);
     }
 
 

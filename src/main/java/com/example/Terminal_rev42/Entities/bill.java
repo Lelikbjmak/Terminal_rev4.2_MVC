@@ -20,7 +20,7 @@ public class bill implements Serializable {
     public bill(){
         this.card = Long.toString(ThreadLocalRandom.current().nextLong(1_000_000_000_000_000L, 9_999_999_999_999_999L)).replaceAll("(.{4})", "$1 ").trim();
         this.ledger = new BigDecimal((Math.random()*(3000 - 1000) + 1000)).setScale(2, BigDecimal.ROUND_HALF_UP);
-        this.pin = (short) (Math.random()*(9999 - 1000) + 1000);
+        this.pin = String.valueOf((int)(Math.random()*(9999 - 1000) + 1000));
         this.validity = LocalDate.now().plusYears(3);
         this.active = true;
     }
@@ -36,20 +36,18 @@ public class bill implements Serializable {
     @NonNull
     private String type;
 
-    @NonNull
+    @Column(updatable = false, nullable = false)
     private String currency;
 
     @Nullable
     private BigDecimal ledger;
 
-    @Size(min = 1000, max = 9999)
     @NonNull
-    private  short pin;
+    private String pin;
 
-    @Column(name = "validity")
+    @Column(name = "validity", updatable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
-    @NonNull
     private LocalDate validity;
 
     @NonNull
@@ -107,11 +105,12 @@ public class bill implements Serializable {
         this.ledger = ledger;
     }
 
-    public short getPin() {
+    @NonNull
+    public String getPin() {
         return pin;
     }
 
-    public void setPin(short pin) {
+    public void setPin(@NonNull String pin) {
         this.pin = pin;
     }
 
