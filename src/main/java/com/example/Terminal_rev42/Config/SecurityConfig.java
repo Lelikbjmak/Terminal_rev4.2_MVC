@@ -69,6 +69,8 @@ public class SecurityConfig{
 
                 .and()
                 .rememberMe()
+                .key("uniqueAndSecret")
+                .tokenValiditySeconds(86400) // 24 hours
 
                 .and()
                 .logout()
