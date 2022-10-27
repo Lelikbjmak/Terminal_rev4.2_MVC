@@ -5,10 +5,11 @@
     <title>Authorization</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="/Terminal/css/style.css">
-  <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/Terminal/css/style.css">
+     <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
 
 </head>
 
@@ -50,15 +51,20 @@
 
         <div class="error" th:text="${message}"></div>
 
-        <label for="login" >Login</label>
         <div class="r2">
-            <input id="login" type="text" placeholder="login" name="username">
+            <input id="login" type="text" placeholder="Username" required autofocus name="username">
         </div>
 
-        <label for="password">Password</label>
         <div class="r2">
-            <input id="password" type="password" placeholder="*************" name="password">
+            <input id="password" type="password" placeholder="Password" required name="password">
         </div>
+
+
+        <label for="rememberme">
+            <input id="rememberme" type="checkbox" name="remember-me"><span></span>
+            Remember me on this computer.
+        </label>
+
         <button class="buttonlogin" id="loggin" type="submit">Submit</button>
     </form>
 </div>
