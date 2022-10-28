@@ -4,6 +4,8 @@ import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Arrays;
 import java.util.Set;
 
 @Controller
@@ -32,26 +33,20 @@ public class MainController {
     @Autowired
     clientServiceImpl clientService;
 
+
     @GetMapping("/reg")
     public String register(){
         return "Register";
     }
+
+    private static final Logger logger = LogManager.getLogger(MainController.class);
 
     @GetMapping()
     public String facepage(HttpSession httpSession, HttpServletRequest request){
 
         SecurityContext context = SecurityContextHolder.getContext();
         httpSession.setAttribute("SPRING_SECURITY_CONTEXT", context);
-        System.err.println("main (secutityContext): " + context.getAuthentication().getName());
-        System.out.println(httpSession.getAttributeNames());
-
-        httpSession.getAttributeNames().asIterator().forEachRemaining(s -> System.err.println(s));
-
-        System.err.println("session: " + request.getRequestedSessionId() + "\nCreation time: " + httpSession.getCreationTime() + "\nMax inactive interval:" + httpSession.getMaxInactiveInterval());
-        Arrays.stream(request.getCookies()).forEach(p -> System.out.println(p));
-
-        System.out.println(request.getCookies().length);
-
+        logger.info("main (secutityContext): " + context.getAuthentication().getName() + "\tsession: "  + request.getRequestedSessionId());
         return "index";
     }
 
@@ -63,7 +58,7 @@ public class MainController {
 
     @GetMapping("/operation")
     public String operations( @SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext){
-        System.err.println("operation (SecurityContext): " + securityContext.getAuthentication().getName());
+        logger.info("operation (SecurityContext): " + securityContext.getAuthentication().getName());
         return "Operation";
     }
 
@@ -73,14 +68,14 @@ public class MainController {
         // 2224 9260 pin - 9140
         Set<bill> bills = billService.AllBillsByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
         httpSession.setAttribute("bills", bills);
-        System.err.println("Service: (SecutityContext) - " + securityContext.getAuthentication().getName());
+        logger.info("Service: (SecutityContext) - " + securityContext.getAuthentication().getName());
 
         return "service";
     }
 
     @GetMapping("/service/holdings")
     public String holdings(@SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext){
-        System.err.println("holdings (SecurityContext): " + securityContext.getAuthentication().getName());
+        logger.info("holdings (SecurityContext): " + securityContext.getAuthentication().getName());
         return "holdings";
     }
 
