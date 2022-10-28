@@ -1,8 +1,10 @@
 package com.example.Terminal_rev42.Config;
 
+import com.example.Terminal_rev42.EventsListeners.HttpSessionListener;
 import com.example.Terminal_rev42.SeviceImplementation.UserDetailsPasswordServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +13,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -39,8 +43,9 @@ public class SecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
+        http
+                .cors().and()   // enable cross domain communication
+                .csrf().disable()
                 .authorizeRequests()
 //                .antMatchers(HttpMethod.DELETE)
 //                .hasRole("ADMIN")
@@ -76,7 +81,6 @@ public class SecurityConfig{
                 .logout()
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl("/Barclays")
-                //.tokenValiditySeconds()   2 weaks - default
 
 
                 .and()
@@ -84,7 +88,8 @@ public class SecurityConfig{
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
                 .maximumSessions(1)
-                .expiredUrl("/Barclays/bad?ms=Session%20expire");
+                .maxSessionsPreventsLogin(true)  // throw SessionAuthenticationException if the number of sessions exceed maximum; we manage this situation (if 'false' -> after our login again with already open session previous sess will be destroyed without warning)
+                .expiredUrl("/Barclays/authorisation?message=Session%20expired.");
 
 
 
@@ -101,9 +106,26 @@ public class SecurityConfig{
                 .build();
     }
 
-    @Bean  // to control sessions
+    @Bean  // to control sessions, exactly to invalidate session after logout
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionListener> sessionListenerWithMetrics() {
+        ServletListenerRegistrationBean<HttpSessionListener> listenerRegBean =
+                new ServletListenerRegistrationBean<>();
+
+        listenerRegBean.setListener(new HttpSessionListener());
+
+        return listenerRegBean;
+    }
+
+    @Bean(name = "sessreg")
+    public SessionRegistry sessionRegistry() {
+        System.out.println("Sessionregister");
+        return new SessionRegistryImpl();
     }
 
 }
