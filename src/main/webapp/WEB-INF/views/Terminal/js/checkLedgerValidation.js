@@ -16,9 +16,11 @@ forma.addEventListener('submit', (e) => {
                 $('.wrap').css({'opacity':'100%', 'z-index':'12'});
 
                 var bill = $("#bill").val();
+                var pin = $('#pincode').val();
 
                 $.post("/Barclays/bill/getLedger", {
                     bill: bill,  //1st in Java | 2nd here
+                    pin: pin
                 }, function(data) {
 
                  }).done(function(data, textStatus, jqXHR){
