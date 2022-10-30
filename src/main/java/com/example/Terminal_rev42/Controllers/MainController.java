@@ -7,8 +7,10 @@ import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +35,8 @@ public class MainController {
     @Autowired
     clientServiceImpl clientService;
 
+    @Autowired
+    SessionRegistry sessionRegistry;
 
     @GetMapping("/reg")
     public String register(){
@@ -52,6 +56,14 @@ public class MainController {
 
     @GetMapping("/authorisation")
     public String authorisations(Model model, @RequestParam(value = "message", required = false) String message){
+
+        if(SecurityContextHolder.getContext().getAuthentication() == null || SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken){
+            System.out.println(SecurityContextHolder.getContext().getAuthentication().getCredentials());
+            model.addAttribute("message", message);
+            return "authorization";
+        }
+
+        message = "You are already logged in!";
         model.addAttribute("message", message);
         return "authorization";
     }
@@ -67,6 +79,10 @@ public class MainController {
                           @SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext, HttpServletRequest request){
         // 2224 9260 pin - 9140
         Set<bill> bills = billService.AllBillsByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
+        System.out.println(sessionRegistry.getSessionInformation(httpSession.getId()) + " sess id: " + request.getSession().getId());
+        System.out.println(sessionRegistry.getSessionInformation(request.getSession().getId()));
+        sessionRegistry.getAllPrincipals().forEach(System.out::println);
+
         httpSession.setAttribute("bills", bills);
         logger.info("Service: (SecutityContext) - " + securityContext.getAuthentication().getName());
 
