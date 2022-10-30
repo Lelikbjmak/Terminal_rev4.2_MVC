@@ -7,12 +7,12 @@ public class Configuration extends AbstractAnnotationConfigDispatcherServletInit
     @Override
     protected Class<?>[] getRootConfigClasses() {
         //return null;
-        return new Class<?>[]{MVCConfig.class, SecurityConfig.class};
+        return new Class<?>[]{MailConfig.class, SecurityConfig.class};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] {MVCConfig.class, SecurityConfig.class};
+        return new Class[] {MVCConfig.class};
     }
 
     @Override
