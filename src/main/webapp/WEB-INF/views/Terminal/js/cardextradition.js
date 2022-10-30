@@ -4,10 +4,12 @@ const type = document.getElementById("type");
 const currency = document.getElementById("Currency");
 
 
+let datafromcardreg = '';
+
+
 form.addEventListener('submit', (e) => {
 
     e.preventDefault();
-
 
     $(document).ready(
         function($) {
@@ -26,8 +28,12 @@ form.addEventListener('submit', (e) => {
             }).done(function(data, textStatus, jqXHR){
                     setTimeout(() => {
                  $('div.message').text(jqXHR.responseText);
+                 $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
                  $('.loader').css({'opacity':'0%', 'z-index':'0'});
                  $('.bl').css({'opacity':'100%', 'z-index':'12'});
+                                  alert(document.querySelector('div.message').innerText);
+                 datafromcardreg = Array.from(document.querySelector('div.message').innerText.matchAll(/(\d{4}\s{1}){4}/gi))[0][0];
+                 alert(datafromcardreg);
                  }, 3000);
 
             }).fail(function(jqXHR, exception, textStatus, errorThrown) {
@@ -59,3 +65,7 @@ form.addEventListener('submit', (e) => {
         });
 
     });
+
+
+
+
