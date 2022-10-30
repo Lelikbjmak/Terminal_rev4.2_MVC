@@ -64,9 +64,10 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public void encodePass(bill bill) {
+    public void encodePassAndActivate(bill bill) {
         System.out.println("bill: " + bill.getCard() + ", pin: " + bill.getPin());
         bill.setPin(passwordEncoder.encode(bill.getPin()));
+        bill.setActive(true);
         billRepository.save(bill);
     }
 

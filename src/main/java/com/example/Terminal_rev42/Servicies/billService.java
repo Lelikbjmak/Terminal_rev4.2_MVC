@@ -24,7 +24,7 @@ public interface billService {
 
     boolean checkpin(bill bill, String pin);
 
-    void encodePass(bill bill);
+    void encodePassAndActivate(bill bill);
 
     bill lastcard(Set<String> bills, long id);
 }
