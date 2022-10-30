@@ -318,3 +318,22 @@ $(document).ready(
     });
 
 });
+
+
+function checkParams() {
+
+    var usernamevalue = username.value.trim();
+    var passwordvalue = password.value.trim();
+    var confirmpasswordvalue = confirmpassword.value.trim();
+    var emailvalue = email.value.trim();
+    var namevalue = name.value.trim();
+    var passportvalue = passport.value.trim();
+    var birthvalue = birth.value;
+    var phonevalue = phone.value.trim();
+
+    if(usernamevalue.length != 0 && emailvalue.length != 0 && phonevalue.length != 0 && passwordvalue.length != 0 && confirmpasswordvalue.length != 0 && namevalue.length != 0 && passportvalue.length != 0 && birthvalue.length != 0) {
+        $('#reg').removeAttr('disabled');
+    } else {
+        $('#reg').attr('disabled', 'disabled');
+    }
+}
