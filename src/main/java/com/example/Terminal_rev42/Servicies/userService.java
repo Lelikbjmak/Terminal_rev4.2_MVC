@@ -14,4 +14,5 @@ public interface userService {
 
     void update(user user);
 
+    boolean passwordMatch(String password, String username);
 }

@@ -50,5 +50,10 @@ public class userServiceImpl implements userService {
         userDAO.save(user);
     }
 
+    @Override
+    public boolean passwordMatch(String password, String username) {
+        return bCryptPasswordEncoder.matches(password, userDAO.findByUsername(username).getPassword());
+    }
+
 
 }
