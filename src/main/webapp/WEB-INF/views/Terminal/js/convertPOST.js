@@ -158,3 +158,20 @@ function setSuccessFor(input){
     const r = input.parentElement;  //.r2
     r.className = 'r2 success';
 }
+
+
+function checkParams3() {
+
+     var billfromvalue = billfrom3.value.trim();
+     var currencyvalue = currency3.value.trim();
+     var summavalue = summa3.value.trim();
+     var pinvalue = pin3.value.trim();
+
+    if(billfromvalue.length != 0 && currencyvalue.length != 0 && summavalue.length != 0 && pinvalue.length != 0) {
+        $('#bb3').removeAttr('disabled');
+                alert("enabled!");
+    } else {
+        $('#bb3').attr('disabled', 'disabled');
+                alert("disabled!");
+    }
+}

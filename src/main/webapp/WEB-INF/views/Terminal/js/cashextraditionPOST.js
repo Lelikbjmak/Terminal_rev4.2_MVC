@@ -143,3 +143,16 @@ function setSuccessFor(input){
     const r = input.parentElement;  //.r2
     r.className = 'r2 success';
 }
+
+function checkParams4() {
+
+      var billfromvalue = billfrom4.value.trim();
+      var summavalue = summa4.value.trim();
+      var pinvalue = pin4.value.trim();
+
+    if(billfromvalue.length != 0 && summavalue.length != 0 && pinvalue.length != 0) {
+        $('#bb4').removeAttr('disabled');
+    } else {
+        $('#bb4').attr('disabled', 'disabled');
+    }
+}

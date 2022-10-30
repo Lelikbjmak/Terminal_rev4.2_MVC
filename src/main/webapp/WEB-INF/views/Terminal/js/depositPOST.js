@@ -123,4 +123,18 @@ function setSuccessFor(input){
     const r = input.parentElement;  //.r2
     r.className = 'r2 success';
 }
-    
+
+
+function checkParams2() {
+
+    var billfromvalue = bill2.value.trim();
+    var currencyvalue = currency2.value.trim();
+    var summavalue = summa2.value.trim();
+
+
+    if(billfromvalue.length != 0 && summavalue.length != 0 && currencyvalue.length != 0) {
+        $('#bb2').removeAttr('disabled');
+    } else {
+        $('#bb2').attr('disabled', 'disabled');
+    }
+}

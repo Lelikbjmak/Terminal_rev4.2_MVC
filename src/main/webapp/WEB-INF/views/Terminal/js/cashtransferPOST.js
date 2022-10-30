@@ -155,7 +155,6 @@ function check1(){
 }
 
 
-
 function setErrorFor(input, message){
     const r = input.parentElement;  //.r2
     const small = r.querySelector('small');
@@ -167,4 +166,21 @@ function setErrorFor(input, message){
 function setSuccessFor(input){
     const r = input.parentElement;  //.r2
     r.className = 'r2 success';
+}
+
+
+function checkParams1() {
+
+       var billfromvalue = billfrom.value.trim();
+       var billtovalue = billto.value.trim();
+       var summavalue = summa.value.trim();
+       var pinvalue = pin.value.trim();
+
+    if(billfromvalue.length != 0 && summavalue.length != 0 && pinvalue.length != 0 && billtovalue.length != 0){
+        $('#bb1').removeAttr('disabled');
+    } else {
+        $('#bb1').attr('disabled', 'disabled');
+
+    }
+
 }
