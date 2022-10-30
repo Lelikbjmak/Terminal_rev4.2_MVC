@@ -66,14 +66,14 @@
 
     <label>Recipient</label>
     <div class="r2">
-        <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" id="billto">
+        <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" id="billto" onkeyup="checkParams1()">
         <br>
         <small></small>
     </div>
 
     <label>Summa</label>
     <div class="r2">
-        <input type="text" placeholder="00.00" id="summa">
+        <input type="text" placeholder="00.00" id="summa" onkeyup="checkParams1()">
         <br>
         <small></small>
     </div>
@@ -81,12 +81,12 @@
 
     <label>Pin code</label>
     <div class="r2">
-        <input type="password" placeholder="****"  maxlength="4" id="pin">
+        <input type="password" placeholder="****"  maxlength="4" id="pin" onkeyup="checkParams1()">
         <br>
         <small></small>
     </div>
 
-    <button class="bb" id="bb1">Accomplish</button>
+    <button class="bb" id="bb1" disabled>Accomplish</button>
   </form>
   <script src="/Terminal/js/cashtransferPOST.js"></script>
 </div>
@@ -123,13 +123,13 @@
 
     <label>Summa</label>
     <div class="r2">
-      <input type="text" placeholder="00.00" id="summa2">
+      <input type="text" placeholder="00.00" id="summa2" onkeyup="checkParams2()">
       <br>
       <small></small>
     </div>
 
 
-    <button class="bb" id="bb2">Accomplish</button>
+    <button class="bb" id="bb2" disabled>Accomplish</button>
   </form>
   <script src="/Terminal/js/depositPOST.js"></script>
 </div>
@@ -142,7 +142,7 @@
 
     <div class="r2">
     <select id="billfrom3">
-      <option th:each="bill : ${session.bills}" th:text="${bill.card}" >
+      <option th:each="bill : ${session.bills}" th:text="${bill.card}">
       </option>
     </select>
       <br>
@@ -165,19 +165,19 @@
 
     <label>Summa</label>
     <div class="r2">
-      <input type="text" placeholder="00.00" id="summa3">
+      <input type="text" placeholder="00.00" id="summa3" onkeyup="checkParams3()">
       <br>
       <small></small>
     </div>
 
     <label>Pin code</label>
     <div class="r2">
-      <input type="password" placeholder="****" maxlength="4" id="pin3">
+      <input type="password" placeholder="****" maxlength="4" id="pin3" onkeyup="checkParams3()">
       <br>
       <small></small>
     </div>
 
-    <button class="bb" id="bb3">Accomplish</button>
+    <button class="bb" id="bb3" disabled>Accomplish</button>
   </form>
   <script src="/Terminal/js/convertPOST.js"></script>
 </div>
@@ -201,7 +201,7 @@
 
     <label>Summa</label>
     <div class="r2">
-    <input type="text" placeholder="00.00" id="summa4">
+    <input type="text" placeholder="00.00" id="summa4" onkeyup="checkParams4()">
       <br>
       <small></small>
     </div>
@@ -209,12 +209,12 @@
 
     <label>Pin code</label>
     <div class="r2">
-    <input type="password" placeholder="****" maxlength="4" id="pin4">
+    <input type="password" placeholder="****" maxlength="4" id="pin4" onkeyup="checkParams4()">
       <br>
       <small></small>
     </div>
 
-    <button class="bb" id="bb4">Accomplish</button>
+    <button class="bb" id="bb4" disabled>Accomplish</button>
   </form>
 
   <script src="/Terminal/js/cashextraditionPOST.js"></script>
