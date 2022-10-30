@@ -22,7 +22,7 @@ public class bill implements Serializable {
         this.ledger = new BigDecimal((Math.random()*(3000 - 1000) + 1000)).setScale(2, BigDecimal.ROUND_HALF_UP);
         this.pin = String.valueOf((int)(Math.random()*(9999 - 1000) + 1000));
         this.validity = LocalDate.now().plusYears(3);
-        this.active = true;
+        this.active = false;  // become true if we download card -> activate bill
     }
 
     @Id
