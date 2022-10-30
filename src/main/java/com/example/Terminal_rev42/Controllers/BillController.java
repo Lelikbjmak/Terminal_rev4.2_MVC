@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -78,7 +79,7 @@ public class BillController {
     @PostMapping("add")
     @ResponseBody
     @Transactional
-    public ResponseEntity addbill(@SessionAttribute("bills") Set<bill> bills, @RequestParam("currency") String currency, @RequestParam("type") String type) {
+    public ResponseEntity addbill(@SessionAttribute("bills") Set<bill> bills, @RequestParam("currency") String currency, @RequestParam("type") String type, Model model) {
 
         System.out.println("Card add...");
         client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
@@ -92,7 +93,7 @@ public class BillController {
         System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType() + bill.getPin());
         billService.addbill(bill);
 
-        //bills.add(bill);
+        model.addAttribute("download", "http://localhost:8080/Barclays/bill/card?card=" + bill.getCard());
         return ResponseEntity.ok("card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin.");
     }
 
@@ -280,22 +281,25 @@ public class BillController {
     }
 
     @GetMapping("card")
-    public void downloadcard(HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills) throws IOException {
+    public void downloadcard (HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills, @RequestParam(name = "card", required = false) String card, Model model) throws IOException {
 
-        Set<String> cards = new HashSet<>();
-        bills.forEach(p -> cards.add(p.getCard()));
+//        Set<String> cards = new HashSet<>();
+//        bills.forEach(p -> cards.add(p.getCard()));
+//
+//        cards.forEach(p -> System.out.println(p));
+//
+//        bill bill = billService.lastcard(cards, bills.stream().findFirst().get().getClient().getId());
+//
+//        if (bill != null) {
+//            System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
+//        }else{
+//            System.err.println("bill is not found!");
+//            return;
+//        }
 
-        cards.forEach(p -> System.out.println(p));
+        System.err.println("Card: " + card);
 
-        bill bill = billService.lastcard(cards, bills.stream().findFirst().get().getClient().getId());
-
-        if (bill != null) {
-            System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
-        }else{
-            System.err.println("bill is not found!");
-            return;
-        }
-
+        bill bill = billService.findByCard(card);
 
         File file = new File(bill.getCard() + ".txt");
         file.deleteOnExit();
@@ -323,7 +327,7 @@ public class BillController {
 
         inputStream.close();
         outputStream.close();
-        billService.encodePass(bill);
+        billService.encodePassAndActivate(bill);
 
     }
 
