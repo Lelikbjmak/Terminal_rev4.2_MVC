@@ -25,7 +25,7 @@ fetch("http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + curre
    percentage.value = responseText;
 });
 
-    win1.style.marginTop = '-1640px';
+    win1.style.marginTop = '-1280px';
     type.value = "Fixed";
     document.querySelector('div#fixinvest > h2 > u').textContent = '#Fixed Hold#';
 
@@ -54,7 +54,7 @@ fetch("http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + curre
    percentage.value = responseText;
 });
 
-    win1.style.marginTop = '-1100px';
+    win1.style.marginTop = '-730px';
     type.value = "Capitalisation";
     document.querySelector('div#fixinvest > h2 > u').textContent = '#Capitalisation#';
 
