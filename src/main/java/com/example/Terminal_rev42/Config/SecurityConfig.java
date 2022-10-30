@@ -1,10 +1,10 @@
 package com.example.Terminal_rev42.Config;
 
-import com.example.Terminal_rev42.EventsListeners.HttpSessionListener;
+import com.example.Terminal_rev42.SecurityCustomImpl.CustomAuthenticationFailureHandler;
+import com.example.Terminal_rev42.SecurityCustomImpl.HttpSessionListener;
 import com.example.Terminal_rev42.SeviceImplementation.UserDetailsPasswordServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +18,7 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.security.SecureRandom;
 
@@ -69,33 +69,38 @@ public class SecurityConfig{
                 .formLogin()
                 .loginPage("/Barclays/authorisation")
                 .defaultSuccessUrl("/Barclays")
-                .failureUrl("/Barclays/authorisation?message=Invalid%20Username%20or%20Password!")
+                //.failureUrl("/Barclays/authorisation?message=Invalid%20Username%20or%20Password!")  we can handle it with Custom AuthenticationFailureHandler
                 .permitAll()
 
                 .and()
                 .rememberMe()
-                .key("uniqueAndSecret")
+                .key("uniqueAndSecret")   // can add TokenRepository to save all user tokens
                 .tokenValiditySeconds(86400) // 24 hours
 
                 .and()
                 .logout()
+                .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl("/Barclays")
 
 
-                .and()
-                .sessionManagement()
+                .and() // turn off creating session for Anonymous users
+                .sessionManagement() // add Policy to create a new Session ONLY if it's required
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .sessionFixation().migrateSession()
+                .sessionFixation().migrateSession()   // If we try to login again and exceed max count of sessions -> migrate session (create new, none etc)  // can be custom
                 .maximumSessions(1)
                 .maxSessionsPreventsLogin(true)  // throw SessionAuthenticationException if the number of sessions exceed maximum; we manage this situation (if 'false' -> after our login again with already open session previous sess will be destroyed without warning)
-                .expiredUrl("/Barclays/authorisation?message=Session%20expired.");
+                .expiredUrl("/Barclays/authorisation?message=Session%20expired.")
+                .sessionRegistry(sessionRegistry())
+                .and()
+                .sessionAuthenticationFailureHandler(authenticationFailureHandler());   // if session become expired redirect to this URL
 
 
 
 
         return http.build();
     }
+
     @Bean
     public AuthenticationManager customAuthenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder) throws Exception{
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -106,26 +111,35 @@ public class SecurityConfig{
                 .build();
     }
 
-    @Bean  // to control sessions, exactly to invalidate session after logout
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
+//    @Bean  // to control sessions, exactly to invalidate session after logout
+//    public HttpSessionEventPublisher httpSessionEventPublisher() {
+//        return new HttpSessionEventPublisher();
+//    }
 
+
+//    @Bean
+//    public ServletListenerRegistrationBean<HttpSessionListener> sessionListenerWithMetrics() {
+//        ServletListenerRegistrationBean<HttpSessionListener> listenerRegBean =
+//                new ServletListenerRegistrationBean<>();
+//
+//        listenerRegBean.setListener(new HttpSessionListener());
+//
+//        return listenerRegBean;
+//    }
 
     @Bean
-    public ServletListenerRegistrationBean<HttpSessionListener> sessionListenerWithMetrics() {
-        ServletListenerRegistrationBean<HttpSessionListener> listenerRegBean =
-                new ServletListenerRegistrationBean<>();
-
-        listenerRegBean.setListener(new HttpSessionListener());
-
-        return listenerRegBean;
+    public HttpSessionListener getHttpSessionListener(){
+        return new HttpSessionListener();
     }
 
-    @Bean(name = "sessreg")
-    public SessionRegistry sessionRegistry() {
-        System.out.println("Sessionregister");
+    @Bean
+        public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler(){
+        return new CustomAuthenticationFailureHandler();
     }
 
 }
