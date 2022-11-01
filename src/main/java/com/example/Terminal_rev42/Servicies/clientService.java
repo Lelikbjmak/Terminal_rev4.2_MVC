@@ -4,18 +4,19 @@ import com.example.Terminal_rev42.Entities.client;
 
 public interface clientService {
 
-    public void addclient(client client);
+    void addclient(client client);
 
-    public void deleteById(long id);
+    void deleteById(long id);
 
-    public void deleteByName(String name);
+    void deleteByName(String name);
 
-    public Object findByID(long id);
+    Object findByID(long id);
 
-    public client findByName(String name);
+    client findByName(String name);
 
-    public Iterable<client> getAll();
+    Iterable<client> getAll();
 
-    public client findByUser_Username(String username);
+    client findByUser_Username(String username);
+
 
 }
