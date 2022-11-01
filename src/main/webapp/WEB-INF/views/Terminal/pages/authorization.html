@@ -13,29 +13,27 @@
 
 </head>
 
-<body>
+<body background="/Terminal/pics/group.png">
 <header class="hh1">
 
     <div class="menuaut">
         <a href="/Barclays"><img class="logomenu" src="/Terminal/logo/BarclaysPLC.png"></a>
     </div>
 
-    <div class="backk">
-        <img id="im" src="/Terminal/pics/group.png">
-    </div>
-
     <div class="heading">
 
-        <div id="v1">
-            Carry
-        </div>
+        <div>
+            <div id="v1">
+                Carry
+            </div>
 
-        <div id="v2">
-            your
-        </div>
+            <div id="v2">
+                your
+            </div>
 
-        <div id="v3">
-            future!
+            <div id="v3">
+                future!
+            </div>
         </div>
 
         <div id="v4">Sharp minds, Sharp opportunities</div>
@@ -43,20 +41,23 @@
         <div id="v6">We bring good things to life</div>
         <div id="v7">What do you want to accomplish today?</div>
     </div>
+
 </header>
 
 
 <div class="box">
     <form class="aut" th:action="@{/Barclays/authorisation}"  th:method="post" id="aut">
 
+        <div>Sign in</div>
+        <br>
         <div class="error" th:text="${message}"></div>
 
         <div class="r2">
-            <input id="login" type="text" placeholder="Username" required autofocus name="username">
+            <input id="login" type="text" placeholder="Username" required autofocus name="username" onkeyup="checkParams()">
         </div>
 
         <div class="r2">
-            <input id="password" type="password" placeholder="Password" required name="password">
+            <input id="password" type="password" placeholder="Password" required name="password" onkeyup="checkParams()">
         </div>
 
 
@@ -65,9 +66,12 @@
             Remember me on this computer.
         </label>
 
-        <button class="buttonlogin" id="loggin" type="submit">Submit</button>
+        <button class="buttonlogin" id="loggin" type="submit" disabled>Submit</button>
+        <br>
+        <a href="/Barclays/client/ForgotPassword" id="forgotPassword">Forgot password</a>
     </form>
 </div>
+<script src="/Terminal/js/authentication.js"></script>
 
 </body>
 </html>
