@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 @Service
@@ -26,7 +26,7 @@ public class userServiceImpl implements userService {
     @Override
     public void save(user user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoleset(new HashSet<>(Arrays.asList(roleDAO.findByRole("ROLE_USER"))));
+        user.setRoleset(new HashSet<>(Collections.singletonList(roleDAO.findByRole("ROLE_USER"))));
         userDAO.save(user);
     }
 
@@ -37,7 +37,7 @@ public class userServiceImpl implements userService {
 
     @Override
     public boolean checkUserExists(String username) {
-        return userDAO.findByUsername(username) != null ? true : false;
+        return userDAO.findByUsername(username) != null;
     }
 
     @Override
@@ -53,6 +53,25 @@ public class userServiceImpl implements userService {
     @Override
     public boolean passwordMatch(String password, String username) {
         return bCryptPasswordEncoder.matches(password, userDAO.findByUsername(username).getPassword());
+    }
+
+    @Override
+    public user findByResetPasswordToken(String token) {
+        return userDAO.findByResetPasswordToken(token);
+    }
+
+    @Override
+    public void updatePassword(user user, String rawPassword) {
+        String encodedPassword = bCryptPasswordEncoder.encode(rawPassword);
+        user.setPassword(encodedPassword);
+        user.setResetPasswordToken(null);
+        userDAO.save(user);
+    }
+
+    @Override
+    public void updateResetPasswordToken(String token, user user) {
+        user.setResetPasswordToken(token);
+        userDAO.save(user);
     }
 
 

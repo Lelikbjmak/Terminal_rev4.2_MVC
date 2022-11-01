@@ -15,4 +15,11 @@ public interface userService {
     void update(user user);
 
     boolean passwordMatch(String password, String username);
+
+    user findByResetPasswordToken(String token);
+
+    void updatePassword(user user, String rawPassword);
+
+    void updateResetPasswordToken(String token, user user);
+
 }
