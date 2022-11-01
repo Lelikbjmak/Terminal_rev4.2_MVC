@@ -36,6 +36,9 @@ public class user {
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
+    @Column(unique = true, name = "reset_password_token")
+    private String resetPasswordToken;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UsersRoles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userid") ,
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "roleid"))
@@ -108,4 +111,13 @@ public class user {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
+
 }
