@@ -69,6 +69,7 @@ public class SecurityConfig{
                 .formLogin()
                 .loginPage("/Barclays/authorisation")
                 .defaultSuccessUrl("/Barclays")
+                .failureHandler(authenticationFailureHandler())
                 //.failureUrl("/Barclays/authorisation?message=Invalid%20Username%20or%20Password!")  we can handle it with Custom AuthenticationFailureHandler
                 .permitAll()
 
@@ -91,11 +92,7 @@ public class SecurityConfig{
                 .maximumSessions(1)
                 .maxSessionsPreventsLogin(true)  // throw SessionAuthenticationException if the number of sessions exceed maximum; we manage this situation (if 'false' -> after our login again with already open session previous sess will be destroyed without warning)
                 .expiredUrl("/Barclays/authorisation?message=Session%20expired.")
-                .sessionRegistry(sessionRegistry())
-                .and()
-                .sessionAuthenticationFailureHandler(authenticationFailureHandler());   // if session become expired redirect to this URL
-
-
+                .sessionRegistry(sessionRegistry());
 
 
         return http.build();

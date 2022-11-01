@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface receiptsService {
 
-    public void save(receipts receipt);
+    void save(receipts receipt);
 
-    public Optional<receipts> findById(long id);
+    Optional<receipts> findById(long id);
 
-    public receipts findFirstByBillfromInOrderByIdDesc(Collection<bill> bills);
+    receipts findFirstByBillfromInOrderByIdDesc(Collection<bill> bills);
 
 }
