@@ -127,19 +127,7 @@ function check3(){
    }else if(!pinreg.test(pinvalue)){
        setErrorFor(pin3, "Not valid format")
        flag = false;
-   }else{
-       var url = "/Barclays/bill/checkPin?card=" + billfromvalue + "&pin=" + pinvalue;
-       const xhr = new XMLHttpRequest();
-       xhr.open("GET", url, false);
-       xhr.send();
-
-       if(xhr.response === "false"){ // indicates that this bill isn't exist
-          setErrorFor(pin3, "Incorrect pin");
-          flag = false;
-       }else{
-          setSuccessFor(pin3);
        }
-   }
 
   return flag;
 }
@@ -169,9 +157,7 @@ function checkParams3() {
 
     if(billfromvalue.length != 0 && currencyvalue.length != 0 && summavalue.length != 0 && pinvalue.length != 0) {
         $('#bb3').removeAttr('disabled');
-                alert("enabled!");
     } else {
         $('#bb3').attr('disabled', 'disabled');
-                alert("disabled!");
     }
 }
