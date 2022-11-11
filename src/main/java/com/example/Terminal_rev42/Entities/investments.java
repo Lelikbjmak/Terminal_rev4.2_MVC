@@ -5,6 +5,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +18,6 @@ public class investments implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @NonNull
     private long id;
 
     @ManyToOne
@@ -26,9 +28,11 @@ public class investments implements Serializable {
     private String type;
 
     @Column(name = "percentage", nullable = false)
+    @DecimalMin("00.00")
     private BigDecimal percentage;
 
     @Column(name = "summa", nullable = false)
+    @DecimalMin("00.00")
     private BigDecimal contribution;
 
     @Column(name = "currency", nullable = false)
@@ -40,6 +44,8 @@ public class investments implements Serializable {
     private LocalDate begin;
 
     @Column(name = "term_month", nullable = false)
+    @Min(6)
+    @Max(36)
     private short term;
 
     @Column(name = "Status", nullable = false)
