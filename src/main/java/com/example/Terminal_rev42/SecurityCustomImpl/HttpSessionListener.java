@@ -36,12 +36,7 @@ public class HttpSessionListener extends HttpSessionEventPublisher {
         activeSessions.incrementAndGet();
         counterOfActiveSessions.inc();
 
-        if (this.sessionRegistry == null)
-            System.err.println("Sess reg = NULL");
-
-        sessionRegistry.refreshLastRequest(event.getSession().getId());
-        System.out.println(sessionRegistry.getAllPrincipals());
-        logger.info("Session: " + event.getSession().getId() + " is created. Session info: " + sessionRegistry.getSessionInformation(event.getSession().getId()) + ". Count of active sessions: " + counterOfActiveSessions.getCount());
+        logger.info("Session: " + event.getSession().getId() + " is created. Count of active sessions: " + counterOfActiveSessions.getCount());
     }
 
     ApplicationContext getContext(ServletContext servletContext) {
@@ -52,7 +47,8 @@ public class HttpSessionListener extends HttpSessionEventPublisher {
     public final void sessionDestroyed(final HttpSessionEvent event) {
         activeSessions.decrementAndGet();
         counterOfActiveSessions.dec();
-        logger.info("Session: " + event.getSession().getId() + " is destroyed. Count of active sessions: " + counterOfActiveSessions.getCount());
+        event.getSession().invalidate();
+        logger.info("Session: " + event.getSession().getId() + " is destroyed. " + sessionRegistry.getSessionInformation(event.getSession().getId()) + "Count of active sessions: " + counterOfActiveSessions.getCount());
 
     }
 

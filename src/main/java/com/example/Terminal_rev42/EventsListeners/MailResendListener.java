@@ -3,6 +3,8 @@ package com.example.Terminal_rev42.EventsListeners;
 import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.Model.user;
 import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,6 +25,7 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
     @Autowired
     private JavaMailSender mailSender;
 
+    private static final Logger logger = LoggerFactory.getLogger(MailResendListener.class);
 
     @Override
     public void onApplicationEvent(MailConfirmationResendEvent event) {
@@ -34,7 +37,7 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
     @Transactional
     private void confirmRegistration(MailConfirmationResendEvent event) {
 
-        System.err.println("Resending email..." + " to: " + event.getUser().getUsername());
+        logger.info("Resending email..." + " to: " + event.getUser().getUsername());
         user user = event.getUser(); // get user
         VerificationToken token = event.getToken();  // get users token
 
@@ -44,7 +47,6 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
         String recipientAddress = user.getMail();
         String confirmationUrl = event.getAppUrl() + "/Barclays/client/registrationConfirm?token=" + token.getToken();
 
-        System.out.println(confirmationUrl);
 
         //SimpleMailMessage email = new SimpleMailMessage(); // if simple message default text
 
@@ -83,7 +85,7 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            System.err.println("Error in setting MimeMessageHelper to HTML text type!");
+            logger.error("Error in setting MimeMessageHelper to HTML text type!");
             throw new RuntimeException(e);
         }
 
@@ -94,12 +96,11 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            System.err.println("Issue in setting recipient and sender of mail");
+            logger.error("Issue in setting recipient and sender of mail");
             throw new RuntimeException(e);
         }
 
-
-        System.err.println("email has resent!");
+        logger.info("email has resent to " + recipientAddress + "!");
 
     }
 }

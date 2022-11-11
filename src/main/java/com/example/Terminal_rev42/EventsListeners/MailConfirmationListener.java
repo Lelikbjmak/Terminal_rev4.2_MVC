@@ -3,6 +3,8 @@ package com.example.Terminal_rev42.EventsListeners;
 import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.Model.user;
 import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,6 +24,8 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
     @Autowired
     private JavaMailSender mailSender;
 
+    private static final Logger logger = LoggerFactory.getLogger(MailConfirmationListener.class);
+
     @Override
     public void onApplicationEvent(MailConfirmationEvent event) {
         this.confirmRegistration(event);
@@ -29,11 +33,10 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
 
     @Transactional
     private void confirmRegistration(MailConfirmationEvent event) {
-        System.err.println("Sending email..." + " to: " + event.getUser().getUsername());
+        logger.info("Sending email..." + " to: " + event.getUser().getUsername());
         user user = event.getUser();
 
         VerificationToken token = tokenService.createVerificationToken(user);
-        System.out.println("token: " + token.getToken());
 
         String recipientAddress = user.getMail();
         String confirmationUrl = event.getAppUrl() + "/Barclays/client/registrationConfirm?token=" + token.getToken();
@@ -75,7 +78,7 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            System.err.println("Error in setting MimeMessageHelper to HTML text type!");
+            logger.error("Error in setting MimeMessageHelper to HTML text type!");
             throw new RuntimeException(e);
         }
 
@@ -86,12 +89,12 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            System.err.println("Issue in setting recipient and sender of mail");
+            logger.error("Issue in setting recipient and sender of mail: " + recipientAddress);
             throw new RuntimeException(e);
         }
 
 
-        System.err.println("email has sent!");
+        logger.info("email has sent to " + recipientAddress);
 
     }
 }

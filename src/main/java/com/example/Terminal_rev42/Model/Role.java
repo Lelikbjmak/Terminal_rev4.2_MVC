@@ -1,8 +1,7 @@
 package com.example.Terminal_rev42.Model;
 
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
@@ -17,7 +16,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long roleid;   //Pattern = "ROLE_NAME"
 
-    @NonNull
+    @NotBlank
     @Column(unique = true)
     private String role;
 

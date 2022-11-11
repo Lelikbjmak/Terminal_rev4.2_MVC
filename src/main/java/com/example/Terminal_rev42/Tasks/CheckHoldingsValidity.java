@@ -3,6 +3,8 @@ package com.example.Terminal_rev42.Tasks;
 import com.example.Terminal_rev42.EventsListeners.NotifyAboutInvestExpirationEvent;
 import com.example.Terminal_rev42.EventsListeners.NotifyValidityListener;
 import com.example.Terminal_rev42.SeviceImplementation.investServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,10 +23,14 @@ public class CheckHoldingsValidity {
     @Autowired
     NotifyValidityListener notifyValidityListener;
 
-    @Scheduled(fixedRate = 1000*60*60*24)
+    private static final int term = 1000*60*60*24;
+
+    private static final Logger logger = LoggerFactory.getLogger(CheckBillsValidity.class);
+
+    @Scheduled(fixedRate = term)
     public void checkHolds() {
 
-        System.err.println("Invest manager...");
+        logger.info("Holding manager");
 
         investService.allActiveInvests().forEach(p -> {
 
@@ -54,7 +60,7 @@ public class CheckHoldingsValidity {
                     notifyValidityListener.handleNotifyEventOutOfValidityInvests(new NotifyAboutInvestExpirationEvent(p));
                     investService.addInvest(p);
 
-                    System.out.println("Invest: " + p.getId() + " " + p.getType() + " is closed!");
+                    System.err.println("Invest: " + p.getId() + " " + p.getType() + " is closed!");
                 }
 
             } else {

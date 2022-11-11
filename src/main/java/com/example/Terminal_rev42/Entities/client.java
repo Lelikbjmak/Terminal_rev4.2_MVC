@@ -6,6 +6,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -20,7 +22,6 @@ public class client implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @NonNull
     private long id;
 
     @NonNull
@@ -33,13 +34,14 @@ public class client implements Serializable {
 
     @NonNull
     @Column(name = "passport")
+    @Pattern(regexp = "^[A-Z]{2}\\d{7}$")
     private String passport;
 
     @Column(name = "birth")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
-    @NonNull
+    @NotBlank
     private Date birth;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many bills

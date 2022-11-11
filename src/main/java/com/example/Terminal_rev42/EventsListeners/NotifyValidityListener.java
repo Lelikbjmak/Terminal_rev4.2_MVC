@@ -3,6 +3,8 @@ package com.example.Terminal_rev42.EventsListeners;
 import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Entities.investments;
 import com.example.Terminal_rev42.Model.user;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,11 +21,14 @@ public class NotifyValidityListener {
     @Autowired
     private JavaMailSender mailSender;
 
+    private static final Logger logger = LoggerFactory.getLogger(NotifyValidityListener.class);
+
     @EventListener
     @Transactional
     public void handleNotifyEventBill(NotifyBillValidityExpirationEvent event){
 
-        System.err.println("Notify users about validation expiration");
+        logger.info("Notify users about bill validation expiration active");
+
         bill bill = event.getBill();
 
         user user = bill.getClient().getUser();
@@ -66,7 +71,7 @@ public class NotifyValidityListener {
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            System.err.println("Error in setting MimeMessageHelper to HTML text type!");
+            logger.error("Error in setting MimeMessageHelper to HTML text type! " + recipientAddress);
             throw new RuntimeException(e);
         }
 
@@ -77,19 +82,18 @@ public class NotifyValidityListener {
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            System.err.println("Issue in setting recipient and sender of mail");
+            logger.error("Issue in setting recipient and sender of mail: " + recipientAddress);
             throw new RuntimeException(e);
         }
 
-
-        System.err.println("notification about expiration date of bill has sent to " + user.getUsername() + "!");
+        logger.info("Notification about expiration date of bill has sent to " + user.getUsername() + "!");
     }
 
     @EventListener
     @Transactional
     public void handleNotifyEventOutOfValidityBill(NotifyBillValidityExpirationEvent event){
 
-        System.err.println("Notify users about validation expiration");
+        System.err.println("Notify users about bill validation expiration");
         bill bill = event.getBill();
 
         user user = bill.getClient().getUser();
@@ -156,7 +160,7 @@ public class NotifyValidityListener {
     @Transactional
     public void handleNotifyEventOutOfValidityInvests(NotifyAboutInvestExpirationEvent event){
 
-        System.err.println("Notify users about validation expiration");
+        logger.info("Notify users about validation expiration");
         investments investments = event.getInvestments();
 
         user user = investments.getClient().getUser();
@@ -199,7 +203,7 @@ public class NotifyValidityListener {
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            System.err.println("Error in setting MimeMessageHelper to HTML text type!");
+            logger.error("Error in setting MimeMessageHelper to HTML text type!");
             throw new RuntimeException(e);
         }
 
@@ -210,12 +214,12 @@ public class NotifyValidityListener {
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            System.err.println("Issue in setting recipient and sender of mail");
+            logger.error("Issue in setting recipient and sender of mail");
             throw new RuntimeException(e);
         }
 
 
-        System.err.println("notification about expiration date of bill has sent to " + user.getUsername() + "!");
+        logger.info("notification about expiration date of bill has sent to " + user.getUsername() + "!");
     }
 
 

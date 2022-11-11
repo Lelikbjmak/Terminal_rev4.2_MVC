@@ -4,6 +4,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -24,12 +26,12 @@ public class receipts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NonNull
+    @NotBlank
     private String type;
 
     @ManyToOne
     @JoinColumn(name = "billfrom", referencedColumnName = "card")
-    @NonNull
+    @NotBlank
     private bill billfrom;
 
     @ManyToOne
@@ -37,10 +39,11 @@ public class receipts {
     @Nullable
     private bill billto;
 
-    @NonNull
+    @NotBlank
     private String currency;
 
-    @NonNull
+    @NotBlank
+    @DecimalMin("00.00")
     private BigDecimal summa;
 
     public long getId() {

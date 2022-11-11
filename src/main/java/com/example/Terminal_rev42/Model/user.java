@@ -4,6 +4,8 @@ import com.example.Terminal_rev42.Entities.client;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -12,7 +14,14 @@ public class user {
 
     public user(){
         this.enabled = false;
+        this.failedAttempts = 0;
+        this.temporalLock = false;
     }
+
+    @Transient
+    public static final int MAX_FAILED_ATTEMPTS = 3;
+    @Transient
+    public static final long LOCK_TIME_DURATION =  1; // 24 hours
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,24 +29,40 @@ public class user {
     private long userid;
 
     @Column(unique = true)
+    @NotBlank
+    @Size(min = 4)
     private String username;
 
-    @NonNull
+    @NotBlank
+    @Size(min = 8)
     private String password;
 
     @Transient
+    @NotBlank
+    @Size(min = 8)
     private String confirmedpassword;
 
     @NonNull
     @Column(unique = true)
+    @Email
     private String mail;
-
 
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
     @Column(unique = true, name = "reset_password_token")
     private String resetPasswordToken;
+
+    @Column(name = "temporalLock", nullable = false)
+    private boolean temporalLock;
+
+    @Column(name = "failed_attempts")
+    @Min(1)
+    @Max(3)
+    private int failedAttempts;
+
+    @Column(name = "lock_time")
+    private LocalDateTime lockTime;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UsersRoles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userid") ,
@@ -119,5 +144,30 @@ public class user {
     public void setResetPasswordToken(String resetPasswordToken) {
         this.resetPasswordToken = resetPasswordToken;
     }
+
+    public LocalDateTime getLockTime() {
+        return lockTime;
+    }
+
+    public void setLockTime(LocalDateTime lockTime) {
+        this.lockTime = lockTime;
+    }
+
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+
+    public boolean isTemporalLock() {
+        return temporalLock;
+    }
+
+    public void setTemporalLock(boolean temporalLock) {
+        this.temporalLock = temporalLock;
+    }
+
 
 }
