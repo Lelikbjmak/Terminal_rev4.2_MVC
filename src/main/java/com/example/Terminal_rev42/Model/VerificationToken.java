@@ -3,6 +3,7 @@ package com.example.Terminal_rev42.Model;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,16 +12,18 @@ import java.util.Date;
 @Table(name = "VerToken")
 public class VerificationToken {
 
-    private static final int EXPIRATION = 60 * 8;  // validity - 8 hours to confirm email
-
     public VerificationToken(){
         this.setExpiryDate(calculateExpiryDate(VerificationToken.EXPIRATION));
     }
+
+    @Transient
+    private static final int EXPIRATION = 60 * 8;  // validity - 8 hours to confirm email
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
+    @NotBlank
     @Column(unique = true)
     private String token;
 
