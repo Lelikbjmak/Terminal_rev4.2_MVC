@@ -95,18 +95,8 @@ function check1(){
     }else if(!billtoreg.test(billtovalue)){
         setErrorFor(billtovalue, "Not valid format");
         flag = false;
-    }else{
-        var url = "/Barclays/bill/checkBill?card=" + billtovalue;
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.send();
-
-        if(xhr.response === "false"){ // indicates that this bill isn't exist
-           setErrorFor(billto, "Card isn't exist");
-           flag = false;
-        }else{
-           setSuccessFor(billto);
-        }
+    } else{
+       setSuccessFor(billto);
     }
 
 
@@ -116,19 +106,8 @@ function check1(){
     }else if(!summareg.test(summavalue)){
         flag = false;
         setErrorFor(summa, "Not valid format");
-    }else{
-        var url = "/Barclays/bill/checkLedger?card=" + billfromvalue;
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.send();
-        var ledger = +(xhr.response);
-
-        if(ledger < +(summavalue)){ // indicates that this bill isn't exist
-           setErrorFor(summa, "Scarcity of money on your ledger");
-           flag = false;
-        }else{
-           setSuccessFor(summa);
-        }
+    } else{
+       setSuccessFor(summa);
     }
 
    if(pinvalue === ''){
@@ -137,19 +116,19 @@ function check1(){
    }else if(!pinreg.test(pinvalue)){
        setErrorFor(pin, "Not valid format")
        flag = false;
-   }else{
-       var url = "/Barclays/bill/checkPin?card=" + billfromvalue + "&pin=" + pinvalue;
-       const xhr = new XMLHttpRequest();
-       xhr.open("GET", url, false);
-       xhr.send();
-
-       if(xhr.response === "false"){ // indicates that this bill isn't exist
-          setErrorFor(pin, "Incorrect pin");
-          flag = false;
+//   }else //{
+//       var url = "/Barclays/bill/checkPin?card=" + billfromvalue + "&pin=" + pinvalue;
+//       const xhr = new XMLHttpRequest();
+//       xhr.open("GET", url, false);
+//       xhr.send();
+//
+//       if(xhr.response === "false"){ // indicates that this bill isn't exist
+//          setErrorFor(pin, "Incorrect pin");
+//          flag = false;
        }else{
           setSuccessFor(pin);
        }
-   }
+//   }
 
   return flag;
 }
