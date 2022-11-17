@@ -3,11 +3,11 @@ package com.example.Terminal_rev42.EventsListeners;
 import com.example.Terminal_rev42.Entities.investments;
 import org.springframework.context.ApplicationEvent;
 
-public class NotifyAboutInvestExpirationEvent extends ApplicationEvent {
+public class InvestExpirationEvent extends ApplicationEvent {
 
-    private investments investments;
+    private final investments investments;
 
-    public NotifyAboutInvestExpirationEvent(investments investments) {
+    public InvestExpirationEvent(investments investments) {
         super(investments);
 
         this.investments = investments;
