@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 public class receiptsServiceImpl implements receiptsService {
@@ -22,12 +21,7 @@ public class receiptsServiceImpl implements receiptsService {
     }
 
     @Override
-    public Optional<receipts> findById(long id) {
-        return receiptsRepository.findById(id);
-    }
-
-    @Override
-    public receipts findFirstByBillfromInOrderByIdDesc(Collection<bill> bills) {
+    public receipts findFirstByBillInOrderByIdDesc(Collection<bill> bills) {
         return receiptsRepository.findFirstByBillfromInOrderByIdDesc(bills);
     }
 
