@@ -6,8 +6,6 @@ import com.example.Terminal_rev42.Servicies.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class clientServiceImpl implements clientService {
 
@@ -15,10 +13,7 @@ public class clientServiceImpl implements clientService {
     private clientRepository clientRepository;
 
     @Override
-    public void addclient(client client) {
-
-        clientRepository.save(client);
-    }
+    public void save(client client) { clientRepository.save(client); }
 
     @Override
     public void deleteById(long id) {
@@ -31,22 +26,21 @@ public class clientServiceImpl implements clientService {
     }
 
     @Override
-    public Optional<client> findByID(long id) {
-        return clientRepository.findById(id);
-    }
-
-    @Override
-    public client findByName(String name) {
-        return clientRepository.findByName(name);
-    }
-
-    @Override
-    public Iterable<client> getAll() {
-        return clientRepository.findAll();
-    }
-
-    @Override
     public client findByUser_Username(String username) {
         return clientRepository.findByUser_Username(username);
     }
+
+    @Override
+    public boolean checkClientExistsByNameAndPassport(String name, String passport) {
+
+        return clientRepository.findByNameAndPassport(name, passport) != null;
+
+    }
+
+    @Override
+    public client findByNameAndPassport(String name, String passport) {
+        return clientRepository.findByNameAndPassport(name, passport);
+    }
+
+
 }

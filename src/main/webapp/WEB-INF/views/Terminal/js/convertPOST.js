@@ -105,20 +105,22 @@ function check3(){
     }else if(!summareg.test(summavalue)){
         flag = false;
         setErrorFor(summa3, "Not valid format");
-    }else{
-        var url = "/Barclays/bill/checkLedger?card=" + billfromvalue;
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.send();
-        var ledger = xhr.response;
-
-        if(ledger < summavalue){ // indicates that this bill isn't exist
-           setErrorFor(summa3, "Scarcity of money on your ledger");
-           flag = false;
-        }else{
+    }
+//else{
+//        var url = "/Barclays/bill/checkLedger?card=" + billfromvalue;
+//        const xhr = new XMLHttpRequest();
+//        xhr.open("GET", url, false);
+//        xhr.send();
+//        var ledger = xhr.response;
+//
+//        if(ledger < summavalue){ // indicates that this bill isn't exist
+//           setErrorFor(summa3, "Scarcity of money on your ledger");
+//           flag = false;
+//        }
+        else{
            setSuccessFor(summa3);
         }
-    }
+//    }
 
 
    if(pinvalue === ''){
@@ -127,7 +129,9 @@ function check3(){
    }else if(!pinreg.test(pinvalue)){
        setErrorFor(pin3, "Not valid format")
        flag = false;
-       }
+   }else{
+       setSuccessFor(pin3);
+   }
 
   return flag;
 }
