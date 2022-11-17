@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/Terminal/css/style.css" type="text/css">
     <link rel="shortcut icon" href="/Terminal/logo/barclays.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
 </head>
 <body class="body1" >
 
@@ -34,65 +36,67 @@
 
             <label><b>Login</b></label>
             <div class="r1">
-                <input type="text" id="username" name="username" onkeyup="checkParams()">
+                <input type="text" id="username" name="username" onkeyup="checkParamsUser()">
                 <br>
                 <small></small>
             </div>
 
             <label><b>Email</b></label>
             <div class="r1">
-                <input type="email" id="email" name="email" onkeyup="checkParams()">
+                <input type="email" id="email" name="email" onkeyup="checkParamsUser()">
                 <br>
                 <small></small>
             </div>
 
             <label><b>Password</b></label>
             <div class="r1">
-                <input type="password" name="password" id="password" onkeyup="checkParams()">
+                <input type="password" name="password" id="password" onkeyup="checkParamsUser()">
+                <i class="fa-regular fa-eye-slash" id="togglePassword1"></i>
                 <br>
                 <small></small>
             </div>
 
             <label><b>Confirm password</b></label>
             <div class="r1">
-                <input type="password" name="confirmpassword" id="confirmpassword" onkeyup="checkParams()">
+                <input type="password" name="confirmpassword" id="confirmpassword" onkeyup="checkParamsUser()">
+                <i class="fa-regular fa-eye-slash" id="togglePassword2"></i>
                 <br>
                 <small></small>
             </div>
 
-            <button type="button" class="butregister" id="go" >Continue</button>
+            <button type="button" class="butregister" id="go" disabled="disabled">Continue</button>
         </div>
 
         <div class="register-form" id="client">
             <label><b>Full name</b></label>
             <div class="r1">
-                <input type="text" name="name" id="name" placeholder="Name Surname" onkeyup="checkParams()">
+                <input type="text" name="name" id="name" placeholder="Name Surname" onkeyup="checkParamsClient()">
                 <br>
                 <small></small>
             </div>
 
             <label><b>Passport</b></label>
             <div class="r1">
-                <input type="text" name="passport" id="passport" placeholder="XX*******" onkeyup="checkParams()">
+                <input type="text" name="passport" id="passport" placeholder="XX*******" onkeyup="checkParamsClient()">
                 <br>
                 <small></small>
             </div>
 
             <label for="bday"><b>Birth</b></label>
             <div class="r1">
-                <input type="date" name="bday" id="bday" onkeyup="checkParams()">
+                <input type="date" name="bday" id="bday" onkeyup="checkParamsClient()">
                 <br>
                 <small></small>
             </div>
 
             <label for="phone"><b>Phone number</b></label>
             <div class="r1">
-                <input type="tel" name="phone" id="phone" placeholder="**********" onkeyup="checkParams()">
+                <input type="tel" name="phone" id="phone" placeholder="**********" onkeyup="checkParamsClient()">
                 <br>
                 <small></small>
             </div>
 
-            <button type="submit" class="butregister" id="reg" disabled>Register</button>
+            <button type="submit" class="butregister" id="reg" disabled="disabled">Register</button>
         </div>
 
     </form>

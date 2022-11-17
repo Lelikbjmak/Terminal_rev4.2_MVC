@@ -165,6 +165,7 @@ $(document).ready(
          }).done(function(data, textStatus, jqXHR){
                 setTimeout(() => {
                     $('div.message').text(jqXHR.responseText);
+                    $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
                     $('div.message1').text('');
                     $('.loader').css({'opacity':'0%', 'z-index':'0'});
                     $('.bl').css({'opacity':'100%', 'z-index':'12'});
@@ -284,10 +285,11 @@ $(document).ready(
         }, function(data) {
 
          }).done(function(data, textStatus, jqXHR){
-                setTimeout(() => {
-                    $('div.message1.small').text(jqXHR.responseText);
-                    $('.loader').css({'opacity':'0%', 'z-index':'0'});
-                }, 2500);
+            setTimeout(() => {
+                $('div.message1.small').text(jqXHR.responseText);
+                $('div.message1.small').html($('div.message1.small').html().replace(/\n/g,'<br/>'));
+                $('.loader').css({'opacity':'0%', 'z-index':'0'});
+            }, 2500);
 
         }).fail(function(jqXHR, exception, errorThrown) {
             var msg = '';
@@ -320,20 +322,55 @@ $(document).ready(
 });
 
 
-function checkParams() {
+function checkParamsClient() {
 
-    var usernamevalue = username.value.trim();
-    var passwordvalue = password.value.trim();
-    var confirmpasswordvalue = confirmpassword.value.trim();
-    var emailvalue = email.value.trim();
     var namevalue = name.value.trim();
     var passportvalue = passport.value.trim();
     var birthvalue = birth.value;
     var phonevalue = phone.value.trim();
 
-    if(usernamevalue.length != 0 && emailvalue.length != 0 && phonevalue.length != 0 && passwordvalue.length != 0 && confirmpasswordvalue.length != 0 && namevalue.length != 0 && passportvalue.length != 0 && birthvalue.length != 0) {
+    if(phonevalue.length != 0 && namevalue.length != 0 && passportvalue.length != 0 && birthvalue.length != 0) {
         $('#reg').removeAttr('disabled');
     } else {
         $('#reg').attr('disabled', 'disabled');
     }
 }
+
+
+function checkParamsUser() {
+
+    var usernamevalue = username.value.trim();
+    var passwordvalue = password.value.trim();
+    var confirmpasswordvalue = confirmpassword.value.trim();
+    var emailvalue = email.value.trim();
+
+    if(usernamevalue.length != 0 && emailvalue.length != 0 && passwordvalue.length != 0 && confirmpasswordvalue.length != 0 ) {
+        $('#go').removeAttr('disabled');
+    } else {
+        $('#go').attr('disabled', 'disabled');
+    }
+}
+
+
+const togglePassword1 = document.querySelector("#togglePassword1");
+const togglePassword2 = document.querySelector("#togglePassword2");
+
+togglePassword1.addEventListener("click", function () {
+    // toggle the type attribute
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type", type);
+
+    // toggle the icon
+    this.classList.toggle("fa-eye");
+
+});
+
+togglePassword2.addEventListener("click", function () {
+    // toggle the type attribute
+    const type = confirmpassword.getAttribute("type") === "password" ? "text" : "password";
+    confirmpassword.setAttribute("type", type);
+
+    // toggle the icon
+    this.classList.toggle("fa-eye");
+
+});
