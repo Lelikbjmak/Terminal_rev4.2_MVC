@@ -48,7 +48,7 @@ public class HttpSessionListener extends HttpSessionEventPublisher {
         activeSessions.decrementAndGet();
         counterOfActiveSessions.dec();
         event.getSession().invalidate();
-        logger.info("Session: " + event.getSession().getId() + " is destroyed. " + sessionRegistry.getSessionInformation(event.getSession().getId()) + "Count of active sessions: " + counterOfActiveSessions.getCount());
+        logger.info("Session: " + event.getSession().getId() + " is destroyed. Session info: " + sessionRegistry.getSessionInformation(event.getSession().getId()) + ". Count of active sessions: " + counterOfActiveSessions.getCount());
 
     }
 
