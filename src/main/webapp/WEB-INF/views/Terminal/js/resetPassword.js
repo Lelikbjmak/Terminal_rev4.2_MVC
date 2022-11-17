@@ -85,6 +85,7 @@ form.addEventListener('submit', (e) => {
                 var confirmedPassword = $("#confPass").val().trim();
 
                 $.post("/Barclays/client/resetPassword", {
+
                     password: password,
                     confirmedPassword: confirmedPassword,
                     token: getToken()
@@ -92,11 +93,10 @@ form.addEventListener('submit', (e) => {
                 }, function(data) {
 
                 }).done(function(data, textStatus, jqXHR){
-//                   setTimeout(() => {
+
                    $("#message").text(jqXHR.responseText);
                    $("#message").css("color", "rgba(0, 0, 0, 0.6)");
                    $('.fa-lg').css({'opacity':'0%'});
-//                                   }, 3000);
 
                 }).fail(function(jqXHR, exception, errorThrown) {
                     var msg = '';
@@ -120,9 +120,9 @@ form.addEventListener('submit', (e) => {
                     }
 
                     setTimeout(() => {
-                                    $("#message").text(jqXHR.responseText);
-                                    $('.fa-lg').css({'opacity':'0%'});
-                                    }, 3000);
+                        $("#message").text(jqXHR.responseText);
+                        $('.fa-lg').css({'opacity':'0%'});
+                    }, 3000);
 
                 });
 
@@ -143,3 +143,28 @@ function getToken (url = window.location) {
 
     return params.token;
 }
+
+
+const togglePassword1 = document.querySelector("#togglePassword1");
+const togglePassword2 = document.querySelector("#togglePassword2");
+
+
+togglePassword1.addEventListener("click", function () {
+    // toggle the type attribute
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type", type);
+
+    // toggle the icon
+    this.classList.toggle("fa-eye");
+
+});
+
+togglePassword2.addEventListener("click", function () {
+    // toggle the type attribute
+    const type = confirmedPassword.getAttribute("type") === "password" ? "text" : "password";
+    confirmedPassword.setAttribute("type", type);
+
+    // toggle the icon
+    this.classList.toggle("fa-eye");
+
+});
