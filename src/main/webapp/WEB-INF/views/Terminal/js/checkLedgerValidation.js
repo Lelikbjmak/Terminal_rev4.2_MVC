@@ -85,19 +85,10 @@ function ch(){
     }else if(!pinreg.test(pinvalue)){
         flag = false;
         setErrorFor(pin, 'Not valid format');
-    }else{
-        var url = "/Barclays/bill/checkPin?card=" + billvalue + "&pin=" + pinvalue;
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.send();
-
-        if(xhr.response === "false"){ // indicates that this bill isn't exist
-           setErrorFor(pin, "Incorrect pin");
-           flag = false;
-        }else{
+    } else{
            setSuccessFor(pin);
-        }
     }
+
     return flag;
 }
 
