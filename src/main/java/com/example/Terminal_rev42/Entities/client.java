@@ -120,7 +120,7 @@ public class client implements Serializable {
 
     @Override
     public String toString(){
-        return this.getName() + " ,passport: " + this.getPassport();
+        return "Name: " + this.getName() + " ,passport: " + this.getPassport();
     }
 }
 
