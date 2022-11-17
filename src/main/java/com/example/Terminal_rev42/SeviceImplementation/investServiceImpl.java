@@ -24,9 +24,4 @@ public class investServiceImpl implements InvestService {
         return investrepository.findByStatusIsTrue();
     }
 
-    @Override
-    public Iterable<investments> findAll() {
-        return investrepository.findAll();
-    }
-
 }

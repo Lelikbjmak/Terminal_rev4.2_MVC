@@ -10,5 +10,4 @@ public interface InvestService {
 
     Set<investments> allActiveInvests();
 
-    Iterable<investments> findAll();
 }
