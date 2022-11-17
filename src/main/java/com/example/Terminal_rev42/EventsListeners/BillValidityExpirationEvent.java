@@ -3,13 +3,13 @@ package com.example.Terminal_rev42.EventsListeners;
 import com.example.Terminal_rev42.Entities.bill;
 import org.springframework.context.ApplicationEvent;
 
-public class NotifyBillValidityExpirationEvent extends ApplicationEvent {
+public class BillValidityExpirationEvent extends ApplicationEvent {
 
-    private bill bill;
+    private final bill bill;
 
-    private int days;
+    private final int days;
 
-    public NotifyBillValidityExpirationEvent(bill bill, int days) {
+    public BillValidityExpirationEvent(bill bill, int days) {
         super(bill);
         this.bill = bill;
         this. days = days;
