@@ -22,4 +22,7 @@ public interface BillRepository extends CrudRepository<bill, String> {
 
     @Query("select b from bill b where datediff(b.validity, now()) = :data and b.active = true")  // datediff in days
     Set<bill> findAllByValiditySubNowIs(@Param("data") int day);
+
+    Set<bill> findByClient_idAndActiveIsTrueAndTemporalLockIsFalseAndFailedAttemptsGreaterThan(long id, int failedAttempts);
+
 }
