@@ -7,6 +7,7 @@ var userwin = document.getElementById('user');
 
 const backButton = document.getElementById('prev');
 
+const againButton = document.getElementById('again');
 
 ov.addEventListener('click', function(){
 
@@ -22,9 +23,9 @@ ov.style.zIndex = '0';
 
 backButton.addEventListener('click', function(){
 
-const rr = document.getElementsByClassName('r2 success');
+const rr = document.getElementsByClassName('r1 success');
 
-const rrr = document.getElementsByClassName('r2 error');
+const rrr = document.getElementsByClassName('r1 error');
 
 for (let r of rrr) {
       r.classList.remove('error');
@@ -41,7 +42,6 @@ for (let r of rr) {
 for (let r of rr) {
       r.classList.remove('success');
     }
-
 
 userwin.style.opacity = '100%';
 
@@ -57,5 +57,16 @@ $('div.message1.small').text('');
 $('.wrap').css({'opacity':'0%', 'z-index':'0'});
 $('.loader').css('opacity','100%');
 $("#regg").trigger('reset');
+
+});
+
+
+againButton.addEventListener('click', function(){
+
+$('div.message').text('');
+$('div.message1.small').text('');
+
+$('.wrap').css({'opacity':'0%', 'z-index':'0'});
+$('.loader').css('opacity','100%');
 
 });
