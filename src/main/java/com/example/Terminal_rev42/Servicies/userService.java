@@ -1,5 +1,7 @@
 package com.example.Terminal_rev42.Servicies;
 
+import com.example.Terminal_rev42.Exceptions.UserAlreadyExistsException;
+import com.example.Terminal_rev42.Exceptions.UserNotExistsException;
 import com.example.Terminal_rev42.Model.user;
 
 public interface userService {
@@ -16,10 +18,16 @@ public interface userService {
 
     boolean passwordMatch(String password, String username);
 
-    user findByResetPasswordToken(String token);
+    user findByResetPasswordToken(String token) throws UserNotExistsException;
 
-    void updatePassword(user user, String rawPassword);
+    void updatePassword(user user, String rawPassword, String confirmedRawPassword);
 
     void updateResetPasswordToken(String token, user user);
+
+    void lockUser(user user);
+
+    void increaseFailedAttempts(user user);
+
+    void resetFailedAttempts(user user);
 
 }
