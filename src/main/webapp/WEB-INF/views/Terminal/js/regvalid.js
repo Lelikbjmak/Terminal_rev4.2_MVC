@@ -130,82 +130,130 @@ form.addEventListener('click', (e) =>{
 
 
 
+
+
 forma.addEventListener('submit', (e) => {
     e.preventDefault();
+
     if(check1()){
 
-
-$(document).ready(
-    function($) {
-
         $('.wrap').css({'opacity':'100%', 'z-index':'12'});
-
 
         var username = $("#username").val().trim();
         var email = $("#email").val().trim();
         var password = $("#password").val().trim();
-        var confirmedpassword = $("#confirmpassword").val().trim();
+        var confirmedPassword = $("#confirmpassword").val().trim();
         var name = $("#name").val().trim();
         var passport = $("#passport").val().trim();
         var birth = $("#bday").val();
         var phone = $("#phone").val().trim();
 
+        user = {
+        "username":username,
+        "password":password,
+        "confirmedpassword":confirmedPassword,
+        "mail":email
+        };
 
-        $.post("/Barclays/client/add", {
-            username: username,  //1st in Java | 2nd here
-            email: email,
-            password: password,
-            confirmedpassword: confirmedpassword,
-            name: name,
-            passport: passport,
-            birth: birth,
-            phone: phone
-        }, function(data) {
+        client = {
+        "name":name,
+        "phone":phone,
+        "passport":passport,
+        "birth":birth
+        };
 
-         }).done(function(data, textStatus, jqXHR){
+        $.ajax({
+            url: '/Barclays/client/add',
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify({user, client}),
+            processData: false,
+
+            success: function(data, textStatus, jqXHR){
+               setTimeout(() => {
+               $('div.message').text(data.message);
+               $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
+               $('div.message1').text('');
+               $('.loader').css({'opacity':'0%', 'z-index':'0'});
+               $('.bl').css({'opacity':'100%', 'z-index':'12'});
+               }, 2500);
+
+            },
+            error: function(jqXHR, exception, textStatus){
+
+                var data = JSON.parse(jqXHR.responseText);
+
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect. Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                }else if (jqXHR.status == 400) {
+                    msg = jqXHR.responseText;
+                }else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error. ' + data.message;
+                }
+
+                if('username' in data){
+                    us = document.getElementById("username");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.username);
+                }
+
+                if('password' in data){
+                    us = document.getElementById("password");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.password);
+                }
+
+                if('confirmedpassword' in data){
+                    us = document.getElementById("confirmpassword");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.confirmedpassword);
+                }
+
+                if('mail' in data){
+                    us = document.getElementById("email");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.mail);
+                }
+
+                if('name' in data){
+                    us = document.getElementById("name");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.name);
+                }
+
+                if('passport' in data){
+                    us = document.getElementById("passport");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.passport);
+                }
+
+
+                if('phone' in data){
+                    us = document.getElementById("email");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.mail);
+                }
+
                 setTimeout(() => {
-                    $('div.message').text(jqXHR.responseText);
-                    $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
-                    $('div.message1').text('');
-                    $('.loader').css({'opacity':'0%', 'z-index':'0'});
-                    $('.bl').css({'opacity':'100%', 'z-index':'12'});
+                $('div.message').text(data.message);
+                $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
+                $('div.message1').text('');
+                $('.loader').css({'opacity':'0%', 'z-index':'0'});
+                $('.bl').css({'opacity':'100%', 'z-index':'12'});
                 }, 2500);
-
-//               setTimeout(function() {
-//                    //document.location.href = "/Barclays";
-////                    $('div.message').text('');
-////                    $('.wrap').css({'opacity':'0%', 'z-index':'0'});
-////                    $('.loader').css('opacity','100%');
-////                    $("#regg").trigger('reset');
-//               }, 5000);
-
-        }).fail(function(jqXHR, exception, errorThrown) {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect. Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            }else if (jqXHR.status == 400) {
-                msg = jqXHR.responseText;
-            }else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error. ' + jqXHR.responseText;
             }
-            alert(msg);
-
         });
-
-
-
-
-    });
 
 
     }
@@ -273,53 +321,60 @@ resendButton.addEventListener('click', (e) => {
 
     e.preventDefault();
 
-$(document).ready(
-    function($) {
+    $(document).ready(
+        function($) {
 
-         $('.loader').css({'opacity':'100%', 'z-index':'12'});
+             $('.loader').css({'opacity':'100%', 'z-index':'13'});
 
-        var username = $("#username").val().trim();
+            var username = $("#username").val().trim();
 
-        $.post("/Barclays/client/resendConfirmation", {
-            username: username  //1st in Java | 2nd here
-        }, function(data) {
+            $.post("/Barclays/client/resendConfirmation", {
+                username: username  //1st in Java | 2nd here
+            }, function(data) {
 
-         }).done(function(data, textStatus, jqXHR){
-            setTimeout(() => {
-                $('div.message1.small').text(jqXHR.responseText);
-                $('div.message1.small').html($('div.message1.small').html().replace(/\n/g,'<br/>'));
+             }).done(function(data, textStatus, jqXHR){
+                setTimeout(() => {
+                    $('div.message1.small').text(data.message);
+                    $('div.message1.small').html($('div.message1.small').html().replace(/\n/g,'<br/>'));
+                    $('.loader').css({'opacity':'0%', 'z-index':'0'});
+                }, 2500);
+
+            }).fail(function(jqXHR, exception, errorThrown) {
+
+                var data = JSON.parse(jqXHR.responseText);
+
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect. Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                }else if (jqXHR.status == 400) {
+                    msg = data.message;
+                }else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error. ' + data.message;
+                }
+
+                setTimeout(() => {
+                $('div.message1.small').text(data.message);
                 $('.loader').css({'opacity':'0%', 'z-index':'0'});
-            }, 2500);
+                }, 2500);
 
-        }).fail(function(jqXHR, exception, errorThrown) {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect. Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            }else if (jqXHR.status == 400) {
-                msg = jqXHR.responseText;
-            }else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error. ' + jqXHR.responseText;
-            }
-            alert(msg);
+            });
+
+
+
 
         });
 
-
-
-
     });
-
-});
 
 
 function checkParamsClient() {
