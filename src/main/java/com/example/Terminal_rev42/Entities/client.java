@@ -2,10 +2,11 @@ package com.example.Terminal_rev42.Entities;
 
 import com.example.Terminal_rev42.Model.user;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -24,43 +25,40 @@ public class client implements Serializable {
     @Column(name = "id")
     private long id;
 
-    @NonNull
     @Column(name = "name")
+    @NotBlank(message = "Name can't be blank.")
+    @Length(max = 35, message = "Full name is too long.")
+    @Pattern(regexp = "^([A-Z]{1}[a-z]*\\s?){2,3}|([А-Я]{1}[а-я]*\\s?){2,3}$", message = "Not valid format. Should be like Ivanov Ivan Ivanovich.")
     private String name;
 
-    @NonNull
+    @NotBlank(message = "Phone can't be blank.")
     @Column(name = "phone")
+    @Length(min = 7, message = "Phone number is too short.")
+    @Length(max = 16, message = "Phone number is too long.")
+    @Pattern(regexp = "\\d{7,16}", message = "Not valid format.")
     private String phone;
 
-    @NonNull
+    @NotBlank(message = "Passport can't be blank.")
     @Column(name = "passport")
-    @Pattern(regexp = "^[A-Z]{2}\\d{7}$")
+    @Pattern(regexp = "^[A-Z]{2}\\d{7}$", message = "Not valid format.")
     private String passport;
 
     @Column(name = "birth")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
-    @NotBlank
     private Date birth;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many bills
-    private Set<bill> bills = new HashSet();
+    private Set<bill> bills = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
+    @Valid
     private user user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many invests
     private Set<investments> investments = new HashSet<>();
-
-    public com.example.Terminal_rev42.Model.user getUser() {
-        return user;
-    }
-
-    public void setUser(com.example.Terminal_rev42.Model.user user) {
-        this.user = user;
-    }
 
     public long getId() {
         return id;
@@ -110,11 +108,19 @@ public class client implements Serializable {
         this.bills = bills;
     }
 
-    public Set<com.example.Terminal_rev42.Entities.investments> getInvestments() {
+    public user getUser() {
+        return user;
+    }
+
+    public void setUser(user user) {
+        this.user = user;
+    }
+
+    public Set<investments> getInvestments() {
         return investments;
     }
 
-    public void setInvestments(Set<com.example.Terminal_rev42.Entities.investments> investments) {
+    public void setInvestments(Set<investments> investments) {
         this.investments = investments;
     }
 

@@ -1,10 +1,12 @@
 package com.example.Terminal_rev42.Model;
 
 import com.example.Terminal_rev42.Entities.client;
+
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -25,26 +27,27 @@ public class user {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NonNull
+    @NotNull
     private long userid;
 
     @Column(unique = true)
-    @NotBlank
-    @Size(min = 4)
+    @NotBlank(message = "Username can't be blank.")
+    @Size(min = 4, message = "Username must contain at least 4 symbols.")
+    @Size(max = 20, message = "Username is too long.")
     private String username;
 
-    @NotBlank
-    @Size(min = 8)
+    @NotBlank(message = "Password can't be blank.")
+    @Size(min = 8, message = "Password must contain at least 8 symbols.")
     private String password;
 
     @Transient
-    @NotBlank
-    @Size(min = 8)
+    @NotBlank(message = "ConfirmedPassword can't be blank.")
+    @Size(min = 8, message = "ConfirmedPassword must contain at least 8 symbols.")
     private String confirmedpassword;
 
-    @NonNull
     @Column(unique = true)
-    @Email
+    @NotBlank(message = "Mail must contain at least 8 symbols.")
+    @Email(message = "Not valid format.")
     private String mail;
 
     @Column(name = "enabled", nullable = false)
@@ -57,7 +60,7 @@ public class user {
     private boolean temporalLock;
 
     @Column(name = "failed_attempts")
-    @Min(1)
+    @Min(0)
     @Max(3)
     private int failedAttempts;
 
@@ -70,6 +73,7 @@ public class user {
     private Set<Role> roleset;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    @Valid
     private client client;
 
     public com.example.Terminal_rev42.Entities.client getClient() {
