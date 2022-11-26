@@ -84,14 +84,14 @@
 
             <label>Type</label>
             <div class="r2">
-                <input type="text" disabled="disabled" value="Fixed" id="type1">
+                <input type="text" disabled="disabled" value="Fixed" id="type1" onkeyup="checkParamsFixed();">
                 <br>
                 <small></small>
             </div>
 
             <label>Currency</label>
             <div class="r2">
-                <select id="Currency">
+                <select id="Currency" onkeyup="checkParamsFixed();">
                     <option value="BYN">BYN</option>
                     <option selected="selected" value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -103,14 +103,14 @@
 
             <label>Percentage %</label>
             <div class="r2">
-                <input type="text" disabled="disabled" placeholder="waiting for currency..." id="percentage">
+                <input type="text" disabled="disabled" placeholder="waiting for currency..." id="percentage" onkeyup="checkParamsFixed()">
                 <br>
                 <small></small>
             </div>
 
             <label>Term</label>
             <div class="r2">
-                <select id="term">
+                <select id="term" onkeyup="checkParamsFixed();">
                     <option value="6">6 month</option>
                     <option selected="selected" value="12">12 month</option>
                     <option value="24">24 month</option>
@@ -150,7 +150,7 @@
 
             <label>Currency</label>
             <div class="r2">
-                <select id="Currencyfrom">
+                <select id="Currencyfrom" onkeyup="checkParamsFixedPaymentCash();">
                     <option value="BYN">BYN</option>
                     <option selected="selected" value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -162,12 +162,12 @@
 
             <label>Deposit</label>
             <div class="r2">
-                <input type="number" placeholder="00.00" id="dep1">
+                <input type="number" placeholder="00.00" id="dep1" min="0" onkeyup="checkParamsFixedPaymentCash();">
                 <br>
                 <small></small>
             </div>
 
-            <button type="submit" class="bb" id="fixinv1">Invest</button>
+            <button type="submit" class="bb" id="fixinv1" disabled>Invest</button>
         </div>
 
 
@@ -176,7 +176,7 @@
 
             <label>Card</label>
             <div class="r2">
-                <select id="billfrom">
+                <select id="billfrom" onkeyup="checkParamsFixedPaymentCard();">
                     <option th:each="bill : ${session.bills}" th:text="${bill.card}">
                     </option>
                 </select>
@@ -186,19 +186,19 @@
 
             <label>Deposit</label>
             <div class="r2">
-                <input type="number" placeholder="00.00" id="dep2">
+                <input type="number" placeholder="00.00" id="dep2" onkeyup="checkParamsFixedPaymentCard();">
                 <br>
                 <small></small>
             </div>
 
             <label>Pin code</label>
             <div class="r2">
-                <input type="password" placeholder="****" maxlength="4" id="pin">
+                <input type="password" placeholder="****" maxlength="4" id="pin" onkeyup="checkParamsFixedPaymentCard()">
                 <br>
                 <small></small>
             </div>
 
-            <button type="submit" class="bb" id="fixinv2">Invest</button>
+            <button type="submit" class="bb" id="fixinv2" disabled>Invest</button>
 
         </div>
 
