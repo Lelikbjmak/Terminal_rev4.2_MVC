@@ -29,6 +29,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String username = userDetails.getUsername();
         user user = userService.findByUsername(username);
+
         if (user.getFailedAttempts() > 0) {
             userService.resetFailedAttempts(user);
         }
