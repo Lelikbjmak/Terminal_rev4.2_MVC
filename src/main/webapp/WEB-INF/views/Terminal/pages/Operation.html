@@ -55,7 +55,7 @@
     <h2><u>#Cash Transfer#</u></h2>
     <label>Your card</label>
     <div class="r2">
-      <select id="billfrom">
+      <select id="billfrom" onkeyup="checkParams1()">
           <option th:each="bill : ${session.bills}" th:text="${bill.card}">
           </option>
       </select>
@@ -66,7 +66,7 @@
 
     <label>Recipient</label>
     <div class="r2">
-        <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" id="billto" onkeyup="checkParams1()">
+        <input type="text" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" id="billto" onkeyup="checkParams1()">
         <br>
         <small></small>
     </div>
@@ -100,7 +100,7 @@
     <label>Your card</label>
 
     <div class="r2">
-    <select id="billfrom2">
+    <select id="billfrom2" onkeyup="checkParams2()">
       <option th:each="bill : ${session.bills}" th:text="${bill.card}">
       </option>
     </select>
@@ -110,7 +110,7 @@
 
     <label>Currency</label>
     <div class="r2">
-      <select id="currency2">
+      <select id="currency2" onkeyup="checkParams2()">
         <option>BYN</option>
         <option>USD</option>
         <option>EUR</option>
@@ -141,7 +141,7 @@
     <label>Your card</label>
 
     <div class="r2">
-    <select id="billfrom3">
+    <select id="billfrom3" onkeyup="checkParams3()">
       <option th:each="bill : ${session.bills}" th:text="${bill.card}">
       </option>
     </select>
@@ -152,7 +152,7 @@
 
     <label>Currency</label>
     <div class="r2">
-      <select id="currency3">
+      <select id="currency3" onkeyup="checkParams3()">
         <option>BYN</option>
         <option>USD</option>
         <option>EUR</option>
@@ -190,7 +190,7 @@
     <label>Your card</label>
 
     <div class="r2">
-    <select id="billfrom4">
+    <select id="billfrom4" onkeyup="checkParams4()">
       <option th:each="bill : ${session.bills}" th:text="${bill.card}">
       </option>
     </select>
