@@ -5,6 +5,10 @@ const currency3 = document.getElementById("currency3");
 const summa3 = document.getElementById("summa3");
 const pin3 = document.getElementById("pin3");
 
+summa3.onkeydown = function(e) {
+if (!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8 || e.keyCode == 190)) {
+  return false; }
+}
 
 
 form3.addEventListener('submit', (e) => {

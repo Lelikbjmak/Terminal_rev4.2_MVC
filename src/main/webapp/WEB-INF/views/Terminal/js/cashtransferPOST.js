@@ -5,6 +5,16 @@ const billto = document.getElementById("billto");
 const summa = document.getElementById("summa");
 const pin = document.getElementById("pin");
 
+summa.onkeydown = function(e) {
+if (!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8 || e.keyCode == 190)) {
+  return false; }
+}
+
+$('#billto').on('keypress change', function () {
+  $(this).val(function (index, value) {
+    return value.replace(/\W/gi, '').replace(/(.{4})/g, '$1 ');
+  });
+});
 
 form1.addEventListener('submit', (e) => {
 

@@ -4,6 +4,12 @@ const billfrom4 = document.getElementById("billfrom4");
 const summa4 = document.getElementById("summa4");
 const pin4 = document.getElementById("pin4");
 
+summa4.onkeydown = function(e) {
+if (!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8 || e.keyCode == 190)) {
+  return false; }
+}
+
+
 
 form4.addEventListener('submit', (e) => {
 

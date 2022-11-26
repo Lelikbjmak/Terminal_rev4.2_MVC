@@ -4,6 +4,11 @@ const bill2 = document.getElementById("billfrom2");
 const currency2 = document.getElementById("currency2");
 const summa2 = document.getElementById("summa2");
 
+summa2.onkeydown = function(e) {
+if (!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8 || e.keyCode == 190)) {
+  return false; }
+}
+
 
 form2.addEventListener('submit', (e) => {
 
