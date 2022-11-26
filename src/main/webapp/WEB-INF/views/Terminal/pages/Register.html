@@ -36,7 +36,7 @@
 
             <label><b>Login</b></label>
             <div class="r1">
-                <input type="text" id="username" name="username" onkeyup="checkParamsUser()">
+                <input type="text" id="username" name="username" onkeyup="checkParamsUser()" maxlength="20">
                 <br>
                 <small></small>
             </div>
@@ -70,21 +70,21 @@
         <div class="register-form" id="client">
             <label><b>Full name</b></label>
             <div class="r1">
-                <input type="text" name="name" id="name" placeholder="Name Surname" onkeyup="checkParamsClient()">
+                <input type="text" name="name" id="name" placeholder="First Last Middle" onkeyup="checkParamsClient()" maxlength="35">
                 <br>
                 <small></small>
             </div>
 
             <label><b>Passport</b></label>
             <div class="r1">
-                <input type="text" name="passport" id="passport" placeholder="XX*******" onkeyup="checkParamsClient()">
+                <input type="text" name="passport" id="passport" placeholder="XX*******" onkeyup="checkParamsClient()" maxlength="9">
                 <br>
                 <small></small>
             </div>
 
             <label for="bday"><b>Birth</b></label>
             <div class="r1">
-                <input type="date" name="bday" id="bday" onkeyup="checkParamsClient()">
+                <input type="date" name="bday" id="bday" onkeyup="checkParamsClient()" lang="en" min="1900-01-01">
                 <br>
                 <small></small>
             </div>
@@ -103,10 +103,11 @@
 
 
 <div class="wrap" id="wrap">
-    <div class="message" id="message"></div>
-    <div><small class="message1"></small></div>
+    <div class="message" id="message">mess</div>
+    <div><small class="message1">smalMessa</small></div>
     <div class="loader"></div>
     <button class="bl" id="rec">Resend email</button>
+    <button class="bl" id="again" >Try again</button>
     <button class="bl" id="prev">Back</button>
 </div>
 
