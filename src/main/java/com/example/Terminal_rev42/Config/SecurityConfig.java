@@ -1,7 +1,9 @@
 package com.example.Terminal_rev42.Config;
 
 import com.example.Terminal_rev42.SecurityCustomImpl.CustomAuthenticationFailureHandler;
+import com.example.Terminal_rev42.SecurityCustomImpl.CustomAuthenticationSuccessHandler;
 import com.example.Terminal_rev42.SecurityCustomImpl.HttpSessionListener;
+import com.example.Terminal_rev42.SeviceImplementation.UserDetailedServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.UserDetailsPasswordServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,10 +17,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.security.SecureRandom;
 
@@ -27,9 +29,10 @@ import java.security.SecureRandom;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig{
 
-    @Qualifier("UserDetailsServiceImpl")  // our ovverride userdetilsSerice (implementing of UDS)
+    //@Qualifier("UserDetailsServiceImpl")  // our override userDetailsService (implementing of UDS) cauze we renamed it
+
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailedServiceImpl userDetailedService;
 
     @Qualifier("UserDetailsPasswordServiceImpl")
     @Autowired
@@ -56,6 +59,7 @@ public class SecurityConfig{
                 .antMatchers("/Barclays/bill/**", "/Barclays/service/**")
                 .hasAnyRole("USER", "ADMIN")
 
+
                 .antMatchers("/Barclays", "/Barclays/reg", "/Barclays/client/**",  "/Barclays/bad", "/Barclays/success", "/Barclays/authorisation")
                 .permitAll()
 
@@ -69,31 +73,30 @@ public class SecurityConfig{
                 .formLogin()
                 .loginPage("/Barclays/authorisation")
                 .defaultSuccessUrl("/Barclays")
-                .failureHandler(authenticationFailureHandler())
-                //.failureUrl("/Barclays/authorisation?message=Invalid%20Username%20or%20Password!")  we can handle it with Custom AuthenticationFailureHandler
+                .failureHandler(authenticationFailureHandler())   // if we have logged in successfully that handler will process this case
+                .successHandler(authenticationSuccessHandler())  // if we have failed bid to login
                 .permitAll()
 
                 .and()
-                .rememberMe()
+                .rememberMe() // ACTIVATE remember me property
                 .key("uniqueAndSecret")   // can add TokenRepository to save all user tokens
                 .tokenValiditySeconds(86400) // 24 hours
 
                 .and()
                 .logout()
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")   // delete info about user session after logout
                 .logoutSuccessUrl("/Barclays")
 
-
-                .and() // turn off creating session for Anonymous users
-                .sessionManagement() // add Policy to create a new Session ONLY if it's required
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)   // add Policy to create a new Session ONLY if it's required
                 .sessionFixation().migrateSession()   // If we try to login again and exceed max count of sessions -> migrate session (create new, none etc)  // can be custom
                 .maximumSessions(1)
-                .maxSessionsPreventsLogin(true)  // throw SessionAuthenticationException if the number of sessions exceed maximum; we manage this situation (if 'false' -> after our login again with already open session previous sess will be destroyed without warning)
-                .expiredUrl("/Barclays/authorisation?message=Session%20expired.")
-                .sessionRegistry(sessionRegistry());
-
+                .maxSessionsPreventsLogin(false) // throw SessionAuthenticationException if the number of sessions exceed maximum; we manage this situation (if 'false' -> after our login again with already open session previous sess will be destroyed without warning)
+                .expiredUrl("/Barclays/authorisation?message=Session%20expired.") // add Page if session become expired during
+                .sessionRegistry(sessionRegistry());  // define session register which will create and drop all sessions in application
 
         return http.build();
     }
@@ -101,17 +104,12 @@ public class SecurityConfig{
     @Bean
     public AuthenticationManager customAuthenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder) throws Exception{
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
+                .userDetailsService(userDetailedService)
                 .passwordEncoder(bCryptPasswordEncoder)
                 .userDetailsPasswordManager(userDetailsPasswordService)
                 .and()
                 .build();
     }
-
-//    @Bean  // to control sessions, exactly to invalidate session after logout
-//    public HttpSessionEventPublisher httpSessionEventPublisher() {
-//        return new HttpSessionEventPublisher();
-//    }
 
 
 //    @Bean
@@ -129,14 +127,20 @@ public class SecurityConfig{
         return new HttpSessionListener();
     }
 
+
     @Bean
-        public SessionRegistry sessionRegistry() {
+    public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
     }
 
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler(){
         return new CustomAuthenticationFailureHandler();
+    }
+
+    @Bean
+    public SimpleUrlAuthenticationSuccessHandler authenticationSuccessHandler(){
+        return new CustomAuthenticationSuccessHandler();
     }
 
 }
