@@ -15,10 +15,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Service("UserDetailsServiceImpl")
+@Service
 public class UserDetailedServiceImpl implements UserDetailsService  {
 
     @Autowired
@@ -27,18 +28,15 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
     private static final Logger logger = LoggerFactory.getLogger(UserDetailedServiceImpl.class);
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        boolean accountNonExpired = true;
-        boolean credentialsNonExpired = true;
-        boolean accountNonLocked = true;
 
         user user = userDAO.findByUsername(username);
 
         if (user == null)
             throw new UsernameNotFoundException(username);
 
+        if (user.isTemporalLock()){ unlockUserWhenTermExpired(user); }
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
@@ -46,18 +44,8 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));
         }
 
-//        User springuser = new User(
-//                user.getUsername(),
-//                user.getPassword(),
-//                user.isEnabled(),
-//                accountNonExpired,
-//                credentialsNonExpired,
-//                accountNonLocked,
-//                grantedAuthorities
-//        );
 
-
-        UserDetails user1 = User.withUsername(user.getUsername()).password(user.getPassword()).disabled(!user.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(false).authorities(grantedAuthorities).build();
+        UserDetails user1 = User.withUsername(user.getUsername()).password(user.getPassword()).disabled(!user.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(user.isTemporalLock()).authorities(grantedAuthorities).build();
 
         logger.info("User: " + username + " is logging...");
 
@@ -65,4 +53,18 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
     }
 
 
+    private void unlockUserWhenTermExpired(user user) {
+
+        if(LocalDateTime.now().isAfter(user.getLockTime().plusDays(com.example.Terminal_rev42.Model.user.LOCK_TIME_DURATION))){
+
+            logger.info("User: " + user.getUsername() + " is unlocked after temporal lock.");
+            user.setTemporalLock(false);
+            user.setLockTime(null);
+            user.setFailedAttempts(0);
+
+            userDAO.save(user);
+
+        }
+
+    }
 }
