@@ -23,8 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -84,7 +83,7 @@ public class MainControllerTest {
 
     @Test
     @WithAnonymousUser
-    public void getRegisterPage() throws Exception {
+    public void getRegisterPageTest() throws Exception {
         this.mockMvc.perform(get("/Barclays/reg"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -94,41 +93,67 @@ public class MainControllerTest {
     @Sql(value = {"/create-user-before-main-controller-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/drop-users-after-main-controller-test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "test")
-    public void getServicePage() throws Exception {
+    public void successGetServicePageTest() throws Exception {
         this.mockMvc.perform(get("/Barclays/service"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
+    public void failedGetServicePageTest() throws Exception {
+        this.mockMvc.perform(get("/Barclays/service"))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/Barclays/authorisation"));
+    }
+
+    @Test
     @Sql(value = {"/create-user-before-main-controller-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/drop-users-after-main-controller-test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "test")
-    public void getOperationPage() throws Exception {
+    public void successGetOperationPageTest() throws Exception {
         this.mockMvc.perform(get("/Barclays/operation"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
+    public void failedGetOperationPageTest() throws Exception {
+        this.mockMvc.perform(get("/Barclays/operation"))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/Barclays/authorisation"));
+    }
+
+    @Test
     @Sql(value = {"/create-user-before-main-controller-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/drop-users-after-main-controller-test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "test")
-    public void getHoldingsPage() throws Exception {
+    public void successGetHoldingsPageTest() throws Exception {
         this.mockMvc.perform(get("/Barclays/service/holdings"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void getBadPage() throws Exception {
+    public void failedGetHoldingsPageTest() throws Exception {
+        this.mockMvc.perform(get("/Barclays/service/holdings"))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/Barclays/authorisation"));
+    }
+
+
+
+    @Test
+    public void getBadPageTest() throws Exception {
         this.mockMvc.perform(get("/Barclays/bad?ms=testBadMessage"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void getSuccessPage() throws Exception {
+    public void getSuccessPageTest() throws Exception {
         this.mockMvc.perform(get("/Barclays/success"))
                 .andDo(print())
                 .andExpect(status().isOk());
