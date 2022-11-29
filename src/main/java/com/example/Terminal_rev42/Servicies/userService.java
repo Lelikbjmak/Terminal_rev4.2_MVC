@@ -30,4 +30,5 @@ public interface userService {
 
     void resetFailedAttempts(user user);
 
+    boolean passwordsMatches(user user);
 }

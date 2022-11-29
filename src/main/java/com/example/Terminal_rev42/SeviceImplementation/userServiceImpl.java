@@ -72,9 +72,8 @@ public class userServiceImpl implements userService {
     @Override
     public void updatePassword(user user, String rawPassword, String confirmedRawPassword) {
         String encodedPassword = bCryptPasswordEncoder.encode(rawPassword);
-        String encodedConfirmedPassword = bCryptPasswordEncoder.encode(confirmedRawPassword);
         user.setPassword(encodedPassword);
-        user.setConfirmedpassword(encodedConfirmedPassword);
+        user.setConfirmedpassword(confirmedRawPassword);
         user.setResetPasswordToken(null);
         userDAO.save(user);
     }
@@ -108,6 +107,11 @@ public class userServiceImpl implements userService {
         user.setFailedAttempts(0);
         userDAO.save(user);
 
+    }
+
+    @Override
+    public boolean passwordsMatches(user user) {
+        return user.getPassword().equals(user.getConfirmedpassword());
     }
 
 }
