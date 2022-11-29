@@ -186,11 +186,11 @@ forma.addEventListener('submit', (e) => {
                 var msg = '';
                 if (jqXHR.status === 0) {
                     msg = 'Not connect. Verify Network.';
-                } else if (jqXHR.status == 404) {
+                } else if (jqXHR.status === 404) {
                     msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
+                } else if (jqXHR.status === 500) {
                     msg = 'Internal Server Error [500].';
-                }else if (jqXHR.status == 400) {
+                }else if (jqXHR.status === 400) {
                     msg = jqXHR.responseText;
                 }else if (exception === 'parsererror') {
                     msg = 'Requested JSON parse failed.';
@@ -214,10 +214,10 @@ forma.addEventListener('submit', (e) => {
                     setErrorFor(us, data.password);
                 }
 
-                if('confirmedpassword' in data){
+                if('confirmedPassword' in data){
                     us = document.getElementById("confirmpassword");
                     us.parentElement.classList.remove('success');
-                    setErrorFor(us, data.confirmedpassword);
+                    setErrorFor(us, data.confirmedPassword);
                 }
 
                 if('mail' in data){
@@ -317,6 +317,7 @@ return flag;
 }
 
 
+
 resendButton.addEventListener('click', (e) => {
 
     e.preventDefault();
@@ -329,13 +330,14 @@ resendButton.addEventListener('click', (e) => {
             var username = $("#username").val().trim();
 
             $.post("/Barclays/client/resendConfirmation", {
-                username: username  //1st in Java | 2nd here
+                username: ""  //1st in Java | 2nd here
             }, function(data) {
 
              }).done(function(data, textStatus, jqXHR){
+                var dat = JSON.parse(jqXHR.responseText);
+                alert(data.message + " " + dat.message);
                 setTimeout(() => {
-                    $('div.message1.small').text(data.message);
-                    $('div.message1.small').html($('div.message1.small').html().replace(/\n/g,'<br/>'));
+                    $('.message1').text(data.message);
                     $('.loader').css({'opacity':'0%', 'z-index':'0'});
                 }, 2500);
 
@@ -346,11 +348,11 @@ resendButton.addEventListener('click', (e) => {
                 var msg = '';
                 if (jqXHR.status === 0) {
                     msg = 'Not connect. Verify Network.';
-                } else if (jqXHR.status == 404) {
+                } else if (jqXHR.status === 404) {
                     msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
+                } else if (jqXHR.status === 500) {
                     msg = 'Internal Server Error [500].';
-                }else if (jqXHR.status == 400) {
+                }else if (jqXHR.status === 400) {
                     msg = data.message;
                 }else if (exception === 'parsererror') {
                     msg = 'Requested JSON parse failed.';
@@ -362,8 +364,14 @@ resendButton.addEventListener('click', (e) => {
                     msg = 'Uncaught Error. ' + data.message;
                 }
 
+                if('resendConfirmationPostRequest.username' in data){
+                    us = document.getElementById("username");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data["resendConfirmationPostRequest.username"]);
+                }
+
                 setTimeout(() => {
-                $('div.message1.small').text(data.message);
+                $('.message1').text(msg);
                 $('.loader').css({'opacity':'0%', 'z-index':'0'});
                 }, 2500);
 
