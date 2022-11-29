@@ -24,20 +24,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import javax.validation.Validator;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.*;
 
 @Controller
 @RequestMapping("/Barclays/client")
+@Validated
 public class ClientController {
 
     @Autowired
@@ -63,20 +66,20 @@ public class ClientController {
     private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    private ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException exception, HttpServletRequest request){
+    private ResponseEntity<Map<String, String>> handleUserAlreadyExistsException(UserAlreadyExistsException exception, HttpServletRequest request){
 
         logger.error("Exception UserAlreadyExists is thrown for " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(exception.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("username", "Username: " + exception.getUsername() + " is already used.", "message", exception.getMessage()));
 
     }
 
     @ExceptionHandler(ClientAlreadyExistsException.class)
-    private ResponseEntity<String> handleClientAlreadyExistsException(ClientAlreadyExistsException exception, HttpServletRequest request){
+    private ResponseEntity<Map<String, String>> handleClientAlreadyExistsException(ClientAlreadyExistsException exception, HttpServletRequest request){
 
         logger.error("Exception ClientAlreadyExists is thrown for " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(exception.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("passport", exception.getClient().getPassport() + " is already registered.", "name", exception.getClient().getName() + " is already registered.", "message", exception.getMessage()));
     }
 
     @ExceptionHandler(VerificationTokenIsNotFoundException.class)
@@ -99,21 +102,28 @@ public class ClientController {
         return "redirect:/Barclays/bad?token=" + exception.getVerificationToken().getToken();
     }
 
+    @ExceptionHandler(PasswordAndConfirmedPasswordNotMatchException.class)
+    private ResponseEntity<Map<String, String>> handlePasswordAndConfirmedPasswordNotMatchException(PasswordAndConfirmedPasswordNotMatchException exception, HttpServletRequest request){
+
+        logger.error("Exception PasswordAndConfirmedPasswordNotMatch is thrown for " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", "Check entered data.","confirmedPassword", exception.getMessage()));
+    }
+
     @ExceptionHandler(UserNotExistsException.class)
-    private ResponseEntity<String> handleUserNotExistsExceptionException(UserNotExistsException exception, HttpServletRequest request, Model model){
+    private ResponseEntity<Map<String, String>> handleUserNotExistsExceptionException(UserNotExistsException exception, HttpServletRequest request){
 
         logger.error("Exception UserNotExists is thrown for " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(exception.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
-        System.err.println("Error in @Valid");
         Map<String, String> errors = new HashMap<>();
-
+        System.err.println("Error with @Valid @NotBlank etc in request Param/Body...");
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
@@ -142,7 +152,7 @@ public class ClientController {
     @PostMapping("/add")
     @ResponseBody
     @Transactional
-    public ResponseEntity<Map<String, String>> addClientPostRequest(HttpServletRequest request, @RequestBody ObjectNode objectNode) throws UserAlreadyExistsException, ClientAlreadyExistsException, JsonProcessingException, NoSuchMethodException, MethodArgumentNotValidException {
+    public ResponseEntity<Map<String, String>> registerClient(HttpServletRequest request, @RequestBody ObjectNode objectNode) throws UserAlreadyExistsException, ClientAlreadyExistsException, JsonProcessingException, PasswordAndConfirmedPasswordNotMatchException {
 
         user user = getUserToRegister(objectNode);
         client client = getClientToRegister(objectNode);
@@ -169,7 +179,7 @@ public class ClientController {
         return objectMapper.treeToValue(objectNode.get("client"), com.example.Terminal_rev42.Entities.client.class);
     }
     @Transactional
-    private void validateUserAndClientEntityBeforeRegistration(user user, client client) throws UserAlreadyExistsException, ConstraintViolationException, ClientAlreadyExistsException {
+    private void validateUserAndClientEntityBeforeRegistration(user user, client client) throws UserAlreadyExistsException, ConstraintViolationException, ClientAlreadyExistsException, PasswordAndConfirmedPasswordNotMatchException {
 
         Set<ConstraintViolation<Object>> violations = validator.validate(user);
         Set<ConstraintViolation<Object>> violationsClient = validator.validate(client);
@@ -178,15 +188,18 @@ public class ClientController {
         if(!violations.isEmpty())
             throw new ConstraintViolationException("User is not valid.", violations);
 
+        if(!userService.passwordsMatches(user)) {
+            throw new PasswordAndConfirmedPasswordNotMatchException("Confirmed password doesn't match password.", user.getPassword(), user.getConfirmedpassword());
+        }
+
         if(userService.checkUserExists(user.getUsername()))
             throw new UserAlreadyExistsException("User " + user.getUsername() + " is already exists. Try another username.", user.getUsername());
 
         clientService.checkClientNotExistsByNameAndPassport(client.getName(), client.getPassport());
-
     }
 
     @Transactional
-    private void registerNewUser(client client, user user){
+    private void registerNewUser(@Valid client client, @Valid user user){
 
         user.setClient(client);
         client.setUser(user);
@@ -209,23 +222,18 @@ public class ClientController {
     @ResponseBody
     @Transactional
     public ResponseEntity<Map<String, String>> resendConfirmationPostRequest(HttpServletRequest request, @RequestParam("username") @NotBlank(message = "Provided username to resend verification link is empty.")
-    @Size(min = 4, message = "Username must contain at least 4 symbols.") @Size(max = 20, message = "Username is too long.") String username) throws UserNotExistsException {
-
-        logger.info("Resend register confirmation for: " + username);
-
-        String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    @Size(min = 4, max = 20, message = "Username must contain at least 4 symbols, less than 20.") String username) throws UserNotExistsException {
 
         user user = getUserToResendVerificationLink(username);
 
-        VerificationToken token = null;
-
         try {
-            token = tokenService.findByUser(user);
+            String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            VerificationToken token = getVerificationTokenForUserToResendVerificationLink(user);
+            eventPublisher.publishEvent(new MailConfirmationResendEvent(user, appURL, token));
+
         } catch (VerificationTokenIsNotFoundException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
-
-        eventPublisher.publishEvent(new MailConfirmationResendEvent(user, appURL, token));
 
         return ResponseEntity.ok(Map.of("message", "Email has sent."));
 
@@ -241,32 +249,48 @@ public class ClientController {
         return user;
     }
 
+    @Transactional
+    private VerificationToken getVerificationTokenForUserToResendVerificationLink(@Valid user user) throws VerificationTokenIsNotFoundException {
+        return tokenService.findByUser(user);
+    }
 
     @GetMapping("/registrationConfirm")
-    public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) throws VerificationTokenIsNotFoundException, VerificationTokenAuthenticationExpiredException, UserNotExistsException {
+    public String confirmRegistration(@RequestParam("token") String token) throws VerificationTokenIsNotFoundException, VerificationTokenAuthenticationExpiredException{
 
         VerificationToken verificationToken = tokenService.getToken(token);
 
-        user user = verificationToken.getUser();
+        user user = getUserToConfirmRegistration(verificationToken);
 
-        if(user == null){
-            return "redirect:/Barclays/bad?token=" + token + "&ms=User%20is%20not%20found%20for%20token%20" + token + ".";
-        }
-
-        Calendar cal = Calendar.getInstance();
-
-        user.setEnabled(true);
-        verificationToken.setExpiredAt(cal.getTime());
-
-        userService.update(user);
-        tokenService.saveToken(verificationToken);
+        verifyUserWithVerificationToken(user, verificationToken);
 
         return "redirect:/Barclays/success?token=" + token;
     }
 
+    @Transactional
+    private user getUserToConfirmRegistration(@Valid VerificationToken token) throws VerificationTokenIsNotFoundException {
 
+        user user = token.getUser();
 
-    @GetMapping("checkUsername")
+        if(user == null){
+            throw new VerificationTokenIsNotFoundException("User is not found for token: " + token.getToken() + ".", token.getToken());
+        }
+
+        return user;
+    }
+
+    @Transactional
+    private void verifyUserWithVerificationToken(@Valid user user, @Valid VerificationToken verificationToken){
+
+        user.setEnabled(true);
+        verificationToken.setExpiredAt(Calendar.getInstance().getTime());
+
+        userService.update(user);
+        tokenService.saveToken(verificationToken);
+
+//        securityService.autoLogin(user.getUsername(), user.getPassword());
+    }
+
+    @GetMapping("/checkUsername")
     @ResponseBody
     public boolean checkUserExists(@RequestParam("username") String username){
         System.out.println("Checking username: " + username + "...");
@@ -275,7 +299,7 @@ public class ClientController {
         else return true;
     }
 
-    @GetMapping("checkMail")
+    @GetMapping("/checkMail")
     @ResponseBody
     public boolean checkMailExists(@RequestParam("mail") String mail){
 
@@ -286,7 +310,7 @@ public class ClientController {
 
     }
 
-    @GetMapping("checkPassword")
+    @GetMapping("/checkPassword")
     @ResponseBody
     public boolean checkPasswordFor(@RequestParam("username") String username, @RequestParam("password") String password){
 
@@ -295,53 +319,78 @@ public class ClientController {
 
     }
 
-    @GetMapping("ForgotPassword")
+    @GetMapping("/ForgotPassword")
     public String getForgotPasswordPage(){
 
         return "forgetPassword";
     }
 
-    @PostMapping("ForgotPassword")
+    @PostMapping("/ForgotPassword")
     @ResponseBody
-    public ResponseEntity<String> forgotPasswordSendResetLink(@RequestParam("mail") String mail, HttpServletRequest request) throws UserNotExistsException {
+    public ResponseEntity<Map<String, String>> forgotPasswordSendResetLink(@RequestParam("mail") @NotBlank(message = "Mail can't be blank.") @Email(message = "Not valid format.") String mail, HttpServletRequest request) throws UserNotExistsException {
 
         logger.info("Forgot password for: " + mail + ".");
 
-        user user = userService.findByMail(mail);
+        user user = getUserByMailToResetPassword(mail);
 
-        if(user == null) throw new UserNotExistsException("User with mail " + mail + " is not found.", mail);
+        String resetToken = generateResetPasswordToken(user);
 
-        String resetToken = UUID.randomUUID().toString();
-        String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-
-        url = url + "/Barclays/client/resetPassword?token=" + resetToken;
-        userService.updateResetPasswordToken(resetToken, user);
+        String url = generatePasswordResetUrl(request, resetToken);
 
         eventPublisher.publishEvent(new ResetPasswordEvent(user, resetToken, url));
-        return ResponseEntity.status(HttpStatus.OK).body("E-mail has sent.");
 
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "E-mail has sent."));
     }
 
+    @Transactional
+    private user getUserByMailToResetPassword(String mail) throws UserNotExistsException {
 
-    @GetMapping("resetPassword")
-    public String resetPasswordPage(@RequestParam("token") String token){
+        user user = userService.findByMail(mail);
 
+        if(user == null)
+            throw new UserNotExistsException("User with mail " + mail + " is not found.", mail);
+
+        return user;
+    }
+
+    @Transactional
+    private String generateResetPasswordToken(user user){
+        String resetToken = UUID.randomUUID().toString();
+        userService.updateResetPasswordToken(resetToken, user);
+        return resetToken;
+    }
+    @Transactional
+    private String generatePasswordResetUrl(HttpServletRequest request, String resetToken){
+        String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        return url + "/Barclays/client/resetPassword?token=" + resetToken;
+    }
+
+    @GetMapping("/resetPassword")
+    public String resetPasswordPage(@RequestParam("token") @NotBlank(message = "Token can't be blank.") String token){
         return "resetPassword";
     }
 
-    @PostMapping("resetPassword")
+    @PostMapping("/resetPassword")
     @ResponseBody
-    public ResponseEntity<String> resetPassword(@RequestParam(name = "token", required = false) String token, @RequestParam("password") String password, @RequestParam("confirmedPassword") String confirmedPassword, HttpServletRequest request) throws UserNotExistsException {
+    @Validated
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestParam(name = "token") @NotBlank(message = "Token is mandatory to execute password reset.") String token, @NotBlank(message = "Password can't be blank.") @Size(min = 8, max = 30, message = "Password must contain at least 8 symbols, less than 30.")
+    @RequestParam("password") String password, @NotBlank(message = "Password can't be blank.") @Size(min = 8, max = 30, message = "Password must contain at least 8 symbols, less than 30.")
+    @RequestParam("confirmedPassword") String confirmedPassword) throws UserNotExistsException, PasswordAndConfirmedPasswordNotMatchException {
 
-        System.out.println(request.getParameter("token") + "\n" + request.getParameter("password"));
+        validatePasswordsBeforeResetting(password, confirmedPassword);
 
         user user = userService.findByResetPasswordToken(token);
 
         userService.updatePassword(user, password, confirmedPassword);
 
-        return ResponseEntity.ok("Password Successfully updated!");
-
+        return ResponseEntity.ok(Map.of("message", "Password Successfully updated!"));
     }
 
+    @Transactional
+    private void validatePasswordsBeforeResetting(String password, String confirmedPassword) throws PasswordAndConfirmedPasswordNotMatchException {
+
+        if(!password.equals(confirmedPassword))
+            throw new PasswordAndConfirmedPasswordNotMatchException("Confirmed password doesn't match password.", password, confirmedPassword);
+    }
 
 }
