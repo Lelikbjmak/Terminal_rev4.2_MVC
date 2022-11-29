@@ -1,6 +1,7 @@
 package com.example.Terminal_rev42.Servicies;
 
 import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Exceptions.ClientAlreadyExistsException;
 
 public interface clientService {
 
@@ -12,7 +13,7 @@ public interface clientService {
 
     client findByUser_Username(String username);
 
-    boolean checkClientExistsByNameAndPassport(String name, String passport);
+    void checkClientNotExistsByNameAndPassport(String name, String passport) throws ClientAlreadyExistsException;
 
     client findByNameAndPassport(String name, String passport);
 

@@ -1,6 +1,7 @@
 package com.example.Terminal_rev42.SeviceImplementation;
 
 import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Exceptions.ClientAlreadyExistsException;
 import com.example.Terminal_rev42.Repositories.clientRepository;
 import com.example.Terminal_rev42.Servicies.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,12 @@ public class clientServiceImpl implements clientService {
     }
 
     @Override
-    public boolean checkClientExistsByNameAndPassport(String name, String passport) {
+    public void checkClientNotExistsByNameAndPassport(String name, String passport) throws ClientAlreadyExistsException {
 
-        return clientRepository.findByNameAndPassport(name, passport) != null;
+        client client = clientRepository.findByNameAndPassport(name, passport);
+
+        if(client != null)
+            throw new ClientAlreadyExistsException("Client is already exists.\nCheck the accuracy of the entered data or login with your username referred to client " + name + " " + passport + ".", client);
 
     }
 
