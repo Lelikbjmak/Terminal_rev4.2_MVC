@@ -30,10 +30,9 @@ public class user {
     @NotNull
     private long userid;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 25)
     @NotBlank(message = "Username can't be blank.")
-    @Size(min = 4, message = "Username must contain at least 4 symbols.")
-    @Size(max = 20, message = "Username is too long.")
+    @Size(min = 4, max = 20, message = "Username must contain at least 4 symbols, less than 20.")
     private String username;
 
     @NotBlank(message = "Password can't be blank.")
@@ -41,8 +40,6 @@ public class user {
     private String password;
 
     @Transient
-    @NotBlank(message = "ConfirmedPassword can't be blank.")
-    @Size(min = 8, message = "ConfirmedPassword must contain at least 8 symbols.")
     private String confirmedpassword;
 
     @Column(unique = true)

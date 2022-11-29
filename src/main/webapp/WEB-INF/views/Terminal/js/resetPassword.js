@@ -80,6 +80,7 @@ form.addEventListener('submit', (e) => {
 
                  $("#message").text('');
                  $('.fa-lg').css({'opacity':'100%'});
+                 document.querySelector("#resetPassword1 input[type='submit']").setAttribute('disabled', 'disabled');
 
                 var password = $("#pass").val().trim();
                 var confirmedPassword = $("#confPass").val().trim();
@@ -94,21 +95,23 @@ form.addEventListener('submit', (e) => {
 
                 }).done(function(data, textStatus, jqXHR){
 
-                   $("#message").text(jqXHR.responseText);
+                   $("#message").text(data.message);
                    $("#message").css("color", "rgba(0, 0, 0, 0.6)");
                    $('.fa-lg').css({'opacity':'0%'});
+                   document.querySelector("#resetPassword1 input[type='submit']").removeAttribute('disabled');
 
                 }).fail(function(jqXHR, exception, errorThrown) {
+
+                    var data = JSON.parse(jqXHR.responseText);
                     var msg = '';
                     if (jqXHR.status === 0) {
                         msg = 'Not connect. Verify Network.';
-                    } else if (jqXHR.status == 404) {
+                    } else if (jqXHR.status === 404) {
                         msg = 'Requested page not found. [404]';
-                    } else if (jqXHR.status == 500) {
+                    } else if (jqXHR.status === 500) {
                         msg = 'Internal Server Error [500].';
-                    }else if (jqXHR.status == 400) {
-                        msg = jqXHR.responseText;
-                        $("#message").css("color", "rgba(255, 0, 0, 0.37)");
+                    }else if (jqXHR.status === 400) {
+                        msg = data.message;
                     }else if (exception === 'parsererror') {
                         msg = 'Requested JSON parse failed.';
                     } else if (exception === 'timeout') {
@@ -116,12 +119,37 @@ form.addEventListener('submit', (e) => {
                     } else if (exception === 'abort') {
                         msg = 'Ajax request aborted.';
                     } else {
-                        msg = 'Uncaught Error. ' + jqXHR.responseText;
+                        msg = 'Uncaught Error. ' + data.message;
+                    }
+
+                    if('resetPassword.confirmedPassword' in data){
+                    us = document.getElementById("confPass");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data["resetPassword.confirmedPassword"]);
+                    }
+
+                    if('confirmedPassword' in data){
+                    us = document.getElementById("confPass");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data.confirmedPassword);
+                    }
+
+
+                    if('resetPassword.password' in data){
+                    us = document.getElementById("pass");
+                    us.parentElement.classList.remove('success');
+                    setErrorFor(us, data["resetPassword.password"]);
+                    }
+
+                    if('resetPassword.token' in data){
+                    msg = msg + " " + data["resetPassword.token"];
                     }
 
                     setTimeout(() => {
-                        $("#message").text(jqXHR.responseText);
+                        $("#message").text(msg);
+                        $("#message").css("color", "rgba(255, 0, 0, 0.37)");
                         $('.fa-lg').css({'opacity':'0%'});
+                        document.querySelector("#resetPassword1 input[type='submit']").removeAttribute('disabled');
                     }, 3000);
 
                 });
