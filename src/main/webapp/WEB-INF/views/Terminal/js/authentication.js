@@ -23,3 +23,11 @@ togglePassword.addEventListener("click", function () {
     this.classList.toggle("fa-eye");
 
 });
+
+const loginButton = document.querySelector("#loggin");
+
+loginButton.addEventListener("click", function(){
+    $('.fa-lg').css({'opacity':'100%'});
+    $('#loggin').attr('disabled', 'disabled');
+});
+
