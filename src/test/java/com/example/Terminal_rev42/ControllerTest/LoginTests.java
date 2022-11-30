@@ -1,11 +1,10 @@
-package com.example.Terminal_rev42;
+package com.example.Terminal_rev42.ControllerTest;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import com.example.Terminal_rev42.SeviceImplementation.UserDetailedServiceImpl;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -23,16 +22,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc       // auto config classes from mvc layer -> bit simpler approach to test MVC
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-users-before-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/drop-users-after-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class LoginTests {
 
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private UserDetailedServiceImpl userDetailedService;
+
 	@Test
 	@Order(1)
+	public void allAutowiredStuffTest(){
+		Assertions.assertNotNull(userDetailedService);
+	}
+
+	@Test
+	@Order(2)
 	public void accessDeniedTest() throws Exception {
 		this.mockMvc.perform(get("/Barclays/service"))
 				.andDo(print())
@@ -41,17 +47,19 @@ class LoginTests {
 	}
 
 	@Test
-	@Order(2)
-	public void correctLoginTest() throws Exception{
-		this.mockMvc.perform(formLogin("/Barclays/authorisation").user("test").password("11111111"))
+	@Order(3)
+	@Sql(value = {"/create-users-before-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+	@Sql(value = {"/drop-users-after-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+	public void successLoginTest(@Value("${client.add.username.value}") String username, @Value("${client.add.password.value}") String password) throws Exception{
+		this.mockMvc.perform(formLogin("/Barclays/authorisation").user(username).password(password))
 				.andDo(print())
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/Barclays"));
 	}
 
 	@Test
-	@Order(3)
-	public void badCredentialUserNotExists() throws Exception{
+	@Order(4)
+	public void badCredentialUserNotExistsLoginTest() throws Exception {
 		this.mockMvc.perform(formLogin("/Barclays/authorisation").user("badUser").password("badPassword"))
 				.andDo(print())
 				.andExpect(status().is3xxRedirection())
@@ -59,8 +67,10 @@ class LoginTests {
 	}
 
 	@Test
-	@Order(4)
-	public void badCredentialsUserNotActive() throws Exception{
+	@Order(5)
+	@Sql(value = {"/create-users-before-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+	@Sql(value = {"/drop-users-after-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+	public void badCredentialsUserNotActiveLoginTest() throws Exception {
 		this.mockMvc.perform(formLogin("/Barclays/authorisation").user("test2").password("11111111"))
 				.andDo(print())
 				.andExpect(status().is3xxRedirection())
@@ -68,22 +78,25 @@ class LoginTests {
 	}
 
 	@Test
-	@Order(5)
-	public void badCredentialsUserTemporaryLocked() throws Exception{
+	@Order(6)
+	@Sql(value = {"/create-users-before-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+	@Sql(value = {"/drop-users-after-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+	public void badCredentialsUserTemporaryLockedLoginTest() throws Exception {
 		this.mockMvc.perform(formLogin("/Barclays/authorisation").user("test3").password("1111"))
 				.andDo(print())
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/Barclays/authorisation?message=Account%20temporary%20locked%20due%20to%203%20failed%20attempts.%20It%20will%20be%20unlocked%20after%2024%20hours."));
+				.andExpect(redirectedUrl("/Barclays/authorisation?message=Account%20temporary%20locked%20due%20to%203%20failed%20attempts.%20It%20will%20be%20unlocked%202025-11-10%2022:10:36."));
 	}
 
 	@Test
-	@Order(6)
-	public void badCredentialsInvalidPassword() throws Exception{
-		this.mockMvc.perform(formLogin("/Barclays/authorisation").user("Test").password("badPassword"))
+	@Order(7)
+	@Sql(value = {"/create-users-before-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+	@Sql(value = {"/drop-users-after-login-tests.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+	public void badCredentialsInvalidPasswordLoginTest(@Value("${client.add.username.value}") String username) throws Exception{
+		this.mockMvc.perform(formLogin("/Barclays/authorisation").user(username).password("badPassword"))
 				.andDo(print())
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/Barclays/authorisation?message=Invalid%20password."));
 	}
-
 
 }
