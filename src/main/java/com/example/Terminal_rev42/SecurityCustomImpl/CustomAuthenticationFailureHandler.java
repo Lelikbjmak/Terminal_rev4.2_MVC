@@ -9,6 +9,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 
 
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -28,19 +29,13 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         if (!userService.checkUserExists(request.getParameter("username"))){
 
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);  // is Forbidden
-
             response.sendRedirect("/Barclays/authorisation?message=User%20with%20such%20username%20doesn't%20exist.");
 
         } else if (!user.isEnabled()){
 
-            response.setStatus(403);  // is Forbidden
-
             response.sendRedirect("/Barclays/authorisation?message=User%20isn't%20enabled!");
 
         } else if (!userService.passwordMatch(password, username) && user.getFailedAttempts() < 3){
-
-            response.setStatus(403);  // is Forbidden
 
             userLockedValidation(user);
 
@@ -48,9 +43,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         } else if(user.isTemporalLock()){
 
-            response.setStatus(403);  // is Forbidden
-
-            response.sendRedirect("/Barclays/authorisation?message=Account%20temporary%20locked%20due%20to%203%20failed%20attempts.%20It%20will%20be%20unlocked%20after%2024%20hours.");
+            response.sendRedirect("/Barclays/authorisation?message=Account%20temporary%20locked%20due%20to%203%20failed%20attempts.%20It%20will%20be%20unlocked%20" + user.getLockTime().plusDays(1).toLocalDate() + "%20" + user.getLockTime().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".");
 
         }
 
