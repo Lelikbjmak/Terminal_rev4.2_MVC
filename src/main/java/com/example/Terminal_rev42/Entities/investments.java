@@ -1,13 +1,14 @@
 package com.example.Terminal_rev42.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.validation.Valid;
+import javax.validation.constraints.*;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,46 +16,53 @@ import java.time.LocalDate;
 @Entity
 public class investments implements Serializable {
 
+    public investments(){
+        this.begin = LocalDate.now();
+        this.status = true;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "client", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "client", referencedColumnName = "id")
+    @Valid
     private client client;
 
     @Column(name = "type", nullable = false)
+    @NotBlank(message = "Type of investment can't be blank.")
     private String type;
 
     @Column(name = "percentage", nullable = false)
-    @DecimalMin("00.00")
+    @DecimalMin(value = "00.00", message = "Interest must be more than 00.00.")
+    @Digits(integer = 1, fraction = 2, message = "Not valid format.")
     private BigDecimal percentage;
 
-    @Column(name = "summa", nullable = false)
-    @DecimalMin("00.00")
+    @Column(name = "summa")
+    @DecimalMin(value = "00.00", message = "Contribution must be more than 00.00.")
+    @Positive
     private BigDecimal contribution;
 
     @Column(name = "currency", nullable = false)
+    @NotBlank(message = "Currency can't be blank.")
     private String currency;
 
     @Column(name = "begin", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
+    @PastOrPresent(message = "Begin of investment can't be future date.")
     private LocalDate begin;
 
     @Column(name = "term_month", nullable = false)
-    @Min(6)
-    @Max(36)
+    @Digits(integer = 2, fraction = 0, message = "Term should contain 2 digits.")
+    @Min(value = 6, message = "Term can't be less than 6.")
+    @Max(value = 36, message = "Term can't be more than 36.")
     private short term;
 
     @Column(name = "Status", nullable = false)
     private boolean status;
-
-    public investments(){
-        this.begin = LocalDate.now();
-        this.status = true;
-    }
 
     public long getId() {
         return id;
