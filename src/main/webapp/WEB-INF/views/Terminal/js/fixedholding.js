@@ -17,7 +17,8 @@ const pin = document.getElementById('pin');
 currency.onchange = async function(){
     getprecentage(currency.value.trim(), term.value.trim()).then(response => response.text())
     .then(responseText => {
-        percentage.value = responseText;
+        var dat = JSON.parse(responseText);
+        percentage.value = dat.percentage;
     });
 }
 
@@ -25,7 +26,8 @@ currency.onchange = async function(){
 term.onchange = async function(){
     getprecentage(currency.value.trim(), term.value.trim()).then(response => response.text())
     .then(responseText => {
-        percentage.value = responseText;
+        var dat = JSON.parse(responseText);
+        percentage.value = dat.percentage;
     });
 }
 
@@ -247,65 +249,6 @@ forma.addEventListener('submit', (e) => {
 
         if(radios[0].checked){
 
-//             $(document).ready(
-//                    function($) {
-//
-//                        $('.wrap').css({'opacity':'100%', 'z-index':'12'});
-//
-//                        var typevalue = $("#type1").val();
-//                        var currencyvalue = $("#Currency").val();
-//                        var percentage = $("#percentage").val();
-//                        var termvalue = $("#term").val();
-//                        var currencyfromvalue = $("#Currencyfrom").val();
-//                        var summavalue = $("#dep1").val();
-//
-//                        $.post("/Barclays/bill/HoldCash", {
-//                            type: typevalue,  //1st in Java | 2nd here
-//                            currency: currencyvalue,
-//                            precentage: percentage,
-//                            term: termvalue,
-//                            summa : summavalue,
-//                            currfrom: currencyfromvalue
-//
-//                        }, function(data) {
-//
-//                        }).done(function(data, textStatus, jqXHR){
-//                            setTimeout(() => {
-//                            $('div.message').text(jqXHR.responseText);
-//                            $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
-//                            $('.loader').css({'opacity':'0%', 'z-index':'0'});
-//                            $('.bl').css({'opacity':'100%', 'z-index':'12'});
-//                            }, 3000);
-//                        }).fail(function(jqXHR, exception, textStatus, errorThrown) {
-//                            var msg = '';
-//                            if (jqXHR.status === 0) {
-//                                msg = 'Not connect. Verify Network.';
-//                            } else if (jqXHR.status == 404) {
-//                                msg = 'Requested page not found. [404]';
-//                            } else if (jqXHR.status == 500) {
-//                                msg = 'Internal Server Error [500].';
-//                            }else if (jqXHR.status == 400) {
-//                                msg = jqXHR.responseText;
-//                            }else if (exception === 'parsererror') {
-//                                msg = 'Requested JSON parse failed.';
-//                            } else if (exception === 'timeout') {
-//                                msg = 'Time out error.';
-//                            } else if (exception === 'abort') {
-//                                msg = 'Ajax request aborted.';
-//                            } else {
-//                                msg = 'Uncaught Error. ' + jqXHR.responseText;
-//                            }
-//
-//                            setTimeout(() => {
-//                            $('div.message').text(msg);
-//                            $('.loader').css('opacity','0%');
-//                            $('.bl').css({'opacity':'100%', 'z-index':'12'});
-//                            }, 3000);
-//                    });
-//
-//             });
-
-
                 var typevalue = $("#type1").val();
                 var currencyvalue = $("#Currency").val();
                 var percentage = $("#percentage").val();
@@ -313,41 +256,43 @@ forma.addEventListener('submit', (e) => {
                 var currencyfromvalue = $("#Currencyfrom").val();
                 var summavalue = $("#dep1").val();
 
-            invest = {
-                "type":typevalue,
-                "percentage":percentage,
-                "currency":currencyvalue,
-                "term":termvalue
+            investment = {
+                "type":"",
+                "percentage":"",
+                "currency":"",
+                "term":""
             };
 
             $.ajax({
                 url: '/Barclays/bill/HoldCash',
                 type: 'post',
                 contentType: 'application/json',
-                data: JSON.stringify({invest, "dep":summavalue, "currencyFrom":currencyfromvalue}),
+                data: JSON.stringify({investment, "deposit":summavalue, "currencyFrom":currencyfromvalue}),
                 processData: false,
-                success: function( data, textStatus, jqXHR){
+                success: function(data, textStatus, jqXHR){
 
-                   setTimeout(() => {
-                   $('div.message').text(jqXHR.responseText);
+                   $('div.message').text(data.message);
                    $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
                    $('div.message1').text('');
                    $('.loader').css({'opacity':'0%', 'z-index':'0'});
                    $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                   }, 2500);
 
                 },
                 error: function( jqXHR, textStatus, errorThrown ){
 
                     var msg = '';
-                    if (jqXHR.status === 0) {
+                    var dat = JSON.parse(jqXHR.responseText);
+
+                    if (jqXHR.status === 200) {
+                        msg = dat.message;
+                    } else if (jqXHR.status === 0) {
                         msg = 'Not connect. Verify Network.';
                     } else if (jqXHR.status == 404) {
                         msg = 'Requested page not found. [404]';
                     } else if (jqXHR.status == 500) {
                         msg = 'Internal Server Error [500].';
                     }else if (jqXHR.status == 400) {
-                        msg = jqXHR.responseText;
+                        msg = dat.message;
                     }else if (exception === 'parsererror') {
                         msg = 'Requested JSON parse failed.';
                     } else if (exception === 'timeout') {
@@ -358,91 +303,56 @@ forma.addEventListener('submit', (e) => {
                         msg = 'Uncaught Error. ' + jqXHR.responseText;
                     }
 
-                    setTimeout(() => {
                     $('div.message').text(msg);
                     $('.loader').css('opacity','0%');
                     $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                    }, 3000);
 
+                    const type = document.getElementById('type1');
+                    const currency = document.getElementById('Currency');
+                    const percentage = document.getElementById('percentage');
+                    const term = document.getElementById('term');
+
+                    if('summa' in dat) {
+                        const cashDep = document.getElementById('dep1');
+                        setErrorFor(cashDep, dat.summa);
+                    }
+
+                    if('currencyOfDep' in dat) {
+                        const currFrom = document.getElementById('Currencyfrom');
+                        setErrorFor(currFrom, dat.currencyOfDep);
+                    }
+
+                    if('term' in dat){
+                        const tr = document.getElementById('term');
+                        setErrorFor(tr, dat.term);
+                    }
+
+                    if('type' in dat){
+                        const tp = document.getElementById('type1');
+                        setErrorFor(tp, dat.type);
+                    }
+
+                    if('currency' in dat) {
+                        const summa = document.getElementById('Currency');
+                        setErrorFor(curr, dat.currency);
+                    }
                 }
             });
 
         } else {
 
-//            $(document).ready(
-//
-//                function($) {
-//
-//                    $('.wrap').css({'opacity':'100%', 'z-index':'12'});
-//
-//                    var typevalue = $("#type1").val().trim();
-//                    var currencyvalue = $("#Currency").val().trim();
-//                    var percentage = $("#percentage").val().trim();
-//                    var termvalue = $("#term").val().trim();
-//                    var billvalue = $('#billfrom').val().trim();
-//                    var summavalue = $("#dep2").val().trim();
-//                    var pinvalue = $("#pin").val().trim();
-//
-//
-//                    $.post("/Barclays/bill/HoldCard", {
-//                        type : typevalue,  //1st in Java | 2nd here
-//                        currency : currencyvalue,
-//                        precentage : percentage,
-//                        term : termvalue,
-//                        summa : summavalue,
-//                        bill : billvalue,
-//                        pin : pinvalue
-//
-//                    }, function(data) {
-//
-//                    }).done(function(data, textStatus, jqXHR){
-//                        setTimeout(() => {
-//                        $('div.message').text(jqXHR.responseText);
-//                        $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
-//                        $('.loader').css({'opacity':'0%', 'z-index':'0'});
-//                        $('.bl').css({'opacity':'100%', 'z-index':'12'});
-//                        }, 3000);
-//                    }).fail(function(jqXHR, exception, textStatus, errorThrown) {
-//                        var msg = '';
-//                        if (jqXHR.status === 0) {
-//                            msg = 'Not connect. Verify Network.';
-//                        } else if (jqXHR.status == 404) {
-//                            msg = 'Requested page not found. [404]';
-//                        } else if (jqXHR.status == 500) {
-//                            msg = 'Internal Server Error [500].';
-//                        }else if (jqXHR.status == 400) {
-//                            msg = jqXHR.responseText;
-//                        }else if (exception === 'parsererror') {
-//                            msg = 'Requested JSON parse failed.';
-//                        } else if (exception === 'timeout') {
-//                            msg = 'Time out error.';
-//                        } else if (exception === 'abort') {
-//                            msg = 'Ajax request aborted.';
-//                        } else {
-//                            msg = 'Uncaught Error. ' + jqXHR.responseText;
-//                        }
-//
-//                        setTimeout(() => {
-//                        $('div.message').text(msg);
-//                        $('.loader').css('opacity','0%');
-//                        $('.bl').css({'opacity':'100%', 'z-index':'12'});
-//                        }, 3000);
-//                });
-//
-//            });
-
             var typevalue = $("#type1").val().trim();
             var currencyvalue = $("#Currency").val().trim();
             var percentage = $("#percentage").val().trim();
             var termvalue = $("#term").val().trim();
-            var billvalue = $('#billfrom').val().trim();
+            var billvalue = $('#billfrom').val().trim().slice(0, -6);
             var summavalue = $("#dep2").val().trim();
             var pinvalue = $("#pin").val().trim();
 
-            invest = {
-                "type":typevalue,
+            investment = {
+                "type":"typevalue",
                 "percentage":percentage,
-                "currency":currencyvalue,
+                "currency":"",
                 "term":termvalue
             };
 
@@ -450,29 +360,31 @@ forma.addEventListener('submit', (e) => {
                 url: '/Barclays/bill/HoldCard',
                 type: 'post',
                 contentType: 'application/json',
-                data: JSON.stringify({invest, "dep":summavalue, "pin":pinvalue, "bill":billvalue}),
+                data: JSON.stringify({investment, "deposit":summavalue, "pin":pinvalue, "bill":billvalue}),
                 processData: false,
-                success: function( data, textStatus, jqXHR){
+                success: function(data, textStatus, jqXHR){
 
-                   setTimeout(() => {
-                   $('div.message').text(jqXHR.responseText);
+                   $('div.message').text(data.message);
                    $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
                    $('.loader').css({'opacity':'0%', 'z-index':'0'});
                    $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                   }, 2500);
 
                 },
-                error: function( jqXHR, textStatus, errorThrown ){
+                error: function(jqXHR, textStatus, errorThrown){
 
                     var msg = '';
-                    if (jqXHR.status === 0) {
+                    var dat = JSON.parse(jqXHR.responseText);
+
+                    if (jqXHR.status === 200) {
+                        msg = dat.message;
+                    } else if (jqXHR.status === 0) {
                         msg = 'Not connect. Verify Network.';
-                    } else if (jqXHR.status == 404) {
+                    } else if (jqXHR.status === 404) {
                         msg = 'Requested page not found. [404]';
-                    } else if (jqXHR.status == 500) {
+                    } else if (jqXHR.status === 500) {
                         msg = 'Internal Server Error [500].';
-                    }else if (jqXHR.status == 400) {
-                        msg = jqXHR.responseText;
+                    }else if (jqXHR.status === 400) {
+                        msg = dat.message;
                     }else if (exception === 'parsererror') {
                         msg = 'Requested JSON parse failed.';
                     } else if (exception === 'timeout') {
@@ -483,12 +395,35 @@ forma.addEventListener('submit', (e) => {
                         msg = 'Uncaught Error. ' + jqXHR.responseText;
                     }
 
-                    setTimeout(() => {
+                    if('summa' in dat) {
+                        const cardDep = document.getElementById('dep2');
+                        setErrorFor(cardDep, dat.summa);
+                    }
+
+                    if('currencyOfDep' in dat) {
+                        const currFrom = document.getElementById('Currencyfrom');
+                        setErrorFor(currFrom, dat.currencyOfDep);
+                    }
+                    if('currency' in dat) {
+                        const curr = document.getElementById('Currency');
+                        setErrorFor(curr, dat.currency);
+                    }
+
+                    if('term' in dat){
+                        const tr = document.getElementById('term');
+                        setErrorFor(tr, dat.term);
+                    }
+
+                    if('type' in dat){
+                        const tp = document.getElementById('type1');
+                        setErrorFor(tp, dat.type);
+                    }
+
+
                     $('div.message').text(msg);
                     $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
-\                   $('.loader').css('opacity','0%');
+                    $('.loader').css('opacity','0%');
                     $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                    }, 3000);
                 }
 
             });
