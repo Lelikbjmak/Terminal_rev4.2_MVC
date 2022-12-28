@@ -23,37 +23,40 @@ form3.addEventListener('submit', (e) => {
             $('.wrap').css({'opacity':'100%', 'z-index':'12'});
 
 
-            var billfrom = $("#billfrom3").val();
+            var billfrom = $("#billfrom3").val().slice(0, -6);
             var currency = $("#currency3").val();
             var summa = $("#summa3").val();
             var pin = $("#pin3").val();
 
 
-
             $.post("/Barclays/bill/convert", {
-                billfrom: billfrom,  //1st in Java | 2nd here
+                billFrom: billfrom,  //1st in Java | 2nd here
                 currency: currency,
                 summa: summa,
-                pin: pin
+                pin: ""
             }, function(data) {
 
              }).done(function(data, textStatus, jqXHR){
-                    setTimeout(() => {
-                 $('div.message').text(jqXHR.responseText);
+
+                 $('div.message').text(data.message);
                  $('.loader').css({'opacity':'0%', 'z-index':'0'});
                  $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                 }, 3000);
 
             }).fail(function(jqXHR, exception, textStatus, errorThrown) {
+
                 var msg = '';
-                if (jqXHR.status === 0) {
+                var dat = JSON.parse(jqXHR.responseText);
+
+                if (jqXHR.status === 200) {
+                    msg = dat.message;
+                } else if (jqXHR.status === 0) {
                     msg = 'Not connect. Verify Network.';
-                } else if (jqXHR.status == 404) {
+                } else if (jqXHR.status === 404) {
                     msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
+                } else if (jqXHR.status === 500) {
                     msg = 'Internal Server Error [500].';
-                }else if (jqXHR.status == 400) {
-                    msg = jqXHR.responseText;
+                }else if (jqXHR.status === 400) {
+                    msg = dat.message;
                 }else if (exception === 'parsererror') {
                     msg = 'Requested JSON parse failed.';
                 } else if (exception === 'timeout') {
@@ -64,11 +67,52 @@ form3.addEventListener('submit', (e) => {
                     msg = 'Uncaught Error. ' + jqXHR.responseText;
                 }
 
-                setTimeout(() => {
+                if('bill' in dat) {
+                    const bF = document.getElementById("billfrom3");
+                    setErrorFor(bF, dat.bill);
+                }
+
+                if('pin' in dat){
+                    const pn = document.getElementById("pin");
+                    setErrorFor(pn, dat.pin);
+                }
+
+                if('convert.billFrom' in dat){
+                    const bF = document.getElementById("billfrom3");
+                    bF.parentElement.classList.remove('success');
+                    setErrorFor(bF, dat["convert.billFrom"]);
+
+                }
+
+                if('convert.pin' in dat){
+                    const pn = document.getElementById("pin3");
+                    setErrorFor(pn, dat["convert.pin"]);
+                }
+
+                if('convert.summa' in dat){
+                    const ledger = document.getElementById("summa3");
+                    setErrorFor(ledger, dat["convert.summa"]);
+                }
+
+                if('convert.currency' in dat){
+                   const cur = document.getElementById("currency3");
+                   setErrorFor(cur, dat["convert.currency"]);
+                }
+
+                if('ledger' in dat){
+                   const ledger = document.getElementById("summa3");
+                   setErrorFor(ledger, dat.ledger);
+                }
+
                 $('div.message').text(msg);
                 $('.loader').css('opacity','0%');
-                $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                }, 3000);
+                if(jqXHR.status === 400 || jqXHR.status === 404 || jqXHR.status === 500){
+                    for(var i = 1; i < $('.bl').length; i++)
+                    $('.bl').eq(i).css({'opacity':'100%', 'z-index':'12'});
+                } else
+                    $('.bl').css({'opacity':'100%', 'z-index':'12'});
+
+
             });
 
         });

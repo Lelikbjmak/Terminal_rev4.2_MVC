@@ -27,36 +27,40 @@ form1.addEventListener('submit', (e) => {
 
             $('.wrap').css({'opacity':'100%', 'z-index':'12'});
 
-            var billfrom = $("#billfrom").val();
-            var billto = $("#billto").val();
-            var summa = $("#summa").val();
-            var pin = $("#pin").val();
+            var billfrom = $("#billfrom").val().trim().slice(0, -6);
+            var billto = $("#billto").val().trim().slice(0, -6);
+            var summa = $("#summa").val().trim();
+            var pin = $("#pin").val().trim();
 
 
-            $.post("/Barclays/bill/cashtransfer", {
-                billfrom: billfrom,
-                billto: billto,
+            $.post("/Barclays/bill/cashTransfer", {
+                billFrom: billfrom,
+                billTo: billto,
                 summa: summa,
                 pin: pin
             }, function(data) {
 
              }).done(function(data, textStatus, jqXHR){
-                    setTimeout(() => {
-                 $('div.message').text(jqXHR.responseText);
+
+                 $('div.message').text(data.message);
                  $('.loader').css({'opacity':'0%', 'z-index':'0'});
                  $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                 }, 3000);
 
             }).fail(function(jqXHR, exception, textStatus, errorThrown) {
+
                 var msg = '';
-                if (jqXHR.status === 0) {
+                var dat = JSON.parse(jqXHR.responseText);
+
+                if (jqXHR.status === 200) {
+                    msg = dat.message;
+                } else if (jqXHR.status === 0) {
                     msg = 'Not connect. Verify Network.';
-                } else if (jqXHR.status == 404) {
+                } else if (jqXHR.status === 404) {
                     msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
+                } else if (jqXHR.status === 500) {
                     msg = 'Internal Server Error [500].';
-                }else if (jqXHR.status == 400) {
-                    msg = jqXHR.responseText;
+                }else if (jqXHR.status === 400) {
+                    msg = dat.message;
                 }else if (exception === 'parsererror') {
                     msg = 'Requested JSON parse failed.';
                 } else if (exception === 'timeout') {
@@ -67,11 +71,66 @@ form1.addEventListener('submit', (e) => {
                     msg = 'Uncaught Error. ' + jqXHR.responseText;
                 }
 
-                setTimeout(() => {
+                if('bill' in dat){
+
+                    const bF = document.getElementById("billfrom");
+                    const bT = document.getElementById("billto");
+
+                    if(dat.card === bF.value) {
+                        bF.parentElement.classList.remove('success');
+                        setErrorFor(bF, dat.bill);
+                    } else {
+                        bT.parentElement.classList.remove('success');
+                        setErrorFor(bT, dat.bill);
+                    }
+                }
+
+                if('pin' in dat){
+                    const pn = document.getElementById("pin");
+                    setErrorFor(pn, dat.pin);
+                }
+
+                if('cashTransfer.billFrom' in dat){
+                    const bF = document.getElementById("billfrom");
+                    bF.parentElement.classList.remove('success');
+                    setErrorFor(bF, dat["cashTransfer.billFrom"]);
+
+                }
+
+                if('cashTransfer.billTo' in dat){
+                    const bT = document.getElementById("billto");
+                    bT.parentElement.classList.remove('success');
+                    setErrorFor(bT, dat["cashTransfer.billFrom"]);
+                }
+
+                if('cashTransfer.pin' in dat){
+                    const pn = document.getElementById("pin");
+                    setErrorFor(pn, dat["cashTransfer.pin"]);
+                }
+
+                if('cashTransfer.summa' in dat){
+                    const ledger = document.getElementById("summa");
+                    setErrorFor(ledger, dat["cashTransfer.summa"]);
+                }
+
+                if('ledger' in dat){
+                   const ledger = document.getElementById("summa");
+                   setErrorFor(ledger, dat.ledger);
+                }
+
+                if('billTo' in dat){
+                    const bT = document.getElementById("billto");
+                    setErrorFor(bT, dat.billTo);
+                }
+
                 $('div.message').text(msg);
                 $('.loader').css('opacity','0%');
-                $('.bl').css({'opacity':'100%', 'z-index':'12'});
-                }, 3000);
+                if(jqXHR.status === 400 || jqXHR.status === 404 || jqXHR.status === 500){
+                    for(var i = 1; i < $('.bl').length; i++)
+                    $('.bl').eq(i).css({'opacity':'100%', 'z-index':'12'});
+                } else
+                    $('.bl').css({'opacity':'100%', 'z-index':'12'});
+
             });
 
     });
@@ -126,19 +185,11 @@ function check1(){
    }else if(!pinreg.test(pinvalue)){
        setErrorFor(pin, "Not valid format")
        flag = false;
-//   }else //{
-//       var url = "/Barclays/bill/checkPin?card=" + billfromvalue + "&pin=" + pinvalue;
-//       const xhr = new XMLHttpRequest();
-//       xhr.open("GET", url, false);
-//       xhr.send();
-//
-//       if(xhr.response === "false"){ // indicates that this bill isn't exist
-//          setErrorFor(pin, "Incorrect pin");
-//          flag = false;
-       }else{
-          setSuccessFor(pin);
-       }
-//   }
+
+   }else{
+       setSuccessFor(pin);
+   }
+
 
   return flag;
 }
