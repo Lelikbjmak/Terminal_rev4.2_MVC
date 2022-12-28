@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.Model;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity

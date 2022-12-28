@@ -4,253 +4,341 @@ import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Entities.client;
 import com.example.Terminal_rev42.Entities.investments;
 import com.example.Terminal_rev42.Entities.receipts;
+import com.example.Terminal_rev42.Exceptions.*;
 import com.example.Terminal_rev42.Model.rates;
 import com.example.Terminal_rev42.SeviceImplementation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.Validator;
+import javax.validation.constraints.*;
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 @Controller
 @RequestMapping("/Barclays/bill")
 @SessionAttributes("bills")
+@Validated // to active validation in RequestParams/RequestBody with valid the same
 public class BillController {
 
     @Autowired
-    billServiceImpl billService;
+    private billServiceImpl billService;
 
     @Autowired
-    SecurityServiceImpl securityService;
+    private SecurityServiceImpl securityService;
 
     @Autowired
-    clientServiceImpl clientService;
+    private clientServiceImpl clientService;
 
     @Autowired
-    receiptsServiceImpl receiptsService;
+    private receiptsServiceImpl receiptsService;
 
     @Autowired
-    investServiceImpl investService;
+    private investServiceImpl investService;
 
     @Autowired
-    rates ratess;
+    private rates currencyRates;
 
-    @GetMapping("checkBill")
-    @ResponseBody
-    public boolean checkBill(@RequestParam("card") String card){
-        if(billService.findByCard(card) != null)
-            return true;
-        else return false;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private Validator validator;
+
+    private static final Logger logger = LoggerFactory.getLogger(BillController.class);
+
+    @Value("${operations.type.cash.transfer}")
+    private String cashTransferOperationType;
+
+    @Value("${operations.type.deposit}")
+    private String depositOperationType;
+
+    @Value("${operations.type.convert}")
+    private String convertOperationType;
+
+    @Value("${operations.type.cash.extradition}")
+    private String cashExtraditionOperationType;
+
+    @Value("${bill.currency.usd}")
+    private String usd;
+    @Value("${bill.currency.eur}")
+    private String eur;
+    @Value("${bill.currency.byn}")
+    private String byn;
+    @Value("${bill.currency.rub}")
+    private String rub;
+
+    @ExceptionHandler(BillNotFoundException.class)
+    private ResponseEntity<Map<String, String>> handleBillNotFoundException(BillNotFoundException exception, HttpServletRequest request){
+
+        logger.error("Exception BillNotFound is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is not found.", "card", exception.getCard()));
+
     }
 
-    @GetMapping("checkLedger")
-    @ResponseBody
-    public BigDecimal checkLedger(@RequestParam("card") String card){
-        System.out.println("Check ledger active: " + card);
-        return billService.findByCard(card).getLedger();
+    @ExceptionHandler(BillInactiveException.class)
+    private ResponseEntity<Map<String ,String>> handleBillInactiveException(BillInactiveException exception, HttpServletRequest request){
+
+        logger.error("Exception BillInactive is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is out of validity. Expired date: " + exception.getBill().getValidity(), "card", exception.getBill().getCard()));
+
     }
 
-    @GetMapping("checkPin")
-    @ResponseBody
-    public boolean checkPin(@RequestParam("card") String card, @RequestParam("pin") String pin){
-        System.out.println("Check pin active...\n" + card);
-        if(billService.checkpin(billService.findByCard(card), pin))
-            System.out.println("Pin is correct for " + card);
-        return billService.checkpin(billService.findByCard(card), pin);
+    @ExceptionHandler(TemporaryLockedBillException.class)
+    private ResponseEntity<Map<String, String>> handleTemporaryLockedBillException(TemporaryLockedBillException exception, HttpServletRequest request) {
+
+        logger.error("Exception TemporaryLockedBill is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is temporary locked.", "card", exception.getBill().getCard()));
+
+    }
+
+    @ExceptionHandler(IncorrectBillPinException.class)
+    private ResponseEntity<Map<String, String>> handleIncorrectBillPinException(IncorrectBillPinException exception, HttpServletRequest request) {
+
+        logger.error("Exception IncorrectBillPin is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "pin", exception.getMessage()));
+
+    }
+
+    @ExceptionHandler(NotEnoughLedgerException.class)
+    private ResponseEntity<Map<String, String>> handleNotEnoughLedgerException(NotEnoughLedgerException exception, HttpServletRequest request){
+
+        logger.error("Exception NotEnoughLedger is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "ledger", "Insufficient funds."));
+
+    }
+
+    @ExceptionHandler(MoneyTransferToTheSameBillException.class)
+    private ResponseEntity<Map<String, String>> handleMoneyTransferToTheSameBillException(MoneyTransferToTheSameBillException exception, HttpServletRequest request){
+
+        logger.error("Exception MoneyTransferToTheSameBillException is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "billTo", "Transfer to the same bill."));
+
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+        System.err.println("Error with @Valid @NotBlank etc in request Param/Body...");
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        errors.put("message", "Error in derived data. Check accuracy of input data.");
+
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex, HttpServletRequest request) {
+
+        logger.error("Exception ConstraintViolation is thrown for: " + request.getSession().getId());
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(v -> errors.put(v.getPropertyPath().toString(), v.getMessage()));
+        errors.put("message", "Error in derived data. Check accuracy of input data.");
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+
+    @ExceptionHandler(CurrencyIsNotSupportedOrBlankException.class)
+    private ResponseEntity<Map<String, String>> handleNotEnoughLedgerException(CurrencyIsNotSupportedOrBlankException exception, HttpServletRequest request){
+
+        logger.error("Exception CurrencyIsNotSupported is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "currencyOfDep", "Not supported."));
+
+    }
+
+    @ExceptionHandler(IncorrectSummaException.class)
+    private ResponseEntity<Map<String, String>> handleNotEnoughLedgerException(IncorrectSummaException exception, HttpServletRequest request){
+
+        logger.error("Exception IncorrectSumma is thrown for: " + request.getSession().getId() + ".");
+
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "summa", "Not valid summa to deposit."));
     }
 
     @PostMapping("add")
     @ResponseBody
     @Transactional
-    public ResponseEntity addbill(@SessionAttribute("bills") Set<bill> bills, @RequestParam("currency") String currency, @RequestParam("type") String type, Model model) {
-
-        System.out.println("Card add...");
+    public ResponseEntity<Map<String, String>> registerNewBill(@Valid @RequestBody bill bill, Model model) {
         client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
-
-        bill bill = new bill();
-
-        bill.setCurrency(currency);
-        bill.setType(type);
-        bill.setClient(client);
-
-        System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType() + bill.getPin());
-        billService.addbill(bill);
-
+        bill registeredBill = registerNewBill(client, bill);
+        logger.info("Bill " + registeredBill.getCard() + " is registered.");
         model.addAttribute("download", "http://localhost:8080/Barclays/bill/card?card=" + bill.getCard());
-        return ResponseEntity.ok("card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin.");
+        return ResponseEntity.ok(Map.of("message", "Card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin." ));
     }
 
-    @PostMapping("cashtransfer")
+    @Transactional
+    private bill registerNewBill(client client, bill bill){
+        bill.setClient(client);
+        billService.save(bill);
+        return bill;
+    }
+
+    @PostMapping("cashTransfer")
     @ResponseBody
     @Transactional
-    public ResponseEntity op1(@RequestParam("billfrom") String billlfrom, @RequestParam("billto") String billto,
-                              @RequestParam("summa") BigDecimal summa, @RequestParam("pin") String pin) {
+    public ResponseEntity<Map<String, String>> cashTransfer(@RequestParam ("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billFrom,
+                  @RequestParam("billTo") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billTo,
+                  @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa to transfer can't be below zero.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.")
+                  @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillNotFoundException, IncorrectBillPinException, BillInactiveException, TemporaryLockedBillException, MoneyTransferToTheSameBillException, NotEnoughLedgerException {
 
-        bill billf = billService.findByCard(billlfrom);
-        bill billt = billService.findByCard(billto);
+        bill billF = billService.fullBillValidationBeforeOperation(billFrom);
+        bill billT = billService.fullBillValidationBeforeOperation(billTo);
 
+        if(billF.equals(billT))
+            throw new MoneyTransferToTheSameBillException("Attempt to transfer money to the same bill (" + billFrom + "), from which money is sending.", billF);
 
+        if (billService.pinAndLedgerValidation(billF, pin, summa)) {
+            cashTransferOperation(billF, billT, summa);
+            receipts receipt = getReceiptAfterOperation(getCashTransferOperationType(), billF, billT, summa, billF.getCurrency(), billT.getCurrency());
+            return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
+        } else return ResponseEntity.internalServerError().body(Map.of("message", "Internal Error. Incorrect Pin."));
+    }
 
-        if (billf != null) {
+    @Transactional
+    private void cashTransferOperation(bill billFrom, bill billTo, BigDecimal summa){
 
-            if (billf.isActive()) {
+        billFrom.setLedger(billFrom.getLedger().subtract(summa.setScale(2, RoundingMode.HALF_UP)));  // - summa from my card
+        summa = getOperationSummaForCashTransferAndConvert(billFrom, billTo.getCurrency(), summa);  // obtain summa we must send to recipient (if currency equals -> get the same otherwise get new Summa according to currency rates)
+        billTo.setLedger(billTo.getLedger().add(summa).setScale(2, RoundingMode.HALF_UP));  // + summa to another card
+        billService.save(billFrom);
+    }
 
-                if (billService.checkpin(billf, pin)) {
+    @Transactional
+    private BigDecimal getOperationSummaForCashTransferAndConvert(bill bill, String currencyTo, BigDecimal summa){
 
-                    if(billt == null)
-                        return ResponseEntity.badRequest().body("Bill " + billt.getCard() + " doesn'texist!");
-
-                    if (!billt.isActive())
-                        return ResponseEntity.badRequest().body("Bill " + billt.getCard() + " is inactive!");
-
-                    if (billf.getCurrency().equals(billt.getCurrency())) {
-
-                        billf.setLedger(billf.getLedger().subtract(summa.setScale(2, BigDecimal.ROUND_HALF_UP)));  // - summa from my card
-                        billt.setLedger(billt.getLedger().add(summa.setScale(2, BigDecimal.ROUND_HALF_UP)));  // + summa to another card
-                    } else {
-                        System.out.println("billfrom curr: " + billf.getCurrency() + "   billto curr: " + billt.getCurrency());
-
-                        ratess.setRate(Rates(billf.getCurrency()));
-
-                        Map<String, Double> rates = ratess.getRate();  // add currency rates
-
-                        System.out.println("rate: " + rates.get(billf.getCurrency().concat(billt.getCurrency())));
-
-                        System.out.println(billf.getLedger());
-                        billf.setLedger(billf.getLedger().subtract(summa.setScale(2, BigDecimal.ROUND_HALF_UP)));  // - summa from my card
-                        System.out.println(billf.getLedger());
-
-                        System.out.println(billt.getLedger());
-                        System.out.println("summa to add billt: " + summa.multiply(BigDecimal.valueOf(rates.get(billf.getCurrency().concat(billt.getCurrency())))));
-                        billt.setLedger(billt.getLedger().add(summa.multiply(BigDecimal.valueOf(rates.get(billf.getCurrency().concat(billt.getCurrency()))))).setScale(2, BigDecimal.ROUND_HALF_UP));
-                        System.out.println(billt.getLedger());
-
-                    }
-
-                    receipts receipt = new receipts("Cash transfer " + billf.getCurrency().concat(billt.getCurrency()), billf, billt, summa, billf.getCurrency());
-                    receiptsService.save(receipt);  // save receipt
-
-                    return ResponseEntity.ok("Successful!");
-
-                }else return ResponseEntity.badRequest().body("Incorrect pin!");
-
-            }else return ResponseEntity.badRequest().body("Bill is inactive!");
-
+        if (!billService.checkCurrencyEquals(currencyTo, bill)) {
+        currencyRates.setRate(Rates(bill.getCurrency()));
+        Map<String, Double> rates = currencyRates.getRate();  // add currency rates
+        summa = summa.multiply(BigDecimal.valueOf(rates.get(bill.getCurrency().concat(currencyTo))));
         }
 
-        return ResponseEntity.badRequest().body("Bill doesn't exist!");
+        return summa;
     }
+
+    @Transactional
+    private receipts getReceiptAfterOperation(String type, bill billFrom, bill billTo, BigDecimal summa, String currencyFrom, String currencyTo){
+
+        receipts receipt = new receipts(type, billFrom, billTo, summa, currencyFrom, currencyTo);
+        System.err.println(receipt);
+        receiptsService.save(receipt);  // save receipt
+
+        billService.allLatelyInteractedBills(billFrom.getClient().getId(), 0).forEach(p -> billService.resetFailedAttempts(p));  // pill all failed attempts from interacted bills if failed attempts < 3 and operation is successfully executed
+        logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
+
+        return receipt;
+    }
+
 
     @PostMapping("deposit")
     @Transactional
     @ResponseBody
-    public ResponseEntity op2(@RequestParam("billfrom") String billlfrom, @RequestParam("currency") String currency,
-                              @RequestParam("summa") BigDecimal summa, @SessionAttribute("bills") Set<bill> bills) {
+    public ResponseEntity<Map<String, String>> deposit(@RequestParam ("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String cardFrom,
+                                          @RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency,
+                                          @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa must be more than 00.00.") BigDecimal summa) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException {
 
-        bill billf = billService.findByCard(billlfrom);
+        bill billFrom = billService.fullBillValidationBeforeOperation(cardFrom);
 
-        if (billf != null) {
+        depositOperation(billFrom, currency, summa);
 
-            if (billf.isActive()) {
+        receipts receipt = getReceiptAfterOperation(getDepositOperationType(), billFrom, null, summa, currency, billFrom.getCurrency());
 
-                System.out.println("bill currency: " + billf.getCurrency() + " dep curr: " + currency);
+        return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
+    }
 
-                if (billf.getCurrency().equals(currency))
-                    billf.setLedger(billf.getLedger().add(summa).setScale(2, BigDecimal.ROUND_HALF_UP));  // if currency we dep the same of our bill -> add summ to our ledger
-                else {
-                    // obtain currency rates from API
+    @Transactional
+    private BigDecimal getOperationSummaForDepositAndExtradition(bill bill, String currencyTo, BigDecimal summa){
 
-                    ratess.setRate(Rates(currency));
-                    Map<String, Double> rates = ratess.getRate();  // add currency rates
-
-                    System.out.println("rate(" + currency.concat(billf.getCurrency()) + ")" + BigDecimal.valueOf(rates.get(currency.concat(billf.getCurrency()))));
-                    System.out.println("money to enrolment: " + summa.multiply(BigDecimal.valueOf(rates.get(currency.concat(billf.getCurrency())))));
-                    System.out.println("Ledger before: " + billf.getLedger());
-
-                    billf.setLedger(billf.getLedger().add(summa.multiply(BigDecimal.valueOf(rates.get(currency.concat(billf.getCurrency()))))).setScale(2, BigDecimal.ROUND_HALF_UP));
-
-                    System.out.println("Ledger after: " + billf.getLedger());
-
-                }
-
-                receipts receipt = new receipts("Deposit " + currency.concat(billf.getCurrency()), billf, null, summa, currency);
-                receiptsService.save(receipt);  // save receipt
-
-                return ResponseEntity.ok("Successfully!");
-
-            }else return ResponseEntity.badRequest().body("Bill is inactive!");
+        if (!billService.checkCurrencyEquals(currencyTo, bill)) {
+            currencyRates.setRate(Rates(currencyTo));  // get fresh currency rates
+            Map<String, Double> rates = currencyRates.getRate();  // add currency rates
+            summa = summa.multiply(BigDecimal.valueOf(rates.get(currencyTo.concat(bill.getCurrency()))));
         }
 
-        return ResponseEntity.badRequest().body("Bill doesn't exist!");
+        return summa;
+    }
+
+    @Transactional
+    private void depositOperation(bill billFrom, String currency, BigDecimal summa){
+        summa = getOperationSummaForDepositAndExtradition(billFrom, currency, summa);
+        billFrom.setLedger(billFrom.getLedger().add(summa).setScale(2, RoundingMode.HALF_UP));
+        billService.save(billFrom);
     }
 
     @PostMapping("convert")
     @ResponseBody
     @Transactional
-    public ResponseEntity op3(@RequestParam("billfrom") String billlfrom, @RequestParam("currency") String currency,
-                      @RequestParam("summa") BigDecimal summa, @RequestParam("pin") String pin){
+    public ResponseEntity<Map<String, String>> convert(@RequestParam("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format of card number.") String billFrom, @RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency,
+                                  @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa to deposit must be more than 00.00.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.")
+                                  @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillNotFoundException, BillInactiveException, TemporaryLockedBillException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        bill billf = billService.findByCard(billlfrom);
+        bill billF = billService.fullBillValidationBeforeOperation(billFrom);
 
+        if(billService.pinAndLedgerValidation(billF, pin, summa)) {
 
-        if (billf != null) {
-            if(billf.isActive()) {
+//            convertOperation(billF, summa);
 
-                if (billService.checkpin(billf, pin)) {
+            summa = getOperationSummaForCashTransferAndConvert(billF, currency, summa).setScale(2, RoundingMode.HALF_UP);
 
-                    if (billf.getCurrency().equals(currency)) {
+            receipts receipt = getReceiptAfterOperation(getConvertOperationType(), billF, null, summa, billF.getCurrency(), currency);
 
-                        billf.setLedger(billf.getLedger().subtract(summa));
-                        System.err.println("\nConvert summa: " + summa + " " + currency);
+            return ResponseEntity.ok(Map.of("message","Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
 
-                    } else {
-                        billf.setLedger(billf.getLedger().subtract(summa).setScale(2, BigDecimal.ROUND_HALF_UP));  // - summa from my card
+        } else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal server error during #convert# operation."));
 
-                        ratess.setRate(Rates(billf.getCurrency()));
-                        Map<String, Double> rates = ratess.getRate();  // add currency rates
+    }
 
-
-                        BigDecimal convertcash = summa.multiply(BigDecimal.valueOf(rates.get(billf.getCurrency().concat(currency)))).setScale(2, BigDecimal.ROUND_HALF_UP);
-
-                        System.err.println("\nConvert summa: " + convertcash + " " + currency);
-
-                        receipts receipt = new receipts("Convert " + billf.getCurrency().concat(currency), billf, null, summa, billf.getCurrency());
-                        receiptsService.save(receipt);  // save receipt
-
-                        System.out.println(receipt.toString());
-
-                        return ResponseEntity.ok("Successfully!");
-                    }
-
-                } else return ResponseEntity.badRequest().body("Incorrect pin!");
-            }else ResponseEntity.badRequest().body("Bill is inactive!");
-
-        }
-
-        return ResponseEntity.badRequest().body("Bill doesn't exist!");
+    @Transactional
+    private void convertOperation(bill billFrom, BigDecimal summa){
+        billFrom.setLedger(billFrom.getLedger().subtract(summa).setScale(2, RoundingMode.HALF_UP));  // - summa from my card
+        billService.save(billFrom);
     }
 
     @GetMapping("receipt")
-    public void downloadreceipt(HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills) throws IOException {
+    @Transactional
+    public void downloadReceipt(HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills) throws IOException {
 
-        receipts receipt = receiptsService.findFirstByBillfromInOrderByIdDesc(bills);
+        receipts receipt = receiptsService.findFirstByBillInOrderByIdDesc(bills);
 
         File file = new File("Payment #" + receipt.getId() + ".txt");
         file.deleteOnExit();
@@ -270,39 +358,23 @@ public class BillController {
         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
 
         byte[] buffer = new byte[8192];  // 8kb
-        int i = -1;
+        int i;
 
         while ((i = inputStream.read(buffer)) != -1){
             outputStream.write(buffer, 0, i);
         }
 
-        inputStream.close();;
+        inputStream.close();
         outputStream.close();
     }
 
     @GetMapping("card")
-    public void downloadcard (HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills, @RequestParam(name = "card", required = false) String card, Model model) throws IOException {
-
-//        Set<String> cards = new HashSet<>();
-//        bills.forEach(p -> cards.add(p.getCard()));
-//
-//        cards.forEach(p -> System.out.println(p));
-//
-//        bill bill = billService.lastcard(cards, bills.stream().findFirst().get().getClient().getId());
-//
-//        if (bill != null) {
-//            System.err.println(bill.getCard() + " " + bill.getCurrency() + " " + bill.getType());
-//        }else{
-//            System.err.println("bill is not found!");
-//            return;
-//        }
-
-        System.err.println("Card: " + card);
+    @Transactional
+    public void downloadCardAndActivate (HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills, @RequestParam(name = "card", required = false) String card, Model model) throws IOException {
 
         bill bill = billService.findByCard(card);
 
         File file = new File(bill.getCard() + ".txt");
-        file.deleteOnExit();
 
         try(FileWriter fr = new FileWriter(file)) {
             fr.write(bill.toString());
@@ -319,7 +391,7 @@ public class BillController {
         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
 
         byte[] buffer = new byte[8192];  // 8kb
-        int i = -1;
+        int i;
 
         while ((i = inputStream.read(buffer)) != -1){
             outputStream.write(buffer, 0, i);
@@ -327,120 +399,101 @@ public class BillController {
 
         inputStream.close();
         outputStream.close();
-        billService.encodePassAndActivate(bill);
+
+
+        billService.encodePasswordAndActivateBill(bill);
+
+        if (file.delete()){
+            logger.info("Card: " + card + " is activated. " + LocalDate.now());
+        }
 
     }
+
 
     @PostMapping("getLedger")
     @ResponseBody
     @Transactional
-    public ResponseEntity checkbalance(@RequestParam("bill") String card, @RequestParam("pin") String pin){
-        System.out.println("Check ledger (" + card + ")...");
-        if (billService.checkpin(billService.findByCard(card), pin)) {
+    public ResponseEntity<Map<String, String>> checkBalance(@RequestParam("bill") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format of card number.")
+                                      @Size(min = 19, max = 19, message = "Length of card number must comprise 19 symbols.") String card, @RequestParam("pin")  @NotBlank(message = "Pin is mandatory.")
+                                      @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") String pin) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException {
 
-            BigDecimal ledger = billService.findByCard(card).getLedger();
-            System.out.println("Ledger: " + billService.findByCard(card).getLedger());
-            return ResponseEntity.ok("Ledger: " + ledger + " " + billService.findByCard(card).getCurrency());
+        bill bill = billService.fullBillValidationBeforeOperation(card);
 
-        }else
-            return ResponseEntity.badRequest().body("Incorrect pin!");
+        if (billService.pinValidation(bill, pin)) {
+
+            BigDecimal ledger = bill.getLedger();
+
+            billService.allLatelyInteractedBills(bill.getClient().getId(), 0).forEach(p -> billService.resetFailedAttempts(p));  // pill all failed attempts from interacted bills
+
+            return ResponseEntity.ok(Map.of("message","Ledger: " + ledger + " " + billService.findByCard(card).getCurrency()));
+
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal Server error[500]."));
+
     }
 
-    @PostMapping("cashextradition")
+
+
+    @PostMapping("cashExtradition")
     @ResponseBody
     @Transactional
-    public ResponseEntity op4(@RequestParam("billf") String billf,
-                              @RequestParam("summa") BigDecimal summa, @RequestParam("pin") String pin){
+    public ResponseEntity<Map<String, String>> cashExtradition(@RequestParam("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billFrom,
+                                  @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.01", message = "Summa to deposit must be more than 00.01.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        bill bill = billService.findByCard(billf);
+        bill bill = billService.fullBillValidationBeforeOperation(billFrom);
 
-        if (bill != null) {
-            if (bill.isActive()) {
+        if (billService.pinAndLedgerValidation(bill, pin, summa)) {
 
-                if (bill.getPin().equals(pin)) {
-                    bill.setLedger(bill.getLedger().subtract(summa));
+            cashExtraditionOperation(bill, summa);
 
-                    System.out.println("Withdrawal amount: " + summa + " " + bill.getCurrency());
+            receipts receipt = getReceiptAfterOperation(getCashExtraditionOperationType(), bill, null, summa, bill.getCurrency(), bill.getCurrency());
 
-                    receipts receipt = new receipts("Extradition " + bill.getCurrency(), bill, null, summa, bill.getCurrency());
-                    receiptsService.save(receipt);  // save receipt
+            logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
+            
+            return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
 
-                    return ResponseEntity.ok("Successful!");
-                } else return ResponseEntity.badRequest().body("Incorrect pin");
-            }else return ResponseEntity.badRequest().body("Bill is inactive!");
-        }
+        } else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal server error during #convert# operation."));
 
-        return ResponseEntity.badRequest().body("Bill doesn't exist!");
     }
 
-    public Map<String, Double> getCurrencyRates(){
-
-        RestTemplate res = new RestTemplate();
-        String url = "https://currate.ru/api/?get=rates&pairs=USDRUB,EURRUB,RUBEUR,RUBUSD,USDEUR,BYNRUB,RUBBYN,BYNUSD,BYNEUR,EURBYN,USDBYN&key=34387354d5c93ddfeaf33055a967a3d4";
-
-        ResponseEntity response = res.getForEntity(url, String.class);
-
-        JSONParser parser = new JSONParser();  // from google
-
-        if (response.getStatusCode().value() == 200) {
-            System.out.println("status: " + response.getStatusCode());
-            try {
-                JSONObject data = (JSONObject) parser.parse(response.getBody().toString());
-
-                JSONObject rates = (JSONObject) data.get("data");
-
-                Map<String, Double> currencyrates = new HashMap<>();
-
-                rates.keySet().forEach(p -> {
-                    currencyrates.put(p.toString(), Double.parseDouble(rates.get(p).toString()));
-                });
-
-                return currencyrates;
-
-            } catch (ParseException e) {
-                System.err.println("Can't parse data!\nCan't obtain currency rates from currate.ru");
-            }
-        }else {
-            System.out.println("status: " + response.getStatusCode() + "\n" + response.getStatusCode().name());
-        }
-
-        return null;
+    @Transactional
+    private void cashExtraditionOperation(bill billFrom, BigDecimal summa){
+        billFrom.setLedger(billFrom.getLedger().subtract(summa));
+        billService.save(billFrom);
     }
 
-
-    public Map<String, Double> Rates(String source){
+    private Map<String, Double> Rates(String source){
 
         RestTemplate res = new RestTemplate();
-        String url = "https://api.apilayer.com/currency_data/live?source=" +source + "&currencies=EUR,USD,RUB,BYN";
+        String url = "https://api.apilayer.com/currency_data/live?source=" + source + "&currencies=EUR,USD,RUB,BYN";
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("apikey", "iRObqt4llz1dG1BuUQSeTMd0VxLvc2AU");
-        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
-        ResponseEntity response = res.exchange(url, HttpMethod.GET, entity,  String.class);
+        ResponseEntity<String> response = res.exchange(url, HttpMethod.GET, entity,  String.class);
 
         JSONParser parser = new JSONParser();  // from google
 
         if (response.getStatusCode().value() == 200) {
             try {
                 System.out.println("Status: " + response.getStatusCode().value());
-                JSONObject data = (JSONObject) parser.parse(response.getBody().toString());
+                JSONObject data = (JSONObject) parser.parse(response.getBody());
 
                 JSONObject rates = (JSONObject) data.get("quotes");
 
                 Map<String, Double> currencyrates = new HashMap<>();
 
-                rates.keySet().forEach(p -> {
-                    currencyrates.put(p.toString(), Double.parseDouble(rates.get(p).toString()));
-                });
+                rates.keySet().forEach(p -> currencyrates.put(p.toString(), Double.parseDouble(rates.get(p).toString())));
 
                 return currencyrates;
 
             } catch (ParseException e) {
-                System.err.println("Can't parse data!\nCan't obtain currency rates from currate.ru");
+                logger.error("Can't parse data!\nCan't obtain currency rates from API");
             }
         }else {
-            System.out.println("status: " + response.getStatusCode() + "\n" + response.getStatusCode().name());
+            logger.error("Error in obtaining currency rates from API. Status: " + response.getStatusCode() + ". " + response.getStatusCode().name());
         }
 
         return null;
@@ -450,74 +503,70 @@ public class BillController {
     @GetMapping("PercentageForFixed")
     @ResponseBody
     @Transactional
-    public double getPercentageForInvest(@RequestParam("currency") String  currency, @RequestParam("term") int term) {
-
-        // 6 12 24 36
+    public <S,D> ResponseEntity<Map<S, D>> getPercentageForInvest(@RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency, @RequestParam("term") @Digits(integer = 2, fraction = 0, message = "Invalid Format. Must be Integer value.") @Min(value = 6, message = "Term can't be less than 6 month.") @Max(value = 36, message = "Term can't be greater than 36 month.") int term) {
 
         if (currency.equalsIgnoreCase("byn")) {
 
-            if(term == 6)
-                return 7.21;
+            if (term == 6)
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 7.21));
 
-            if(term == 12)
-                return  10.25;
+            if (term == 12)
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 10.25));
+
 
             if(term == 24)
-                return 13.89;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 13.89));
 
             if(term == 36)
-                return 17.12;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 17.12));
 
         }
         if (currency.equalsIgnoreCase("usd")){
 
             if(term == 6)
-                return 2.77;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 2.77));
 
             if(term == 12)
-                return  4.34;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 4.34));
 
             if(term == 24)
-                return 5.98;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 5.98));
 
             if(term == 36)
-                return 6.89;
-
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 6.89));
         }
 
         if(currency.equalsIgnoreCase("eur")){
 
             if(term == 6)
-                return 2.38;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 2.38));
 
             if(term == 12)
-                return  4;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 4.00));
 
             if(term == 24)
-                return 5.2;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 5.2));
 
             if(term == 36)
-                return 6.14;
-
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 6.14));
         }
 
         if(currency.equalsIgnoreCase("rub")) { // indicates that consumer picked russian ruble
 
             if(term == 6)
-                return 5.65;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 5.65));
 
             if(term == 12)
-                return  7.78;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 7.78));
 
             if(term == 24)
-                return 10.14;
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 10.14));
 
             if(term == 36)
-                return 13.13;
-
+                return ResponseEntity.ok((Map<S, D>) Map.of("percentage", 13.13));
         }
 
-        return 0;
+        return ResponseEntity.badRequest().body((Map<S, D>) Map.of("percentage","Can't obtain interest rate for unsupported currency or term."));
     }
 
 
@@ -525,32 +574,55 @@ public class BillController {
     @PostMapping("HoldCash")
     @ResponseBody
     @Transactional   // with cash
-    public String applyHoldCashPayment(@RequestParam("type") String type, @RequestParam("currency") String curr1, @RequestParam("precentage") BigDecimal precent,
-                                 @RequestParam("term") short term, @RequestParam("summa") BigDecimal dep, @RequestParam("currfrom") String currfrom){
+    public ResponseEntity<Map<String, String>> applyHoldCashPayment(@RequestBody ObjectNode objectNode) throws CurrencyIsNotSupportedOrBlankException, IncorrectSummaException {
 
-        System.err.println("FixedHold starting...cash");
+        investments investment = objectMapper.convertValue(objectNode.get("investment"), investments.class);  // throw exception if not valid
+        String currencyFrom = objectMapper.convertValue(objectNode.get("currencyFrom"), String.class);
+        BigDecimal dep = objectMapper.convertValue(objectNode.get("deposit"), BigDecimal.class);
 
-        investments investment = new investments();
+        validatePaymentForInvestment(investment, currencyFrom, dep);
 
-        if(currfrom.equals(curr1)){  // currency of our invest equals to currency we've dep
-            investment.setContribution(dep);
-        }else {
-            System.out.println("curr from: " + currfrom + " -> " + curr1);
-            ratess.setRate(Rates(currfrom));
-            investment.setContribution(dep.multiply(BigDecimal.valueOf(ratess.getRate().get(currfrom.concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
-            System.out.println(dep + " -> " + dep.multiply(BigDecimal.valueOf(ratess.getRate().get(currfrom.concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        applyInvestmentWithCashPayment(currencyFrom, investment, dep);
+
+        return ResponseEntity.ok(Map.of("message", "Successfully applied for: " + investment));
+    }
+
+    @Transactional
+    private void validatePaymentForInvestment(investments investment, String currencyFrom, BigDecimal deposit) throws CurrencyIsNotSupportedOrBlankException, IncorrectSummaException {
+
+        Set<ConstraintViolation<Object>> violations = validator.validate(investment);
+
+        if(!violations.isEmpty())
+            throw new ConstraintViolationException("Invest is not valid.", violations);
+
+        if(currencyFrom.isBlank() || !currencyIsSupported(currencyFrom))
+            throw new CurrencyIsNotSupportedOrBlankException(currencyFrom, "Currency is not supported.");
+
+        if (deposit.compareTo(BigDecimal.valueOf(00.01)) < 0)
+            throw new IncorrectSummaException(deposit, "Not valid summa " + deposit + ". Summa must be grater than 00.01.");
+    }
+
+    @Transactional
+    private boolean currencyIsSupported(String currencyFrom) throws CurrencyIsNotSupportedOrBlankException {
+
+        if(currencyFrom.equalsIgnoreCase(usd) || currencyFrom.equalsIgnoreCase(eur) || currencyFrom.equalsIgnoreCase(byn) || currencyFrom.equalsIgnoreCase(rub))
+        return true;
+        else throw new CurrencyIsNotSupportedOrBlankException(currencyFrom, "Currency " + currencyFrom + " is not supported.");
+
+    }
+
+    @Transactional
+    private void applyInvestmentWithCashPayment(@NotBlank String currencyToDep, @Valid investments investment, @Positive BigDecimal deposit){
+
+        if(!currencyToDep.equals(investment.getCurrency())) {  // currency of our invest equals to currency we've dep
+            currencyRates.setRate(Rates(currencyToDep));
+            deposit = deposit.multiply(BigDecimal.valueOf(currencyRates.getRate().get(currencyToDep.concat(investment.getCurrency())))).setScale(2, RoundingMode.HALF_UP);
         }
 
-        investment.setType(type);
+        investment.setContribution(deposit);
         investment.setClient(clientService.findByUser_Username(securityService.getAuthenticatedUsername()));
-        investment.setPercentage(precent);
-        investment.setTerm(term);
-        investment.setCurrency(curr1);
         investService.addInvest(investment);
-
-        System.err.println("Fixed hold end...");
-
-        return "Successfully!" + "\n" + investment;
+        logger.info("Investment " + investment + " is successfully registered.");
 
     }
 
@@ -558,52 +630,96 @@ public class BillController {
     @PostMapping("HoldCard")
     @ResponseBody
     @Transactional   // with card
-    public String applyHoldCardPayment(@RequestParam("type") String type, @RequestParam("currency") String curr1, @RequestParam("precentage") BigDecimal precent,
-                                            @RequestParam("term") short term, @RequestParam("summa") BigDecimal dep, @RequestParam("bill") String card){
+    public ResponseEntity<Map<String, String>> applyHoldCardPayment(@RequestBody ObjectNode objectNode) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        if (billService.findByCard(card) != null) {
+        investments investment = objectMapper.convertValue(objectNode.get("investment"), investments.class);  // simultaneously with validation
 
-            if(billService.findByCard(card).isActive()) {
+        String pin = objectMapper.convertValue(objectNode.get("pin"), String.class);
 
-                System.err.println("FixedHold starting...card");
+        BigDecimal dep = objectMapper.convertValue(objectNode.get("deposit"), BigDecimal.class);
 
-                investments investment = new investments();
+        String card = objectMapper.convertValue(objectNode.get("bill"), String.class);
 
-                bill bill = billService.findByCard(card); // bill ta pay with
-                if (bill.getCurrency().equals(curr1)) {
-                    bill.setLedger(bill.getLedger().subtract(dep));
-                    investment.setContribution(dep);
+        if(validateInvestAndPinAndDepositForInvestmentApply(investment, pin, card, dep))
+            return ResponseEntity.badRequest().body(Map.of("message", "Check the accuracy of data."));
 
-                } else {
+        bill bill = billService.fullBillValidationBeforeOperation(card);
 
-                    ratess.setRate(Rates(bill.getCurrency()));
-                    System.out.println("from: " + bill.getCurrency() + " -> " + curr1);
-                    System.out.println("summa: " + dep + " -> " + dep.multiply(BigDecimal.valueOf(ratess.getRate().get(bill.getCurrency().concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        if(billService.pinAndLedgerValidation(bill, pin, dep)) {
+            applyInvestmentWithCardPayment(bill, dep, investment);
+            return ResponseEntity.ok(Map.of("message", "Successfully.\n" + investment));
+        }
 
-                    System.out.println("ledger before: " + bill.getLedger());
-                    bill.setLedger(bill.getLedger().subtract(dep.multiply(BigDecimal.valueOf(ratess.getRate().get(bill.getCurrency().concat(curr1))))).setScale(2, BigDecimal.ROUND_HALF_UP));
-                    System.out.println("Ledger after: " + bill.getLedger());
-                    investment.setContribution(dep.multiply(BigDecimal.valueOf(ratess.getRate().get(bill.getCurrency().concat(curr1)))).setScale(2, BigDecimal.ROUND_HALF_UP));
-
-                }
-
-                investment.setType(type);
-                investment.setClient(clientService.findByUser_Username(securityService.getAuthenticatedUsername()));
-                investment.setPercentage(precent);
-                investment.setTerm(term);
-                investment.setCurrency(curr1);
-
-                investService.addInvest(investment);
-
-                System.err.println("Fixed hold end...");
-
-                return "Successfully!\n" + investment;
-
-            }
-            return "Bill " + billService.findByCard(card) + " is inactive!";
-        }else
-            return "Bill " + billService.findByCard(card) + " doesn't exist!";
-
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Internal Server error."));
     }
 
+    @Transactional
+    private boolean validateInvestAndPinAndDepositForInvestmentApply(investments investment, String pin, String card,  BigDecimal deposit){
+
+        Set<ConstraintViolation<Object>> violations = validator.validate(investment);
+
+        if(!violations.isEmpty())
+            throw new ConstraintViolationException("Invest is not valid.", violations);
+
+        if(!card.matches("^(\\d{4}\\s){3}\\d{4}$"))
+            return true;
+
+        if(!pin.matches("^\\d{4}$"))
+            return true;
+
+        if(deposit.compareTo(BigDecimal.valueOf(00.01)) < 0)
+            return true;
+
+        return false;
+    }
+
+    @Transactional
+    private void applyInvestmentWithCardPayment(bill bill, BigDecimal deposit, investments investment){
+
+        bill.setLedger(bill.getLedger().subtract(deposit).setScale(2, RoundingMode.HALF_UP));
+
+        if (!billService.checkCurrencyEquals(investment.getCurrency(), bill)) {
+            currencyRates.setRate(Rates(bill.getCurrency()));
+            deposit = deposit.multiply(BigDecimal.valueOf(currencyRates.getRate().get(bill.getCurrency().concat(investment.getCurrency()))));
+        }
+
+        investment.setContribution(deposit);
+        investment.setClient(clientService.findByUser_Username(securityService.getAuthenticatedUsername()));
+
+        investService.addInvest(investment);
+        logger.info("Investment " + investment + " is successfully registered.");
+    }
+
+
+    public String getCashTransferOperationType() {
+        return cashTransferOperationType;
+    }
+
+    public String getDepositOperationType() {
+        return depositOperationType;
+    }
+
+    public String getConvertOperationType() {
+        return convertOperationType;
+    }
+
+    public String getCashExtraditionOperationType() {
+        return cashExtraditionOperationType;
+    }
+
+    public void setUsd(String usd) {
+        this.usd = usd;
+    }
+
+    public void setEur(String eur) {
+        this.eur = eur;
+    }
+
+    public void setByn(String byn) {
+        this.byn = byn;
+    }
+
+    public void setRub(String rub) {
+        this.rub = rub;
+    }
 }

@@ -56,7 +56,7 @@
     <label>Your card</label>
     <div class="r2">
       <select id="billfrom" onkeyup="checkParams1()">
-          <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+        <option th:each="bill : ${session.bills}" th:text="${bill.card} + ' (' + ${bill.currency} + ')'">
           </option>
       </select>
       <br>
@@ -81,7 +81,7 @@
 
     <label>Pin code</label>
     <div class="r2">
-        <input type="password" placeholder="****"  maxlength="4" id="pin" onkeyup="checkParams1()">
+        <input type="password" placeholder="****"  maxlength="4" id="pin" onkeyup="checkParams1()" pattern="[0-9]+">
         <br>
         <small></small>
     </div>
@@ -101,7 +101,7 @@
 
     <div class="r2">
     <select id="billfrom2" onkeyup="checkParams2()">
-      <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+      <option th:each="bill : ${session.bills}" th:text="${bill.card} + ' (' + ${bill.currency} + ')'">
       </option>
     </select>
       <br>
@@ -138,11 +138,11 @@
 <div class="form-pop" id="convert">
   <form class="con">
     <h2><u>#Convert#</u></h2>
-    <label>Your card</label>
 
+    <label>Your card</label>
     <div class="r2">
     <select id="billfrom3" onkeyup="checkParams3()">
-      <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+      <option th:each="bill : ${session.bills}" th:text="${bill.card} + ' (' + ${bill.currency} + ')'">
       </option>
     </select>
       <br>
@@ -150,7 +150,7 @@
     </div>
 
 
-    <label>Currency</label>
+    <label>Convert to</label>
     <div class="r2">
       <select id="currency3" onkeyup="checkParams3()">
         <option>BYN</option>
@@ -172,12 +172,15 @@
 
     <label>Pin code</label>
     <div class="r2">
-      <input type="password" placeholder="****" maxlength="4" id="pin3" onkeyup="checkParams3()">
+      <input type="password" placeholder="****" maxlength="4" id="pin3" onkeyup="checkParams3()" pattern="[0-9]+">
       <br>
       <small></small>
     </div>
 
     <button class="bb" id="bb3" disabled>Accomplish</button>
+
+    <div class="addit"><small>*summa to convert refer to your ledger, and currency of you bill.</small></div>
+
   </form>
   <script src="/Terminal/js/convertPOST.js"></script>
 </div>
@@ -187,11 +190,11 @@
 
   <form  class="con">
     <h2><u>#Cash extradition#</u></h2>
-    <label>Your card</label>
 
+    <label>Your card</label>
     <div class="r2">
     <select id="billfrom4" onkeyup="checkParams4()">
-      <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+      <option th:each="bill : ${session.bills}" th:text="${bill.card} + ' (' + ${bill.currency} + ')'">
       </option>
     </select>
       <br>
@@ -209,7 +212,7 @@
 
     <label>Pin code</label>
     <div class="r2">
-    <input type="password" placeholder="****" maxlength="4" id="pin4" onkeyup="checkParams4()">
+    <input type="password" placeholder="****" maxlength="4" id="pin4" onkeyup="checkParams4()" pattern="[0-9]+">
       <br>
       <small></small>
     </div>
@@ -231,7 +234,7 @@
 </div>
 
 
-<footer class="footer-distributed" id="support" style="margin-top: 25%;">
+<footer class="footer-distributed" id="support" style="margin-top: 22%;">
 
   <div class="footer-left">
 

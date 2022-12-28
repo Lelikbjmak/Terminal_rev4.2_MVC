@@ -1,50 +1,73 @@
 package com.example.Terminal_rev42.Entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PastOrPresent;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 public class receipts {
 
-    public receipts(){}
-
-    public receipts(String type, bill billfrom, bill billto, BigDecimal summa, String currency){
+    public receipts(String type, bill billFrom, bill billTo, BigDecimal summa, String currencyFrom, String currencyTo) {  // for CashTransfer (2 bills take parts)
         setType(type);
-        setBillfrom(billfrom);
-        setBillto(billto);
+        setBillFrom(billFrom);
+        setBillTo(billTo);
         setSumma(summa);
-        setCurrency(currency);
+        setCurrencyFrom(currencyFrom);
+        setCurrencyTo(currencyTo);
+        date = LocalDate.now();
+    }
+
+    public receipts(String type, bill billFrom, BigDecimal summa, String currencyFrom, String currencyTo) {   // other Operations (referred to 1 bill)
+        setType(type);
+        setBillFrom(billFrom);
+        setSumma(summa);
+        setCurrencyFrom(currencyFrom);
+        setCurrencyTo(currencyTo);
+        date = LocalDate.now();
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
+    @NotBlank(message = "Type of receipt can't be blank.")
     private String type;
 
     @ManyToOne
     @JoinColumn(name = "billfrom", referencedColumnName = "card")
-    @NotBlank
-    private bill billfrom;
+    @Valid
+    private bill billFrom;
 
     @ManyToOne
     @JoinColumn(name = "billto", referencedColumnName = "card")
     @Nullable
-    private bill billto;
+    private bill billTo;
 
-    @NotBlank
-    private String currency;
+    @Column(length = 5)
+    @NotBlank(message = "Currency of executed operation can't be blank.")
+    private String currencyFrom;
 
-    @NotBlank
-    @DecimalMin("00.00")
+    @Column(length = 5)
+    @NotBlank(message = "Currency transfer is mandatory.")
+    private String currencyTo;
+
+    @DecimalMin(value = "00.00", message = "Summa of accomplished operation must be more than 00.00.")
     private BigDecimal summa;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
+    @PastOrPresent
+    private LocalDate date;
 
     public long getId() {
         return id;
@@ -63,22 +86,21 @@ public class receipts {
         this.type = type;
     }
 
-    @NonNull
-    public bill getBillfrom() {
-        return billfrom;
+    public bill getBillFrom() {
+        return billFrom;
     }
 
-    public void setBillfrom(@NonNull bill billfrom) {
-        this.billfrom = billfrom;
+    public void setBillFrom(bill billFrom) {
+        this.billFrom = billFrom;
     }
 
     @Nullable
-    public bill getBillto() {
-        return billto;
+    public bill getBillTo() {
+        return billTo;
     }
 
-    public void setBillto(@Nullable bill billto) {
-        this.billto = billto;
+    public void setBillTo(@Nullable bill billTo) {
+        this.billTo = billTo;
     }
 
     @NonNull
@@ -90,25 +112,49 @@ public class receipts {
         this.summa = summa;
     }
 
-    @NonNull
-    public String getCurrency() {
-        return currency;
+    public String getCurrencyFrom() {
+        return currencyFrom;
     }
 
-    public void setCurrency(@NonNull String currency) {
-        this.currency = currency;
+    public void setCurrencyFrom(String currencyFrom) {
+        this.currencyFrom = currencyFrom;
+    }
+
+    public String getCurrencyTo() {
+        return currencyTo;
+    }
+
+    public void setCurrencyTo(String currencyTo) {
+        this.currencyTo = currencyTo;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     @Override
     public String toString() {
 
-        if(billto == null) {
-            return "Receipt: #" + getId() + "\nOperation: " + getType() + "\nConsumer: " + getBillfrom().getCard() + "\nsumma: " + summa +
-                    " " + getCurrency() + "\n" + new Date() + "\n-------------Barclays-------------";
-        }else {
-            return "Receipt: #" + getId() + "\nOperation: " + getType() + "\nSender: " + getBillfrom().getCard() + "\nRecipient: " + getBillto().getCard() + "\nsumma: " + summa +
-                    " " + getCurrency() + "\n" + new Date() + "\n-------------Barclays-------------";
+        if(billTo == null && type.equals("Convert")){
+            return "Receipt: #" + getId() + "\nOperation: " + getType() + " " + getCurrencyFrom().concat(getCurrencyTo()) + "\nConsumer: " + getBillFrom().getCard() + "\nsumma: " + summa +
+                    " " + getCurrencyTo() + "\n" + new Date() + "\n-------------Barclays-------------";
         }
+
+        if(billTo == null && type.equals("Cash extradition")){
+            return "Receipt: #" + getId() + "\nOperation: " + getType() + " " + getCurrencyFrom() + "\nConsumer: " + getBillFrom().getCard() + "\nsumma: " + summa +
+                    " " + getCurrencyTo() + "\n" + new Date() + "\n-------------Barclays-------------";
+        }
+
+        if(billTo == null) {
+            return "Receipt: #" + getId() + "\nOperation: " + getType() + " " + getCurrencyFrom().concat(getCurrencyTo()) + "\nConsumer: " + getBillFrom().getCard() + "\nsumma: " + summa +
+                    " " + getCurrencyFrom() + "\n" + new Date() + "\n-------------Barclays-------------";
+        }
+
+        return "Receipt: #" + getId() + "\nOperation: " + getType()  + " " + getCurrencyFrom().concat(getCurrencyTo()) + "\nSender: " + getBillFrom().getCard() + "\nRecipient: " + getBillTo().getCard() + "\nsumma: " + summa + " " + getCurrencyFrom() + "\n" + new Date() + "\n-------------Barclays-------------";
 
     }
 }

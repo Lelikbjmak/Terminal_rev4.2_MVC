@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
@@ -38,8 +39,8 @@ public class client implements Serializable {
     @Pattern(regexp = "\\d{7,16}", message = "Not valid format.")
     private String phone;
 
-    @NotBlank(message = "Passport can't be blank.")
     @Column(name = "passport")
+    @NotBlank(message = "Passport can't be blank.")
     @Pattern(regexp = "^[A-Z]{2}\\d{7}$", message = "Not valid format.")
     private String passport;
 
@@ -47,6 +48,7 @@ public class client implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
+    @Past(message = "Date should be in the past.")
     private Date birth;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many bills

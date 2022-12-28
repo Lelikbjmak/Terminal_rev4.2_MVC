@@ -1,9 +1,10 @@
 package com.example.Terminal_rev42.Model;
 
+
+import javax.validation.constraints.NotBlank;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,11 +24,10 @@ public class VerificationToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     @Column(unique = true)
+    @NotBlank(message = "Token can't be blank.")
     private String token;
 
-    @Column(updatable = true)
     @Basic(optional = false)
     private Date expiryDate;
 
@@ -70,11 +70,11 @@ public class VerificationToken {
         this.expiryDate = expiryDate;
     }
 
-    public com.example.Terminal_rev42.Model.user getUser() {
+    public user getUser() {
         return user;
     }
 
-    public void setUser(com.example.Terminal_rev42.Model.user user) {
+    public void setUser(user user) {
         this.user = user;
     }
 
