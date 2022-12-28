@@ -22,7 +22,7 @@ public class receiptsServiceImpl implements receiptsService {
 
     @Override
     public receipts findFirstByBillInOrderByIdDesc(Collection<bill> bills) {
-        return receiptsRepository.findFirstByBillfromInOrderByIdDesc(bills);
+        return receiptsRepository.findFirstByBillFromInOrderByIdDesc(bills);
     }
 
 }
