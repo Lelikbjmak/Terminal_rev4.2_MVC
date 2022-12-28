@@ -78,6 +78,7 @@
                     <option value="Personal" selected="selected" >Personal use card</option>
                     <option value="Corporate">Corporate card</option>
                 </select>
+                <small></small>
             </div>
 
             <label for="Currency" ><b>Currency</b></label>
@@ -88,6 +89,7 @@
                     <option value="EUR">EUR</option>
                     <option value="RUB" >RUB</option>
                 </select>
+                <small></small>
             </div>
 
             <button class="butregister" type="submit">Register</button>
@@ -106,15 +108,13 @@
                 <option th:each="bill : ${session.bills}" th:text="${bill.card}">
                 </option>
             </select>
-            <br>
-            <small></small>
+            <small style="align: left;"></small>
         </div>
 
         <label>Pin code</label>
         <div class="r2">
             <input type="password" placeholder="****" maxlength="4" id="pincode">
-            <br>
-            <small></small>
+            <small style="align: left;"></small>
         </div>
 
         <button class="bb" id="b">Check</button>
@@ -215,7 +215,7 @@
 </div>
 
 
-<footer class="footer-distributed" id="support" style="margin-top: 9.8%;">
+<footer class="footer-distributed" id="support" style="margin-top: 9.3%;">
 
     <div class="footer-left">
 
