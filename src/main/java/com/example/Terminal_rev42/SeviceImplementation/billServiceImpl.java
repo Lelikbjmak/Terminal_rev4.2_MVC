@@ -9,13 +9,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 @Service
+@Transactional
 public class billServiceImpl implements billService {
 
     @Autowired
@@ -51,6 +54,7 @@ public class billServiceImpl implements billService {
     public void deactivateBill(bill bill) {
 
         bill.setActive(false);
+        bill.setLockTime(LocalDateTime.now());
         billRepository.save(bill);
     }
 
@@ -129,7 +133,7 @@ public class billServiceImpl implements billService {
 
     @Override
     public boolean checkLedger(bill bill, BigDecimal summa) {
-        return bill.getLedger().compareTo(summa) >=0 ? true : false;
+        return bill.getLedger().compareTo(summa) >= 0;
     }
 
 
@@ -148,12 +152,12 @@ public class billServiceImpl implements billService {
             throw new BillNotFoundException("Bill " + card + " doesn't exist.", card);
 
         if(!bill.isActive())
-            throw new BillInactiveException("Bill " + card + " is out of validity. Expired date: " + bill.getValidity(), bill);
+            throw new BillInactiveException("Bill " + card + " is out of validity. Expired date: " + bill.getValidity() + ".", bill);
 
         unlockCard(bill); // if bill is active, but there is a likelihood that it may be temporary locked -> try to unlock due to interaction with bill from client
 
         if(bill.isTemporalLock())
-            throw new TemporaryLockedBillException("Bill " + card + " was temporary locked due to 3 failed attempts. It will be unlocked " + bill.getLockTime().plusDays(1), bill);
+        throw new TemporaryLockedBillException("Bill " + card + " was temporary locked due to 3 failed attempts. It will be unlocked " + bill.getLockTime().plusDays(1).toLocalDate() + " " + bill.getLockTime().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".", bill);
 
         return bill;
 
@@ -165,7 +169,13 @@ public class billServiceImpl implements billService {
 
         if(!checkPin(bill, rawPassword)){
             increaseFailedAttempts(bill);
-            throw new IncorrectBillPinException("Incorrect pin. Attempts left: " + Integer.toString(com.example.Terminal_rev42.Entities.bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".", bill);
+            String message = null;
+            if(bill.getFailedAttempts() == 3) {
+                message = "Incorrect pin. Card is temporary locked. It will be unlocked " + LocalDateTime.now().toLocalDate().plusDays(1) + " " + LocalDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".";
+            } else
+                message = "Incorrect pin. Attempts left: " + (com.example.Terminal_rev42.Entities.bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".";
+
+            throw new IncorrectBillPinException(message, bill);
         }
 
         if (!checkLedger(bill, summa))
@@ -179,7 +189,13 @@ public class billServiceImpl implements billService {
 
         if(!checkPin(bill, rawPassword)){
             increaseFailedAttempts(bill);
-            throw new IncorrectBillPinException("Incorrect pin. Attempts left: " + Integer.toString(com.example.Terminal_rev42.Entities.bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".", bill);
+            String message = null;
+            if(bill.getFailedAttempts() == 3) {
+                message = "Incorrect pin. Card is temporary locked. It will be unlocked " + LocalDateTime.now().toLocalDate().plusDays(1) + " " + LocalDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".";
+            } else
+                message = "Incorrect pin. Attempts left: " + (com.example.Terminal_rev42.Entities.bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".";
+
+            throw new IncorrectBillPinException(message, bill);
         }
 
         return true;
