@@ -35,27 +35,31 @@ public class bill implements Serializable {
     public static final long LOCK_TIME_DURATION =  1; // 24 hours = 1 day
 
     @Id
-    @NotBlank
-    @Size(min = 19, max = 19)
+    @NotBlank(message = "Card number can't be blank.")
+    @Pattern(regexp = "(\\d{4}\\s){3}\\d{4}", message = "Not valid format of card number.")
+    @Size(min = 19, max = 19, message = "Length of card number must comprise 19 symbols.")
     private String card;
 
     @ManyToOne
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private client client;
 
-    @NotBlank
+    @Column(length = 40)
+    @NotBlank(message = "Type can't be blank.")
     private String type;
 
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false, length = 5)
+    @NotBlank(message = "Currency can't be blank.")
     private String currency;
 
-    @NotBlank
-    @DecimalMin("00.00")
+    @Column(nullable = false)
+    @DecimalMin(value = "00.00", message = "Ledger can't be below zero.")
+    @Positive( message = "Ledger can't be negative.")
     private BigDecimal ledger;
 
-    @NotBlank
-    @Size(min = 4, max = 4)
-    @Column(length = 4)
+    @Column(nullable = false)
+    @NotBlank(message = "Pin is mandatory.")
+    @Size(min = 4, message = "Pin must contain 4 symbols.")
     private String pin;
 
     @Column(name = "validity", updatable = false, nullable = false)
@@ -63,24 +67,24 @@ public class bill implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Europe/Minsk")
     private LocalDate validity;
 
-    @NotBlank
-    private boolean active;
+    @Column(nullable = false)
+    private boolean active;        // if bill is activated
 
-    @Column(name = "temporalLock", nullable = false)
+    @Column(name = "temporalLock", nullable = false)      // true if bill was temporary locked due to 3 failed attempts
     private boolean temporalLock;
 
     @Column(name = "failed_attempts", nullable = false)
-    @Min(0)
-    @Max(3)
-    private int failedAttempts;
+    @Min(value = 0, message = "failedAttempts can't be less than 0.")
+    @Max(value = 3, message = "failedAttempts can't be more than 3.")
+    private int failedAttempts;  // failed attempts if we input incorrect pin as operation confirmation - (3 failedAttempts -> lock bill for 24 hours)
 
-    @Column(name = "lock_time")
+    @Column(name = "lock_time")       // lockTime after
     private LocalDateTime lockTime;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billfrom")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billFrom")   // receipts for this bill as Sender
     private Set<receipts> receipts;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billto")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billTo")  // receipts for this bill as Recipient
     private Set<receipts> receipts1;
 
     @Override
