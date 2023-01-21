@@ -36,6 +36,7 @@
 
 </header>
 
+
 <div class="fixedholding">
 
     <div class="fixed">
@@ -177,7 +178,7 @@
             <label>Card</label>
             <div class="r2">
                 <select id="billfrom" onkeyup="checkParamsFixedPaymentCard();">
-                    <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+                    <option th:each="bill : ${session.bills}" th:text="${bill.card} + ' (' + ${bill.currency} + ')'">
                     </option>
                 </select>
                 <br>
@@ -209,6 +210,7 @@
 <div class="wrap" id="wrap">
     <div class="message" id="message"></div>
     <div class="loader"></div>
+    <button class="bl" id="again" >Try again</button>
     <button class="bl" id="prev">back</button>
 </div>
 
@@ -261,9 +263,9 @@
 
         <div class="footer-icons">
 
-            <a href="#"><i class="fa-brands fa-telegram"></i></a>
+            <a href="https://t.me/IamSoloveyDenis"><i class="fa-brands fa-telegram"></i></a>
             <a href="https://www.instagram.com/barclaysuk/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-            <a href="https://www.linkedin.com/feed/?trk=onboarding-landing" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://www.linkedin.com/in/iamdenissolovey" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
             <a href="https://github.com/Lelikbjmak" target="_blank"><i class="fa-brands fa-github"></i></a>
 
         </div>
