@@ -146,7 +146,7 @@ function setSuccessFor(input){
 
 
 async function getprecentage(data, data1){
-const response = fetch("http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + data + "&term=" + data1);
+const response = fetch("http://localhost:8080/Barclays/service/holdings/PercentageForFixed?currency=" + data + "&term=" + data1);
 return await response;
 // we return promise but 'response' will be our response.json()
 }
@@ -257,14 +257,14 @@ forma.addEventListener('submit', (e) => {
                 var summavalue = $("#dep1").val();
 
             investment = {
-                "type":"",
-                "percentage":"",
-                "currency":"",
-                "term":""
+                "type":typevalue,
+                "percentage":percentage,
+                "currency":currencyvalue,
+                "term":termvalue
             };
 
             $.ajax({
-                url: '/Barclays/bill/HoldCash',
+                url: '/Barclays/service/holdings/HoldCash',
                 type: 'post',
                 contentType: 'application/json',
                 data: JSON.stringify({investment, "deposit":summavalue, "currencyFrom":currencyfromvalue}),
@@ -287,11 +287,11 @@ forma.addEventListener('submit', (e) => {
                         msg = dat.message;
                     } else if (jqXHR.status === 0) {
                         msg = 'Not connect. Verify Network.';
-                    } else if (jqXHR.status == 404) {
+                    } else if (jqXHR.status === 404) {
                         msg = 'Requested page not found. [404]';
-                    } else if (jqXHR.status == 500) {
+                    } else if (jqXHR.status === 500) {
                         msg = 'Internal Server Error [500].';
-                    }else if (jqXHR.status == 400) {
+                    }else if (jqXHR.status === 400) {
                         msg = dat.message;
                     }else if (exception === 'parsererror') {
                         msg = 'Requested JSON parse failed.';
@@ -300,7 +300,7 @@ forma.addEventListener('submit', (e) => {
                     } else if (exception === 'abort') {
                         msg = 'Ajax request aborted.';
                     } else {
-                        msg = 'Uncaught Error. ' + jqXHR.responseText;
+                        msg = 'Uncaught Error. ' + dat.message;
                     }
 
                     $('div.message').text(msg);
@@ -350,14 +350,14 @@ forma.addEventListener('submit', (e) => {
             var pinvalue = $("#pin").val().trim();
 
             investment = {
-                "type":"typevalue",
+                "type":typevalue,
                 "percentage":percentage,
-                "currency":"",
+                "currency":currencyvalue,
                 "term":termvalue
             };
 
             $.ajax({
-                url: '/Barclays/bill/HoldCard',
+                url: '/Barclays/service/holdings/HoldCard',
                 type: 'post',
                 contentType: 'application/json',
                 data: JSON.stringify({investment, "deposit":summavalue, "pin":pinvalue, "bill":billvalue}),
@@ -374,6 +374,7 @@ forma.addEventListener('submit', (e) => {
 
                     var msg = '';
                     var dat = JSON.parse(jqXHR.responseText);
+                    alert(jqXHR.responseText);
 
                     if (jqXHR.status === 200) {
                         msg = dat.message;
@@ -417,6 +418,22 @@ forma.addEventListener('submit', (e) => {
                     if('type' in dat){
                         const tp = document.getElementById('type1');
                         setErrorFor(tp, dat.type);
+                    }
+
+                    if('bill' in dat) {
+                        const bF = document.getElementById("billfrom");
+                        setErrorFor(bF, dat.bill);
+                    }
+
+                    if('pin' in dat){
+                        const pn = document.getElementById("pin");
+                        pn.parentElement.classList.remove('success');
+                        setErrorFor(pn, dat.pin);
+                    }
+
+                    if('ledger' in dat){
+                       const ledger = document.getElementById("dep2");
+                       setErrorFor(ledger, dat.ledger);
                     }
 
 

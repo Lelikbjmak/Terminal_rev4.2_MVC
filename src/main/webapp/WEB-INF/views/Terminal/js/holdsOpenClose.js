@@ -14,15 +14,17 @@ var header = document.querySelectorAll('.menu');
 const win1 = document.getElementById('fixinvest');
 
 const closebut = document.getElementById('prev');
+const againButton = document.getElementById('again');
 
 var wrap = document.getElementById('wrap');
 
 // fixed hold
 fixh.addEventListener('click', function(){
 
-fetch("http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + currency.value.trim() + "&term=" + term.value.trim()).then(response => response.text())
+fetch("http://localhost:8080/Barclays/service/holdings/PercentageForFixed?currency=" + currency.value.trim() + "&term=" + term.value.trim()).then(response => response.text())
 .then(responseText => {
-   percentage.value = responseText;
+    var dat = JSON.parse(responseText);
+    percentage.value = dat.percentage;
 });
 
     win1.style.marginTop = '-1280px';
@@ -49,9 +51,10 @@ fetch("http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + curre
 // capitalisation of interests
 cplb.addEventListener('click', function(){
 
-fetch("http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + currency.value.trim() + "&term=" + term.value.trim()).then(response => response.text())
+fetch("http://localhost:8080/Barclays/service/holdings/PercentageForFixed?currency=" + currency.value.trim() + "&term=" + term.value.trim()).then(response => response.text())
 .then(responseText => {
-   percentage.value = responseText;
+        var dat = JSON.parse(responseText);
+        percentage.value = dat.percentage;
 });
 
     win1.style.marginTop = '-730px';
@@ -172,5 +175,38 @@ header[i].style.zIndex = '3';
 for(var i = 0; i < forms.length; i++){
 forms[i].reset();
 }
+
+});
+
+
+againButton.addEventListener('click', function(){
+
+    wrap.style.opacity = '0%';
+    wrap.style.zIndex = '0';
+
+
+    for(var i = 0; i < messages.length; i++){
+        messages[i].style.zIndex = '1';
+    }
+
+
+    var msg = document.getElementById('message');
+    msg.innerHTML = "";
+
+    var ccc = document.querySelectorAll('.bl');
+    for(var i = 0; i< ccc.length; i++){
+    ccc[i].style.opacity = '0%';
+    }
+
+    var loader = document.querySelectorAll('.loader');
+    for(var i = 0; i< loader.length; i++){
+    loader[i].style.opacity = '100%';
+    }
+
+    cardpayment.style.zIndex = '5';
+    cardpayment.style.opacity = '0%';
+    cashpayment.style.zIndex = '5';
+    cashpayment.style.opacity = '0%';
+    wins[0].style.opacity = '100%';
 
 });
