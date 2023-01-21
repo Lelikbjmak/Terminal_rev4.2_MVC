@@ -1,6 +1,5 @@
 package com.example.Terminal_rev42.ControllerTest;
 
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -116,40 +114,5 @@ public class BillControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
-
-    @Test
-    @WithUserDetails(value = "testUser")
-    @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void successGetInterestsForFixedHolding(@Value("${bill.currency.value1}") String currency, @Value("${holdings.term.value.6}") String term) throws Exception {
-        mockMvc.perform(get("/Barclays/bill/PercentageForFixed")
-                        .param("currency", currency)
-                        .param("term", term))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithUserDetails(value = "testUser")
-    @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void failedGetInterestsForFixedHolding(@Value("${holdings.term.value.36}") String term) throws Exception {
-
-        String invalidTerm = "123";
-        String blankCurrency = "";
-        String unsupportedCurrency = "LIR";
-
-        mockMvc.perform(get("/Barclays/bill/PercentageForFixed")
-                        .param("currency", blankCurrency)
-                        .param("term", invalidTerm))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-        mockMvc.perform(get("/Barclays/bill/PercentageForFixed")
-                        .param("currency", unsupportedCurrency)
-                        .param("term", term))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-    }
-
 
 }

@@ -191,7 +191,7 @@ forma.addEventListener('submit', (e) => {
                 } else if (jqXHR.status === 500) {
                     msg = 'Internal Server Error [500].';
                 }else if (jqXHR.status === 400) {
-                    msg = jqXHR.responseText;
+                    msg = data.message;
                 }else if (exception === 'parsererror') {
                     msg = 'Requested JSON parse failed.';
                 } else if (exception === 'timeout') {
@@ -246,7 +246,7 @@ forma.addEventListener('submit', (e) => {
                 }
 
                 setTimeout(() => {
-                $('div.message').text(data.message);
+                $('div.message').text(msg);
                 $('div.message').html($('div.message').html().replace(/\n/g,'<br/>'));
                 $('div.message1').text('');
                 $('.loader').css({'opacity':'0%', 'z-index':'0'});
