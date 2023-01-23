@@ -1,4 +1,4 @@
-package com.example.Terminal_rev42.ControllerTest;
+package com.example.Terminal_rev42.ServicesTest;
 
 
 import com.example.Terminal_rev42.Entities.bill;
