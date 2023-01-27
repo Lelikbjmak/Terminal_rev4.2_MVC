@@ -5,7 +5,10 @@ import com.example.Terminal_rev42.Entities.bill;
 import com.example.Terminal_rev42.Entities.investments;
 import com.example.Terminal_rev42.Exceptions.*;
 import com.example.Terminal_rev42.Model.rates;
-import com.example.Terminal_rev42.SeviceImplementation.*;
+import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.investServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
@@ -33,11 +36,14 @@ import javax.validation.Validator;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.*;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Controller
 @RequestMapping("/Barclays/service/holdings")
-@SessionAttributes("bills")
+@SessionAttributes(value = {"bills", "invests"})
 @Validated // to active validation in RequestParams/RequestBody with valid the same
 public class InvestmentController {
 
@@ -207,6 +213,12 @@ public class InvestmentController {
     }
 
 
+    @ExceptionHandler(InvestmentIsNotFound.class)
+    private ResponseEntity<Map<String, String>> HoldingIsNotFound(InvestmentIsNotFound exception, HttpServletRequest request){
+        logger.error("Exception InvestmentIsNotFound is thrown for: " + request.getSession().getId() + ".");
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "holding", "Holding doesn't exist."));
+    }
+
     @GetMapping("PercentageForFixed")
     @ResponseBody
     @Transactional(propagation = Propagation.REQUIRED)
@@ -357,6 +369,23 @@ public class InvestmentController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Internal Server error."));
     }
 
+
+    @PostMapping("/holdingInfo")
+    @ResponseBody
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Map<String, String> getHoldingInfo(@RequestParam("holdingId") long holdingId) throws InvestmentIsNotFound {
+
+        Optional<investments> optionalInvestments = investService.findById(holdingId);
+        investments investment = null;
+        if (optionalInvestments.isPresent())
+            investment = optionalInvestments.get();
+         else throw new InvestmentIsNotFound(holdingId, "Holding with id: " + holdingId + " is not found.");
+
+        return Map.of("message", "Invest# " + investment.getId() + "\nType: " + investment.getType() + "\nTerm: " +
+               investment.getTerm() + "\nContribution: " + investment.getContribution() + " " + investment.getCurrency() + "\nBegin of invest: " + investment.getBegin() +
+                "\nTurn profit in: " + DAYS.between(investment.getBegin(), LocalDate.now()) + " days" + "\n\n...Barclays...");
+    }
+
     private boolean validateInvestAndPinAndDepositForInvestmentApply(investments investment, String pin, String card,  BigDecimal deposit){
 
         Set<ConstraintViolation<Object>> violations = validator.validate(investment);
@@ -391,14 +420,6 @@ public class InvestmentController {
         investService.addInvest(investment);
         logger.info("Investment " + investment + " is successfully registered.");
     }
-
-
-//    @PostMapping("InvestmentCondition")
-//    @ResponseBody
-//    @Transactional(propagation = Propagation.REQUIRED)  // with card payment
-//    public ResponseEntity<Map<String, String>> checkInvestmentCondition(@RequestBody long InvestId){
-//
-//    }
 
 
     private Map<String, Double> Rates(String source){
