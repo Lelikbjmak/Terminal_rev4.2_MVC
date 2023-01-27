@@ -33,7 +33,7 @@ form3.addEventListener('submit', (e) => {
                 billFrom: billfrom,  //1st in Java | 2nd here
                 currency: currency,
                 summa: summa,
-                pin: ""
+                pin: pin
             }, function(data) {
 
              }).done(function(data, textStatus, jqXHR){
@@ -73,7 +73,8 @@ form3.addEventListener('submit', (e) => {
                 }
 
                 if('pin' in dat){
-                    const pn = document.getElementById("pin");
+                    const pn = document.getElementById("pin3");
+                    pn.parentElement.classList.remove('success');
                     setErrorFor(pn, dat.pin);
                 }
 
