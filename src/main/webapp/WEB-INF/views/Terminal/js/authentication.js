@@ -28,6 +28,5 @@ const loginButton = document.querySelector("#loggin");
 
 loginButton.addEventListener("click", function(){
     $('.fa-lg').css({'opacity':'100%'});
-    $('#loggin').attr('disabled', 'disabled');
 });
 
