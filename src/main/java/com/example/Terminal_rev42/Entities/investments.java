@@ -37,7 +37,7 @@ public class investments implements Serializable {
 
     @Column(name = "percentage", nullable = false)
     @DecimalMin(value = "00.00", message = "Interest must be more than 00.00.")
-    @Digits(integer = 1, fraction = 2, message = "Not valid format.")
+    @Digits(integer = 2, fraction = 2, message = "Not valid format.")
     private BigDecimal percentage;
 
     @Column(name = "summa")

@@ -37,9 +37,10 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         } else if (!userService.passwordMatch(password, username) && user.getFailedAttempts() < 3){
 
-            userLockedValidation(user);
-
-            response.sendRedirect("/Barclays/authorisation?message=Invalid%20password.");
+            if(userLockedValidation(user))
+                response.sendRedirect("/Barclays/authorisation?message=Account%20temporary%20locked%20due%20to%203%20failed%20attempts.%20It%20will%20be%20unlocked%20" + user.getLockTime().plusDays(1).toLocalDate() + "%20" + user.getLockTime().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".");
+            else
+                response.sendRedirect("/Barclays/authorisation?message=Invalid%20password. Attempts left: " + (3 - user.getFailedAttempts()));
 
         } else if(user.isTemporalLock()){
 
@@ -49,7 +50,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
     }
 
-    private void userLockedValidation(user user){
+    private boolean userLockedValidation(user user){
 
         userService.increaseFailedAttempts(user);
         logger.error("User: " + user.getUsername() + ", failed attempts: " + user.getFailedAttempts());
@@ -57,8 +58,10 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         if(user.getFailedAttempts() == com.example.Terminal_rev42.Model.user.MAX_FAILED_ATTEMPTS){
             userService.lockUser(user);
             logger.error("User: " + user.getUsername() + " is locked due to 3 failed attempts. Lock time: " + user.getLockTime());
+            return true;
         }
 
+        return false;
     }
 
 }
