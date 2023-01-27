@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 @Service
-@Transactional
 public class userServiceImpl implements userService {
 
 
@@ -56,8 +55,8 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public boolean passwordMatch(String password, String username) {
-        return bCryptPasswordEncoder.matches(password, userDAO.findByUsername(username).getPassword());
+    public boolean passwordMatch(String rawPassword, String username) {
+        return bCryptPasswordEncoder.matches(rawPassword, userDAO.findByUsername(username).getPassword());
     }
 
     @Override

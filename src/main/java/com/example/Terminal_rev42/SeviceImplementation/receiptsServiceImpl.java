@@ -13,7 +13,7 @@ import java.util.Collection;
 public class receiptsServiceImpl implements receiptsService {
 
     @Autowired
-    receiptsRepository receiptsRepository;
+    private receiptsRepository receiptsRepository;
 
     @Override
     public void save(receipts receipt) {

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 public final class NotificationsAboutBillValidityAndHolds {
 
     @Autowired
-    billServiceImpl billService;
+    private billServiceImpl billService;
 
     @Autowired
-    BillAndInvestValidityEventListener notifyValidityListener;
+    private BillAndInvestValidityEventListener notifyValidityListener;
 
     private static final int firstTerm = 7;  // send mail about expiration 7 day term
 

@@ -27,13 +27,8 @@ public class receipts {
         date = LocalDate.now();
     }
 
-    public receipts(String type, bill billFrom, BigDecimal summa, String currencyFrom, String currencyTo) {   // other Operations (referred to 1 bill)
-        setType(type);
-        setBillFrom(billFrom);
-        setSumma(summa);
-        setCurrencyFrom(currencyFrom);
-        setCurrencyTo(currencyTo);
-        date = LocalDate.now();
+    public receipts(){
+
     }
 
     @Id

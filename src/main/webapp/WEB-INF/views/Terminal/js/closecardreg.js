@@ -65,7 +65,8 @@ header[i].style.zIndex = '3';
 }
 
 for(var i = 0; i < formm.length; i++){
-formm[i].reset();
+    if(formm[i].tagName === 'FORM')
+        formm[i].reset();
 }
 
 });
