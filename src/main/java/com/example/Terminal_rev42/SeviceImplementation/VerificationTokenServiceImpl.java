@@ -16,7 +16,7 @@ import java.util.UUID;
 public class VerificationTokenServiceImpl implements VerificationTokenService {
 
     @Autowired
-    VerificationTokenRepository tokenRepository;
+    private VerificationTokenRepository tokenRepository;
 
     @Override
     public VerificationToken createVerificationToken(user user) {
