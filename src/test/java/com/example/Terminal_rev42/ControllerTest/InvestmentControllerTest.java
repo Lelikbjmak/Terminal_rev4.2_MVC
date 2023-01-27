@@ -66,6 +66,7 @@ public class InvestmentControllerTest {
 
     @Test
     @WithUserDetails(value = "testUser")
+    @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void successHoldCashPaymentTest(@Value("${holding.type.value.fixed}") String type, @Value("${bill.currency.value3}") String currency, @Value("${holdings.term.value.6}") String term,
                                            @Value("${holding.percentage.byn.term.6}") String interest, @Value("${holding.deposit.value}") String deposit, @Value("${bill.currency.value1}") String currencyToDep) throws Exception {
 
@@ -145,6 +146,21 @@ public class InvestmentControllerTest {
         mockMvc.perform(post("/Barclays/service/holdings/HoldCard")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    @WithUserDetails(value = "testUser")
+    @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/create-investment-before-invest-controller-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/drop-tables-after-bill-operations.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void obtainInfoAboutHolding() throws Exception {
+
+
+        mockMvc.perform(post("/Barclays/service/holdings/holdingInfo")
+                        .param("holdingId", String.valueOf(22)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
