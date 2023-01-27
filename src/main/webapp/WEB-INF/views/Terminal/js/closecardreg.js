@@ -153,7 +153,6 @@ var recbutton = document.getElementById("rec");
 
 
 recbutton.addEventListener("click", function(){
-    alert("rebuild card# " + datafromcardreg);
     savecardfile();
     but.removeAttribute("disabled");
 });

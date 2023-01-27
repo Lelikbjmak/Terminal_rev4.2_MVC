@@ -16,10 +16,10 @@ import java.time.LocalDate;
 public final class CheckBillsValidity {
 
     @Autowired
-    billServiceImpl billService;
+    private billServiceImpl billService;
 
     @Autowired
-    BillAndInvestValidityEventListener notifyValidityListener;
+    private BillAndInvestValidityEventListener notifyValidityListener;
 
     private static final int term = 1000*60*60*24; // 1 day
 

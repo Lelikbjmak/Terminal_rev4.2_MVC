@@ -25,7 +25,7 @@ public class billServiceImpl implements billService {
     private BillRepository billRepository;
 
     @Autowired
-    BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     private static final Logger logger = LoggerFactory.getLogger(billServiceImpl.class);
 
@@ -157,7 +157,7 @@ public class billServiceImpl implements billService {
         unlockCard(bill); // if bill is active, but there is a likelihood that it may be temporary locked -> try to unlock due to interaction with bill from client
 
         if(bill.isTemporalLock())
-        throw new TemporaryLockedBillException("Bill " + card + " was temporary locked due to 3 failed attempts. It will be unlocked " + bill.getLockTime().plusDays(1).toLocalDate() + " " + bill.getLockTime().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".", bill);
+            throw new TemporaryLockedBillException("Bill " + card + " was temporary locked due to 3 failed attempts. It will be unlocked " + bill.getLockTime().plusDays(1).toLocalDate() + " " + bill.getLockTime().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".", bill);
 
         return bill;
 
@@ -179,7 +179,7 @@ public class billServiceImpl implements billService {
         }
 
         if (!checkLedger(bill, summa))
-            throw new NotEnoughLedgerException("Not enough ledger to pay " + summa, bill);
+            throw new NotEnoughLedgerException("Not enough ledger to pay " + summa + " " + bill.getCurrency(), bill);
 
         return true;
     }

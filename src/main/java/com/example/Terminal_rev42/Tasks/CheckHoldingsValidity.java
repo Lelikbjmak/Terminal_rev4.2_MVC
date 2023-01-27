@@ -15,15 +15,16 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Component
 public final class CheckHoldingsValidity {
 
     @Autowired
-    investServiceImpl investService;
+    private investServiceImpl investService;
 
     @Autowired
-    BillAndInvestValidityEventListener notifyValidityListener;
+    private BillAndInvestValidityEventListener notifyValidityListener;
 
     private static final int term = 1000*60*60*24;  // 1 day
 
@@ -85,11 +86,11 @@ public final class CheckHoldingsValidity {
 
                         RestTemplate res = new RestTemplate();
                         String url = "http://localhost:8080/Barclays/bill/PercentageForFixed?currency=" + p.getCurrency().toUpperCase() + "&term=" + p.getTerm();
-                        ResponseEntity response = res.getForEntity(url, String.class);
+                        ResponseEntity<String> response = res.getForEntity(url, String.class);
 
                         if (response.getStatusCode().value() == 200) {  // we obtain percentage from request successfully
 
-                            p.setPercentage(p.getPercentage().add(BigDecimal.valueOf(Double.parseDouble(response.getBody().toString()))));
+                            p.setPercentage(p.getPercentage().add(BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(response.getBody()).toString()))));
 
                             notifyValidityListener.handleNotifyEventOutOfValidityInvests(new InvestExpirationEvent(p));
 

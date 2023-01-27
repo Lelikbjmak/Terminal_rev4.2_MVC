@@ -1,6 +1,6 @@
 const forma = document.getElementById('ledgermenu');
 
-const bill = document.getElementById('bill');
+const billF = document.getElementById('bill');
 
 const pin = document.getElementById('pincode');
 
@@ -25,11 +25,14 @@ forma.addEventListener('submit', (e) => {
 
                  }).done(function(data, textStatus, jqXHR){
                         setTimeout(() => {
-                     $('div.message').text(jqXHR.responseText);
+                     $('div.message').text(data.message);
                      $('.loader').css({'opacity':'0%', 'z-index':'0'});
                      }, 3000);
 
                 }).fail(function(jqXHR, exception, textStatus, errorThrown) {
+
+                    var data = JSON.parse(jqXHR.responseText);
+
                     var msg = '';
                     if (jqXHR.status === 0) {
                         msg = 'Not connect. Verify Network.';
@@ -38,7 +41,7 @@ forma.addEventListener('submit', (e) => {
                     } else if (jqXHR.status == 500) {
                         msg = 'Internal Server Error [500].';
                     }else if (jqXHR.status == 400) {
-                        msg = jqXHR.responseText;
+                        msg = data.message;
                     }else if (exception === 'parsererror') {
                         msg = 'Requested JSON parse failed.';
                     } else if (exception === 'timeout') {
@@ -46,8 +49,10 @@ forma.addEventListener('submit', (e) => {
                     } else if (exception === 'abort') {
                         msg = 'Ajax request aborted.';
                     } else {
-                        msg = 'Uncaught Error. ' + jqXHR.responseText;
+                        msg = 'Uncaught Error. ' + data.message;
                     }
+
+
 
                     setTimeout(() => {
                     $('div.message').text(msg);
@@ -67,16 +72,16 @@ function ch(){
 
     let flag = true;
 
-    var billvalue = bill.value.trim();
+    var billvalue = billF.value.trim();
     var pinvalue = pin.value.trim();
 
     var pinreg = /^\d{4}$/;
 
     if(billvalue === ''){
         flag = false;
-        setErrorFor(bill, "You don't wield any card")
+        setErrorFor(billF, "You don't wield any card")
     }else{
-        setSuccessFor(bill);
+        setSuccessFor(billF);
     }
 
     if(pinvalue === ''){
