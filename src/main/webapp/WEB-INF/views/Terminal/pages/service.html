@@ -33,7 +33,11 @@
 
 <nav class="dws-menu">
     <ul>
-        <li><a href="/Barclays/service/holdings"><i class="fa fa-hold"></i>Holdings</a>
+        <li><a href="#"><i class="fa fa-hold"></i>Holdings</a>
+            <ul>
+                <li><a href="/Barclays/service/holdings">open holding</a></li>
+                <li><a id="holdingCondition">Check your holding</a></li>
+            </ul>
         </li>
 
         <li><a href="#"><i class="fa fa-cards"></i>Cards</a>
@@ -105,7 +109,7 @@
         <label>Card</label>
         <div class="r2">
             <select id="bill">
-                <option th:each="bill : ${session.bills}" th:text="${bill.card}">
+                <option th:each="bill : ${session.bills}" th:text="${bill.card} + ' (' + ${bill.currency} + ')'">
                 </option>
             </select>
             <small style="align: left;"></small>
@@ -206,6 +210,36 @@
     <script src="/Terminal/js/convertot.js"></script>
 </div>
 
+<div class="form-pop" id="hld">
+
+    <div class="con">
+
+        <h2><u>#Holding info#</u></h2>
+
+        <br>
+
+        <label for="currHold">Holding</label>
+        <br>
+        <select  id="currHold" onchange="getInfAboutHold();">
+            <option th:each="invest : ${session.invests}" th:text="${invest.id} + ' (' + ${invest.currency} + ')'">
+            </option>
+        </select>
+
+        <br>
+
+        <div id="holdInfo"></div>
+
+        <br>
+
+        <div>
+            <div id="currdate1"></div>
+            <div id="currtime1"></div>
+        </div>
+
+        <script src="/Terminal/js/getHoldingInfo.js"></script>
+    </div>
+
+</div>
 
 <div class="wrap" id="wrap">
     <div class="message" id="message"></div>
