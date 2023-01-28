@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-public class investments implements Serializable {
+public class Investments implements Serializable {
 
-    public investments(){
+    public Investments(){
         this.begin = LocalDate.now();
         this.status = true;
     }
@@ -29,7 +29,7 @@ public class investments implements Serializable {
     @ManyToOne
     @JoinColumn(name = "client", referencedColumnName = "id")
     @Valid
-    private client client;
+    private Client client;
 
     @Column(name = "type", nullable = false)
     @NotBlank(message = "Type of investment can't be blank.")
@@ -72,11 +72,11 @@ public class investments implements Serializable {
         this.id = id;
     }
 
-    public com.example.Terminal_rev42.Entities.client getClient() {
+    public Client getClient() {
         return client;
     }
 
-    public void setClient(com.example.Terminal_rev42.Entities.client client) {
+    public void setClient(Client client) {
         this.client = client;
     }
 

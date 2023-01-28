@@ -2,8 +2,8 @@ package com.example.Terminal_rev42.ControllerTest;
 
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.userServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -38,10 +38,10 @@ public class ClientControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
-    private userServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Autowired
     private SecurityServiceImpl securityService;

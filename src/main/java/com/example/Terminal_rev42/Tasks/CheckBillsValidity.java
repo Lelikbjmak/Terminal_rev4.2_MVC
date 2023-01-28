@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.Tasks;
 import com.example.Terminal_rev42.EventsListeners.BillAndInvestValidityEventListener;
 import com.example.Terminal_rev42.EventsListeners.BillValidityExpirationEvent;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public final class CheckBillsValidity {
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
     private BillAndInvestValidityEventListener notifyValidityListener;

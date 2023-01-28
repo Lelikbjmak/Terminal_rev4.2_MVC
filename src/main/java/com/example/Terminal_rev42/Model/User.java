@@ -1,6 +1,6 @@
 package com.example.Terminal_rev42.Model;
 
-import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Entities.Client;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -12,9 +12,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class user {
+public class User {
 
-    public user(){
+    public User(){
         this.enabled = false;
         this.failedAttempts = 0;
         this.temporalLock = false;
@@ -71,13 +71,13 @@ public class user {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @Valid
-    private client client;
+    private Client client;
 
-    public com.example.Terminal_rev42.Entities.client getClient() {
+    public Client getClient() {
         return client;
     }
 
-    public void setClient(com.example.Terminal_rev42.Entities.client client) {
+    public void setClient(Client client) {
         this.client = client;
     }
 

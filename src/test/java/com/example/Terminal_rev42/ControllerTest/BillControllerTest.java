@@ -35,7 +35,7 @@ public class BillControllerTest {
 
         String bill = "{\"currency\" : \"" + currency + "\", \"type\" : \"" + type + "\"}";
 
-        mockMvc.perform(post("/Barclays/bill/add")
+        mockMvc.perform(post("/Barclays/Bill/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(bill))
                 .andDo(print())
@@ -48,7 +48,7 @@ public class BillControllerTest {
 
         String bill = "{\"currency\" : \"\", \"type\" : \"\"}";
 
-        mockMvc.perform(post("/Barclays/bill/add")
+        mockMvc.perform(post("/Barclays/Bill/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(bill))
                 .andDo(print())
@@ -60,8 +60,8 @@ public class BillControllerTest {
     @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/create-bill-before-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void successGetLedgerTest(@Value("${bill.card.number.value}") String testCardNumber, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/bill/getLedger")
-                .param("bill", testCardNumber)
+        mockMvc.perform(post("/Barclays/Bill/getLedger")
+                .param("Bill", testCardNumber)
                 .param("pin", pin))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -72,8 +72,8 @@ public class BillControllerTest {
     @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/create-bill-before-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void failedGetLedgerIncorrectPinTest(@Value("${bill.card.number.value}") String testCardNumber, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/bill/getLedger")
-                        .param("bill", testCardNumber)
+        mockMvc.perform(post("/Barclays/Bill/getLedger")
+                        .param("Bill", testCardNumber)
                         .param("pin", "111"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -84,8 +84,8 @@ public class BillControllerTest {
     @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/create-bill-before-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void failedGetLedgerBillNotExistsTest(@Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/bill/getLedger")
-                        .param("bill", "invalidBill")
+        mockMvc.perform(post("/Barclays/Bill/getLedger")
+                        .param("Bill", "invalidBill")
                         .param("pin", pin))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -95,9 +95,10 @@ public class BillControllerTest {
     @WithUserDetails(value = "testUser")
     @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/create-bill-before-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void failedGetLedgerBillInactiveTest(@Value("${bill.inactive.card.number.value}") String inactiveBill, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/bill/getLedger")
-                        .param("bill", inactiveBill)
+    public void failedGetLedgerBillInactiveTest(@Value("${bill.inactive.card.number.value}") String inactiveBill,
+                                                @Value("${bill.pin.code.value}") String pin) throws Exception {
+        mockMvc.perform(post("/Barclays/Bill/getLedger")
+                        .param("Bill", inactiveBill)
                         .param("pin", pin))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -107,9 +108,10 @@ public class BillControllerTest {
     @WithUserDetails(value = "testUser")
     @Sql(value = "/create-users-before-bill-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/create-bill-before-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void failedGetLedgerBillTemporaryLockedTest(@Value("${bill.temporary.locked.card.number.value}") String lockedBill, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/bill/getLedger")
-                        .param("bill", lockedBill)
+    public void failedGetLedgerBillTemporaryLockedTest(@Value("${bill.temporary.locked.card.number.value}") String lockedBill,
+                                                       @Value("${bill.pin.code.value}") String pin) throws Exception {
+        mockMvc.perform(post("/Barclays/Bill/getLedger")
+                        .param("Bill", lockedBill)
                         .param("pin", pin))
                 .andDo(print())
                 .andExpect(status().isBadRequest());

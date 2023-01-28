@@ -2,7 +2,7 @@ package com.example.Terminal_rev42.Tasks;
 
 import com.example.Terminal_rev42.EventsListeners.BillAndInvestValidityEventListener;
 import com.example.Terminal_rev42.EventsListeners.InvestExpirationEvent;
-import com.example.Terminal_rev42.SeviceImplementation.investServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.InvestServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -21,7 +21,7 @@ import java.util.Objects;
 public final class CheckHoldingsValidity {
 
     @Autowired
-    private investServiceImpl investService;
+    private InvestServiceImpl investService;
 
     @Autowired
     private BillAndInvestValidityEventListener notifyValidityListener;
@@ -71,7 +71,7 @@ public final class CheckHoldingsValidity {
                 if (LocalDate.now().isEqual(p.getBegin().plusYears(1))  || LocalDate.now().isEqual(p.getBegin().plusYears(2))  ||
                         LocalDate.now().isEqual(p.getBegin().plusYears(3)) ) {
 
-                    // if 1, 2, 3 year passed - obtain money on our bill. If term is bigger than 1, 2, 3 years
+                    // if 1, 2, 3 year passed - obtain money on our Bill. If term is bigger than 1, 2, 3 years
 
                     if (p.getType().equalsIgnoreCase(capitalisationInvestType)) {
 

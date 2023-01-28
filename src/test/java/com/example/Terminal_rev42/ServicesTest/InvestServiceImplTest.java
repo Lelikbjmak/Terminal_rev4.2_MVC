@@ -1,10 +1,10 @@
 package com.example.Terminal_rev42.ServicesTest;
 
 
-import com.example.Terminal_rev42.Entities.client;
-import com.example.Terminal_rev42.Entities.investments;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.investServiceImpl;
+import com.example.Terminal_rev42.Entities.Client;
+import com.example.Terminal_rev42.Entities.Investments;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.InvestServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,17 +27,17 @@ import java.math.BigDecimal;
 public class InvestServiceImplTest {
 
     @Autowired
-    private investServiceImpl investService;
+    private InvestServiceImpl investService;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Test
     public void saveInvest(@Value("${client.add.username.value}") String username){
 
-        client client = clientService.findByUser_Username(username);
+        Client client = clientService.findByUser_Username(username);
 
-        investments investment = new investments();
+        Investments investment = new Investments();
         investment.setContribution(BigDecimal.valueOf(100.00));
         investment.setPercentage(BigDecimal.valueOf(10.00));
         investment.setCurrency("USD");
@@ -57,6 +57,7 @@ public class InvestServiceImplTest {
     public void findInvest(){
         Assertions.assertNotNull(investService.findById(1));
         Assertions.assertNotNull(investService.allActiveInvests());
+        Assertions.assertNotNull(investService.allByClientId(1));
     }
 
 

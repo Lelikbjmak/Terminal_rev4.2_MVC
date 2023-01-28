@@ -3,7 +3,7 @@ package com.example.Terminal_rev42.SeviceImplementation;
 import com.example.Terminal_rev42.Exceptions.VerificationTokenAuthenticationExpiredException;
 import com.example.Terminal_rev42.Exceptions.VerificationTokenIsNotFoundException;
 import com.example.Terminal_rev42.Model.VerificationToken;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.Repositories.VerificationTokenRepository;
 import com.example.Terminal_rev42.Servicies.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     private VerificationTokenRepository tokenRepository;
 
     @Override
-    public VerificationToken createVerificationToken(user user) {
+    public VerificationToken createVerificationToken(User user) {
 
         VerificationToken token = new VerificationToken();
         token.setUser(user);
@@ -56,7 +56,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Override
-    public VerificationToken findByUser(user user) throws VerificationTokenIsNotFoundException {
+    public VerificationToken findByUser(User user) throws VerificationTokenIsNotFoundException {
 
         VerificationToken token = tokenRepository.findByUser(user);
 

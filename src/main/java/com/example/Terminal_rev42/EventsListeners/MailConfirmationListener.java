@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.EventsListeners;
 
 import com.example.Terminal_rev42.Model.VerificationToken;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
     @Transactional
     private void confirmRegistration(MailConfirmationEvent event) {
         logger.info("Sending email..." + " to: " + event.getUser().getUsername());
-        user user = event.getUser();
+        User user = event.getUser();
 
         VerificationToken token = tokenService.createVerificationToken(user);
 

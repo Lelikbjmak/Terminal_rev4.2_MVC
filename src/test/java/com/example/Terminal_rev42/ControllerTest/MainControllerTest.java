@@ -1,8 +1,8 @@
 package com.example.Terminal_rev42.ControllerTest;
 
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -35,13 +35,13 @@ public class MainControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
     private SecurityServiceImpl securityService;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
     private SessionRegistry sessionRegistry;

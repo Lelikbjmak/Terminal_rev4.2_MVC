@@ -1,14 +1,13 @@
 package com.example.Terminal_rev42.SeviceImplementation;
 
 import com.example.Terminal_rev42.Model.Role;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.Repositories.UserDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,7 +30,7 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        user user = userDAO.findByUsername(username);
+        User user = userDAO.findByUsername(username);
 
         if (user == null)
             throw new UsernameNotFoundException(username);
@@ -45,7 +44,7 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
         }
 
 
-        UserDetails user1 = User.withUsername(user.getUsername()).password(user.getPassword()).disabled(!user.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(user.isTemporalLock()).authorities(grantedAuthorities).build();
+        UserDetails user1 = org.springframework.security.core.userdetails.User.withUsername(user.getUsername()).password(user.getPassword()).disabled(!user.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(user.isTemporalLock()).authorities(grantedAuthorities).build();
 
         logger.info("User: " + username + " is logging...");
 
@@ -53,9 +52,9 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
     }
 
 
-    private void unlockUserWhenTermExpired(user user) {
+    private void unlockUserWhenTermExpired(User user) {
 
-        if(LocalDateTime.now().isAfter(user.getLockTime().plusDays(com.example.Terminal_rev42.Model.user.LOCK_TIME_DURATION))){
+        if(LocalDateTime.now().isAfter(user.getLockTime().plusDays(User.LOCK_TIME_DURATION))){
 
             logger.info("User: " + user.getUsername() + " is unlocked after temporal lock.");
             user.setTemporalLock(false);

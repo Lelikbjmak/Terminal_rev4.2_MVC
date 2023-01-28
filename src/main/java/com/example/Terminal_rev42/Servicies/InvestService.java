@@ -1,17 +1,17 @@
 package com.example.Terminal_rev42.Servicies;
 
-import com.example.Terminal_rev42.Entities.investments;
+import com.example.Terminal_rev42.Entities.Investments;
 
 import java.util.Optional;
 import java.util.Set;
 
 public interface InvestService {
 
-    void addInvest(investments invest);
+    void addInvest(Investments invest);
 
-    Set<investments> allActiveInvests();
+    Set<Investments> allActiveInvests();
 
-    Optional<investments> findById(long id);
+    Optional<Investments> findById(long id);
 
-    Set<investments> allByClientId(long id);
+    Set<Investments> allByClientId(long id);
 }

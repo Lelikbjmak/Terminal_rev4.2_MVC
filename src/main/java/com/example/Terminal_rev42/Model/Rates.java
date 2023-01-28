@@ -9,11 +9,11 @@ import java.util.Map;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class rates {
+public class Rates {
 
     private Map<String, Double> rate;
 
-    public rates(){}
+    public Rates(){}
 
     public Map<String, Double> getRate() {
         return rate;

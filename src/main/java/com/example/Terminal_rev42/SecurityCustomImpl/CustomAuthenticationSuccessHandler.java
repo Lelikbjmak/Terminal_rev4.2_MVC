@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.SecurityCustomImpl;
 
-import com.example.Terminal_rev42.Model.user;
-import com.example.Terminal_rev42.SeviceImplementation.userServiceImpl;
+import com.example.Terminal_rev42.Model.User;
+import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +17,7 @@ import java.io.IOException;
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Autowired
-    private userServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -28,7 +28,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         String username = userDetails.getUsername();
-        user user = userService.findByUsername(username);
+        User user = userService.findByUsername(username);
 
         if (user.getFailedAttempts() > 0) {
             userService.resetFailedAttempts(user);

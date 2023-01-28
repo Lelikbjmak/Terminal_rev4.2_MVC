@@ -1,10 +1,10 @@
 package com.example.Terminal_rev42.ServicesTest;
 
 
-import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Entities.Client;
 import com.example.Terminal_rev42.Exceptions.ClientAlreadyExistsException;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.userServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,17 +25,17 @@ import java.util.Date;
 public class ClientServiceImplTest {
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
-    private userServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Test
     @Sql(value = "/create-user-before-main-controller-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/drop-users-after-main-controller-test.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void saveClientTest(@Value("${client.add.name.value}") String name, @Value("${client.add.passport.value}") String passport,
                                @Value("${client.add.phone.value}") String phone, @Value("${client.add.username.value}") String username) {
-        client client = new client();
+        Client client = new Client();
         client.setUser(userService.findByUsername(username));
         client.setPassport(passport);
         client.setName(name);

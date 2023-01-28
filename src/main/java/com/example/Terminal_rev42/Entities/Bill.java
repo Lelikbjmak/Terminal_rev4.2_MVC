@@ -16,14 +16,14 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
-public class bill implements Serializable {
+public class Bill implements Serializable {
 
-    public bill(){
+    public Bill(){
         this.card = Long.toString(ThreadLocalRandom.current().nextLong(1_000_000_000_000_000L, 9_999_999_999_999_999L)).replaceAll("(.{4})", "$1 ").trim();
         this.ledger = BigDecimal.valueOf(Math.random() * (3000 - 1000) + 1000).setScale(2, RoundingMode.HALF_UP);
         this.pin = String.valueOf((int)(Math.random()*(9999 - 1000) + 1000));
         this.validity = LocalDate.now().plusYears(3);
-        this.active = false;  // become true if we download card -> activate bill
+        this.active = false;  // become true if we download card -> activate Bill
         this.temporalLock = false;
         this.failedAttempts = 0;
     }
@@ -42,7 +42,7 @@ public class bill implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "client_id", referencedColumnName = "id")
-    private client client;
+    private Client client;
 
     @Column(length = 40)
     @NotBlank(message = "Type can't be blank.")
@@ -68,24 +68,24 @@ public class bill implements Serializable {
     private LocalDate validity;
 
     @Column(nullable = false)
-    private boolean active;        // if bill is activated
+    private boolean active;        // if Bill is activated
 
-    @Column(name = "temporalLock", nullable = false)      // true if bill was temporary locked due to 3 failed attempts
+    @Column(name = "temporalLock", nullable = false)      // true if Bill was temporary locked due to 3 failed attempts
     private boolean temporalLock;
 
     @Column(name = "failed_attempts", nullable = false)
     @Min(value = 0, message = "failedAttempts can't be less than 0.")
     @Max(value = 3, message = "failedAttempts can't be more than 3.")
-    private int failedAttempts;  // failed attempts if we input incorrect pin as operation confirmation - (3 failedAttempts -> lock bill for 24 hours)
+    private int failedAttempts;  // failed attempts if we input incorrect pin as operation confirmation - (3 failedAttempts -> lock Bill for 24 hours)
 
     @Column(name = "lock_time")       // lockTime after
     private LocalDateTime lockTime;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billFrom")   // receipts for this bill as Sender
-    private Set<receipts> receipts;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billFrom")   // receipts for this Bill as Sender
+    private Set<Receipts> receipts;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billTo")  // receipts for this bill as Recipient
-    private Set<receipts> receipts1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "billTo")  // receipts for this Bill as Recipient
+    private Set<Receipts> receipts1;
 
     @Override
     public String toString(){
@@ -101,11 +101,11 @@ public class bill implements Serializable {
         this.card = card;
     }
 
-    public com.example.Terminal_rev42.Entities.client getClient() {
+    public Client getClient() {
         return client;
     }
 
-    public void setClient(com.example.Terminal_rev42.Entities.client client) {
+    public void setClient(Client client) {
         this.client = client;
     }
 
@@ -163,11 +163,11 @@ public class bill implements Serializable {
         return lockTime;
     }
 
-    public Set<com.example.Terminal_rev42.Entities.receipts> getReceipts() {
+    public Set<Receipts> getReceipts() {
         return receipts;
     }
 
-    public Set<com.example.Terminal_rev42.Entities.receipts> getReceiptss() {
+    public Set<Receipts> getReceiptss() {
         return receipts1;
     }
 

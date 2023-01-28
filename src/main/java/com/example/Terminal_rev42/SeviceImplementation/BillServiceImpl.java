@@ -1,9 +1,9 @@
 package com.example.Terminal_rev42.SeviceImplementation;
 
-import com.example.Terminal_rev42.Entities.bill;
+import com.example.Terminal_rev42.Entities.Bill;
 import com.example.Terminal_rev42.Exceptions.*;
 import com.example.Terminal_rev42.Repositories.BillRepository;
-import com.example.Terminal_rev42.Servicies.billService;
+import com.example.Terminal_rev42.Servicies.BillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Service
 @Transactional
-public class billServiceImpl implements billService {
+public class BillServiceImpl implements BillService {
 
     @Autowired
     private BillRepository billRepository;
@@ -27,31 +27,31 @@ public class billServiceImpl implements billService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    private static final Logger logger = LoggerFactory.getLogger(billServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(BillServiceImpl.class);
 
     @Override
-    public void save(bill bill) {
+    public void save(Bill bill) {
         billRepository.save(bill);
     }
 
     @Override
-    public bill findByCard(String card) {
+    public Bill findByCard(String card) {
         return billRepository.findByCard(card);
     }
 
     @Override
-    public Set<bill> AllBillsByClientId(long id) {
+    public Set<Bill> AllBillsByClientId(long id) {
         return billRepository.findByClient_idAndActiveIsTrue(id);
     }
 
 
     @Override
-    public Set<bill> inActiveBills(LocalDate date) {
+    public Set<Bill> inActiveBills(LocalDate date) {
         return billRepository.findByValidityLessThanAndActiveIsTrue(LocalDate.now());
     }
 
     @Override
-    public void deactivateBill(bill bill) {
+    public void deactivateBill(Bill bill) {
 
         bill.setActive(false);
         bill.setLockTime(LocalDateTime.now());
@@ -59,19 +59,19 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public Set<bill> notifyBillsByValidityLessThan(int days) {
+    public Set<Bill> notifyBillsByValidityLessThan(int days) {
         return billRepository.findAllByValiditySubNowIs(days);
     }
 
     @Override
-    public boolean checkPin(bill bill, String pin) {
+    public boolean checkPin(Bill bill, String pin) {
 
         return passwordEncoder.matches(pin, bill.getPin());
 
     }
 
     @Override
-    public void encodePasswordAndActivateBill(bill bill) {
+    public void encodePasswordAndActivateBill(Bill bill) {
         bill.setPin(passwordEncoder.encode(bill.getPin()));
         bill.setActive(true);
         logger.info("Bill " + bill.getCard() + " is activated.");
@@ -80,11 +80,11 @@ public class billServiceImpl implements billService {
 
 
     @Override
-    public void unlockCard(bill bill) {
+    public void unlockCard(Bill bill) {
 
         if (bill.isTemporalLock()) {
 
-            if (LocalDateTime.now().isAfter(bill.getLockTime().plusDays(com.example.Terminal_rev42.Entities.bill.LOCK_TIME_DURATION))) {
+            if (LocalDateTime.now().isAfter(bill.getLockTime().plusDays(Bill.LOCK_TIME_DURATION))) {
                 bill.setTemporalLock(false);
                 bill.setFailedAttempts(0);
                 bill.setLockTime(null);
@@ -96,12 +96,12 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public Set<bill> allLatelyInteractedBills(long id, int attempts) {
+    public Set<Bill> allLatelyInteractedBills(long id, int attempts) {
         return billRepository.findByClient_idAndActiveIsTrueAndTemporalLockIsFalseAndFailedAttemptsGreaterThan(id, attempts);
     }
 
     @Override
-    public void resetFailedAttempts(bill bill) {
+    public void resetFailedAttempts(Bill bill) {
 
         bill.setFailedAttempts(0);
         billRepository.save(bill);
@@ -109,7 +109,7 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public void increaseFailedAttempts(bill bill) {
+    public void increaseFailedAttempts(Bill bill) {
 
         bill.setFailedAttempts(bill.getFailedAttempts() + 1);
 
@@ -123,7 +123,7 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public void lockBill(bill bill) {
+    public void lockBill(Bill bill) {
 
         bill.setLockTime(LocalDateTime.now());
         bill.setTemporalLock(true);
@@ -132,21 +132,21 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public boolean checkLedger(bill bill, BigDecimal summa) {
+    public boolean checkLedger(Bill bill, BigDecimal summa) {
         return bill.getLedger().compareTo(summa) >= 0;
     }
 
 
     @Override
-    public boolean checkCurrencyEquals(String currency, bill bill) {
+    public boolean checkCurrencyEquals(String currency, Bill bill) {
         return bill.getCurrency().equals(currency);
     }
 
 
     @Override
-    public bill fullBillValidationBeforeOperation(String card) throws BillNotFoundException, BillInactiveException, TemporaryLockedBillException {
+    public Bill fullBillValidationBeforeOperation(String card) throws BillNotFoundException, BillInactiveException, TemporaryLockedBillException {
 
-        bill bill = findByCard(card);
+        Bill bill = findByCard(card);
 
         if(bill == null)
             throw new BillNotFoundException("Bill " + card + " doesn't exist.", card);
@@ -154,7 +154,7 @@ public class billServiceImpl implements billService {
         if(!bill.isActive())
             throw new BillInactiveException("Bill " + card + " is out of validity. Expired date: " + bill.getValidity() + ".", bill);
 
-        unlockCard(bill); // if bill is active, but there is a likelihood that it may be temporary locked -> try to unlock due to interaction with bill from client
+        unlockCard(bill); // if Bill is active, but there is a likelihood that it may be temporary locked -> try to unlock due to interaction with Bill from client
 
         if(bill.isTemporalLock())
             throw new TemporaryLockedBillException("Bill " + card + " was temporary locked due to 3 failed attempts. It will be unlocked " + bill.getLockTime().plusDays(1).toLocalDate() + " " + bill.getLockTime().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".", bill);
@@ -165,7 +165,7 @@ public class billServiceImpl implements billService {
 
 
     @Override
-    public boolean pinAndLedgerValidation(bill bill, String rawPassword, BigDecimal summa) throws IncorrectBillPinException, NotEnoughLedgerException {
+    public boolean pinAndLedgerValidation(Bill bill, String rawPassword, BigDecimal summa) throws IncorrectBillPinException, NotEnoughLedgerException {
 
         if(!checkPin(bill, rawPassword)){
             increaseFailedAttempts(bill);
@@ -173,7 +173,7 @@ public class billServiceImpl implements billService {
             if(bill.getFailedAttempts() == 3) {
                 message = "Incorrect pin. Card is temporary locked. It will be unlocked " + LocalDateTime.now().toLocalDate().plusDays(1) + " " + LocalDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".";
             } else
-                message = "Incorrect pin. Attempts left: " + (com.example.Terminal_rev42.Entities.bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".";
+                message = "Incorrect pin. Attempts left: " + (Bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".";
 
             throw new IncorrectBillPinException(message, bill);
         }
@@ -185,7 +185,7 @@ public class billServiceImpl implements billService {
     }
 
     @Override
-    public boolean pinValidation(bill bill, String rawPassword) throws IncorrectBillPinException {
+    public boolean pinValidation(Bill bill, String rawPassword) throws IncorrectBillPinException {
 
         if(!checkPin(bill, rawPassword)){
             increaseFailedAttempts(bill);
@@ -193,7 +193,7 @@ public class billServiceImpl implements billService {
             if(bill.getFailedAttempts() == 3) {
                 message = "Incorrect pin. Card is temporary locked. It will be unlocked " + LocalDateTime.now().toLocalDate().plusDays(1) + " " + LocalDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS) + ".";
             } else
-                message = "Incorrect pin. Attempts left: " + (com.example.Terminal_rev42.Entities.bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".";
+                message = "Incorrect pin. Attempts left: " + (Bill.MAX_FAILED_ATTEMPTS - bill.getFailedAttempts()) + ".";
 
             throw new IncorrectBillPinException(message, bill);
         }

@@ -1,14 +1,14 @@
 package com.example.Terminal_rev42.Controllers;
 
 
-import com.example.Terminal_rev42.Entities.bill;
-import com.example.Terminal_rev42.Entities.investments;
+import com.example.Terminal_rev42.Entities.Bill;
+import com.example.Terminal_rev42.Entities.Investments;
 import com.example.Terminal_rev42.Exceptions.*;
-import com.example.Terminal_rev42.Model.rates;
+import com.example.Terminal_rev42.Model.Rates;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.investServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.InvestServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
@@ -48,19 +48,19 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class InvestmentController {
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
     private SecurityServiceImpl securityService;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
-    private investServiceImpl investService;
+    private InvestServiceImpl investService;
 
     @Autowired
-    private rates currencyRates;
+    private Rates currencyRates;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -97,7 +97,7 @@ public class InvestmentController {
 
         logger.error("Exception BillNotFound is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is not found.", "card", exception.getCard()));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "Bill", "Bill is not found.", "card", exception.getCard()));
 
     }
 
@@ -106,7 +106,7 @@ public class InvestmentController {
 
         logger.error("Exception BillInactive is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is out of validity. Expired date: " + exception.getBill().getValidity(), "card", exception.getBill().getCard()));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "Bill", "Bill is out of validity. Expired date: " + exception.getBill().getValidity(), "card", exception.getBill().getCard()));
 
     }
 
@@ -115,14 +115,14 @@ public class InvestmentController {
 
         logger.error("Exception TemporaryLockedBill is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is temporary locked.", "card", exception.getBill().getCard()));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "Bill", "Bill is temporary locked.", "card", exception.getBill().getCard()));
 
     }
 
     @ExceptionHandler(IncorrectBillPinException.class)
     public ResponseEntity<Map<String, String>> handleIncorrectBillPinException(IncorrectBillPinException exception, HttpServletRequest request) {
 
-        bill currentBill = exception.getBill();
+        Bill currentBill = exception.getBill();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -157,7 +157,7 @@ public class InvestmentController {
 
         logger.error("Exception MoneyTransferToTheSameBillException is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "billTo", "Transfer to the same bill."));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "billTo", "Transfer to the same Bill."));
 
     }
 
@@ -295,7 +295,7 @@ public class InvestmentController {
     @Transactional(propagation = Propagation.REQUIRED)  // cash payment
     public ResponseEntity<Map<String, String>> applyHoldCashPayment(@RequestBody ObjectNode objectNode) throws CurrencyIsNotSupportedOrBlankException, IncorrectSummaException {
 
-        investments investment = objectMapper.convertValue(objectNode.get("investment"), investments.class);  // throw exception if not valid
+        Investments investment = objectMapper.convertValue(objectNode.get("investment"), Investments.class);  // throw exception if not valid
         String currencyFrom = objectMapper.convertValue(objectNode.get("currencyFrom"), String.class);
         BigDecimal dep = objectMapper.convertValue(objectNode.get("deposit"), BigDecimal.class);
 
@@ -306,7 +306,7 @@ public class InvestmentController {
         return ResponseEntity.ok(Map.of("message", "Successfully applied for: " + investment));
     }
 
-    private void validatePaymentForInvestment(investments investment, String currencyFrom, BigDecimal deposit) throws CurrencyIsNotSupportedOrBlankException, IncorrectSummaException {
+    private void validatePaymentForInvestment(Investments investment, String currencyFrom, BigDecimal deposit) throws CurrencyIsNotSupportedOrBlankException, IncorrectSummaException {
 
         Set<ConstraintViolation<Object>> violations = validator.validate(investment);
 
@@ -328,7 +328,7 @@ public class InvestmentController {
 
     }
 
-    private void applyInvestmentWithCashPayment(@NotBlank String currencyToDep, @Valid investments investment, @Positive BigDecimal deposit){
+    private void applyInvestmentWithCashPayment(@NotBlank String currencyToDep, @Valid Investments investment, @Positive BigDecimal deposit){
 
         if(!currencyToDep.equals(investment.getCurrency())) {  // currency of our invest equals to currency we've dep
             currencyRates.setRate(Rates(currencyToDep));
@@ -348,18 +348,18 @@ public class InvestmentController {
     @Transactional(propagation = Propagation.REQUIRED)  // with card payment
     public ResponseEntity<Map<String, String>> applyHoldCardPayment(@RequestBody ObjectNode objectNode) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        investments investment = objectMapper.convertValue(objectNode.get("investment"), investments.class);  // simultaneously with validation
+        Investments investment = objectMapper.convertValue(objectNode.get("investment"), Investments.class);  // simultaneously with validation
 
         String pin = objectMapper.convertValue(objectNode.get("pin"), String.class);
 
         BigDecimal dep = objectMapper.convertValue(objectNode.get("deposit"), BigDecimal.class);
 
-        String card = objectMapper.convertValue(objectNode.get("bill"), String.class);
+        String card = objectMapper.convertValue(objectNode.get("Bill"), String.class);
 
         if(validateInvestAndPinAndDepositForInvestmentApply(investment, pin, card, dep))
             return ResponseEntity.badRequest().body(Map.of("message", "Check the accuracy of data."));
 
-        bill bill = billService.fullBillValidationBeforeOperation(card);
+        Bill bill = billService.fullBillValidationBeforeOperation(card);
 
         if(billService.pinAndLedgerValidation(bill, pin, dep)) {
             applyInvestmentWithCardPayment(bill, dep, investment);
@@ -375,8 +375,8 @@ public class InvestmentController {
     @Transactional(propagation = Propagation.REQUIRED)
     public Map<String, String> getHoldingInfo(@RequestParam("holdingId") long holdingId) throws InvestmentIsNotFound {
 
-        Optional<investments> optionalInvestments = investService.findById(holdingId);
-        investments investment = null;
+        Optional<Investments> optionalInvestments = investService.findById(holdingId);
+        Investments investment = null;
         if (optionalInvestments.isPresent())
             investment = optionalInvestments.get();
          else throw new InvestmentIsNotFound(holdingId, "Holding with id: " + holdingId + " is not found.");
@@ -386,7 +386,7 @@ public class InvestmentController {
                 "\nTurn profit in: " + DAYS.between(investment.getBegin(), LocalDate.now()) + " days" + "\n\n...Barclays...");
     }
 
-    private boolean validateInvestAndPinAndDepositForInvestmentApply(investments investment, String pin, String card,  BigDecimal deposit){
+    private boolean validateInvestAndPinAndDepositForInvestmentApply(Investments investment, String pin, String card, BigDecimal deposit){
 
         Set<ConstraintViolation<Object>> violations = validator.validate(investment);
 
@@ -405,7 +405,7 @@ public class InvestmentController {
         return false;
     }
 
-    private void applyInvestmentWithCardPayment(bill bill, BigDecimal deposit, investments investment){
+    private void applyInvestmentWithCardPayment(Bill bill, BigDecimal deposit, Investments investment){
 
         bill.setLedger(bill.getLedger().subtract(deposit).setScale(2, RoundingMode.HALF_UP));
 

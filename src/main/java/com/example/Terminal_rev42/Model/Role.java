@@ -21,7 +21,7 @@ public class Role {
     private String role;
 
     @ManyToMany(mappedBy = "roleset")
-    private Set<user> userSet;
+    private Set<User> userSet;
 
     public long getRoleid() {
         return roleid;
@@ -39,11 +39,11 @@ public class Role {
         this.role = role;
     }
 
-    public Set<user> getUserSet() {
+    public Set<User> getUserSet() {
         return userSet;
     }
 
-    public void setUserSet(Set<user> userSet) {
+    public void setUserSet(Set<User> userSet) {
         this.userSet = userSet;
     }
 }

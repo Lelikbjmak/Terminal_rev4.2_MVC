@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.SecurityCustomImpl;
 
-import com.example.Terminal_rev42.Model.user;
-import com.example.Terminal_rev42.SeviceImplementation.userServiceImpl;
+import com.example.Terminal_rev42.Model.User;
+import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -16,7 +16,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
 
     @Autowired
-    private userServiceImpl userService;
+    private UserServiceImpl userService;
 
 
     @Override
@@ -25,7 +25,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        user user = userService.findByUsername(username);
+        User user = userService.findByUsername(username);
 
         if (!userService.checkUserExists(request.getParameter("username"))){
 
@@ -50,12 +50,12 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
     }
 
-    private boolean userLockedValidation(user user){
+    private boolean userLockedValidation(User user){
 
         userService.increaseFailedAttempts(user);
         logger.error("User: " + user.getUsername() + ", failed attempts: " + user.getFailedAttempts());
 
-        if(user.getFailedAttempts() == com.example.Terminal_rev42.Model.user.MAX_FAILED_ATTEMPTS){
+        if(user.getFailedAttempts() == User.MAX_FAILED_ATTEMPTS){
             userService.lockUser(user);
             logger.error("User: " + user.getUsername() + " is locked due to 3 failed attempts. Lock time: " + user.getLockTime());
             return true;

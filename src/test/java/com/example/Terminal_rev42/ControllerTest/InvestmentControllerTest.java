@@ -117,7 +117,7 @@ public class InvestmentControllerTest {
 
         String investment = "\"investment\" : {\"type\" : \"" + type + "\", \"percentage\" : \"" + interest + "\", \"currency\" : \"" + currencyOfInvest + "\", \"term\" : \"" + term +"\"}";
         String dep = "\"deposit\" : \"" + deposit + "\"";
-        String bill = "\"bill\" : \"" + card + "\"";
+        String bill = "\"Bill\" : \"" + card + "\"";
         String pin = "\"pin\" : \"" + pinCode + "\"";
         String JSON = "{" + investment + "," + dep + "," + bill + "," + pin + "}";
 
@@ -139,7 +139,7 @@ public class InvestmentControllerTest {
 
         String investment = "\"investment\" : {\"type\" : \"" + type + "\", \"percentage\" : \"" + interest + "\", \"currency\" : \"" + currencyToDep + "\", \"term\" : \"" + term +"\"}";
         String dep = "\"deposit\" : \"" + deposit + "\"";
-        String bill = "\"bill\" : \"" + card + "\"";
+        String bill = "\"Bill\" : \"" + card + "\"";
         String pin = "\"pin\" : \"" + pinCode + "\"";
         String JSON = "{" + investment + "," + dep + "," + bill + "," + pin + "}";
 

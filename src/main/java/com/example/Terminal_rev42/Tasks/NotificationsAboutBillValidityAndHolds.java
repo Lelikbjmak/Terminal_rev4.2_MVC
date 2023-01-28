@@ -2,7 +2,7 @@ package com.example.Terminal_rev42.Tasks;
 
 import com.example.Terminal_rev42.EventsListeners.BillAndInvestValidityEventListener;
 import com.example.Terminal_rev42.EventsListeners.BillValidityExpirationEvent;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public final class NotificationsAboutBillValidityAndHolds {
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
     private BillAndInvestValidityEventListener notifyValidityListener;

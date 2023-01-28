@@ -1,16 +1,16 @@
 package com.example.Terminal_rev42.Controllers;
 
-import com.example.Terminal_rev42.Entities.client;
+import com.example.Terminal_rev42.Entities.Client;
 import com.example.Terminal_rev42.EventsListeners.MailConfirmationEvent;
 import com.example.Terminal_rev42.EventsListeners.MailConfirmationResendEvent;
 import com.example.Terminal_rev42.EventsListeners.ResetPasswordEvent;
 import com.example.Terminal_rev42.Exceptions.*;
 import com.example.Terminal_rev42.Model.VerificationToken;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.userServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -44,10 +44,10 @@ import java.util.*;
 public class ClientController {
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
-    private userServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Autowired
     private SecurityServiceImpl securityService;
@@ -154,8 +154,8 @@ public class ClientController {
     @Transactional
     public ResponseEntity<Map<String, String>> registerClient(HttpServletRequest request, @RequestBody ObjectNode objectNode) throws UserAlreadyExistsException, ClientAlreadyExistsException, JsonProcessingException, PasswordAndConfirmedPasswordNotMatchException {
 
-        user user = getUserToRegister(objectNode);
-        client client = getClientToRegister(objectNode);
+        User user = getUserToRegister(objectNode);
+        Client client = getClientToRegister(objectNode);
 
         validateUserAndClientEntityBeforeRegistration(user, client);
 
@@ -170,16 +170,16 @@ public class ClientController {
     }
 
     @Transactional
-    private user getUserToRegister(ObjectNode objectNode) throws JsonProcessingException {
-        return objectMapper.treeToValue(objectNode.get("user"), com.example.Terminal_rev42.Model.user.class);
+    private User getUserToRegister(ObjectNode objectNode) throws JsonProcessingException {
+        return objectMapper.treeToValue(objectNode.get("user"), User.class);
     }
 
     @Transactional
-    private client getClientToRegister(ObjectNode objectNode) throws JsonProcessingException {
-        return objectMapper.treeToValue(objectNode.get("client"), com.example.Terminal_rev42.Entities.client.class);
+    private Client getClientToRegister(ObjectNode objectNode) throws JsonProcessingException {
+        return objectMapper.treeToValue(objectNode.get("client"), Client.class);
     }
     @Transactional
-    private void validateUserAndClientEntityBeforeRegistration(user user, client client) throws UserAlreadyExistsException, ConstraintViolationException, ClientAlreadyExistsException, PasswordAndConfirmedPasswordNotMatchException {
+    private void validateUserAndClientEntityBeforeRegistration(User user, Client client) throws UserAlreadyExistsException, ConstraintViolationException, ClientAlreadyExistsException, PasswordAndConfirmedPasswordNotMatchException {
 
         Set<ConstraintViolation<Object>> violations = validator.validate(user);
         Set<ConstraintViolation<Object>> violationsClient = validator.validate(client);
@@ -199,7 +199,7 @@ public class ClientController {
     }
 
     @Transactional
-    private void registerNewUser(@Valid client client, @Valid user user){
+    private void registerNewUser(@Valid Client client, @Valid User user){
 
         user.setClient(client);
         client.setUser(user);
@@ -210,7 +210,7 @@ public class ClientController {
     }
 
     @Transactional
-    private void sendVerificationMailForRegistration(HttpServletRequest request, user user){
+    private void sendVerificationMailForRegistration(HttpServletRequest request, User user){
 
         String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         eventPublisher.publishEvent(new MailConfirmationEvent(user, appURL));
@@ -224,7 +224,7 @@ public class ClientController {
     public ResponseEntity<Map<String, String>> resendConfirmationPostRequest(HttpServletRequest request, @RequestParam("username") @NotBlank(message = "Provided username to resend verification link is empty.")
     @Size(min = 4, max = 20, message = "Username must contain at least 4 symbols, less than 20.") String username) throws UserNotExistsException {
 
-        user user = getUserToResendVerificationLink(username);
+        User user = getUserToResendVerificationLink(username);
 
         try {
             String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
@@ -240,9 +240,9 @@ public class ClientController {
     }
 
     @Transactional
-    private user getUserToResendVerificationLink(String username) throws UserNotExistsException {
+    private User getUserToResendVerificationLink(String username) throws UserNotExistsException {
 
-        user user = userService.findByUsername(username);
+        User user = userService.findByUsername(username);
         if(user == null)
             throw new UserNotExistsException("User " + username + " is not found.", username);
 
@@ -250,7 +250,7 @@ public class ClientController {
     }
 
     @Transactional
-    private VerificationToken getVerificationTokenForUserToResendVerificationLink(@Valid user user) throws VerificationTokenIsNotFoundException {
+    private VerificationToken getVerificationTokenForUserToResendVerificationLink(@Valid User user) throws VerificationTokenIsNotFoundException {
         return tokenService.findByUser(user);
     }
 
@@ -259,7 +259,7 @@ public class ClientController {
 
         VerificationToken verificationToken = tokenService.getToken(token);
 
-        user user = getUserToConfirmRegistration(verificationToken);
+        User user = getUserToConfirmRegistration(verificationToken);
 
         verifyUserWithVerificationToken(user, verificationToken);
 
@@ -267,9 +267,9 @@ public class ClientController {
     }
 
     @Transactional
-    private user getUserToConfirmRegistration(@Valid VerificationToken token) throws VerificationTokenIsNotFoundException {
+    private User getUserToConfirmRegistration(@Valid VerificationToken token) throws VerificationTokenIsNotFoundException {
 
-        user user = token.getUser();
+        User user = token.getUser();
 
         if(user == null){
             throw new VerificationTokenIsNotFoundException("User is not found for token: " + token.getToken() + ".", token.getToken());
@@ -279,7 +279,7 @@ public class ClientController {
     }
 
     @Transactional
-    private void verifyUserWithVerificationToken(@Valid user user, @Valid VerificationToken verificationToken){
+    private void verifyUserWithVerificationToken(@Valid User user, @Valid VerificationToken verificationToken){
 
         user.setEnabled(true);
         verificationToken.setExpiredAt(Calendar.getInstance().getTime());
@@ -331,7 +331,7 @@ public class ClientController {
 
         logger.info("Forgot password for: " + mail + ".");
 
-        user user = getUserByMailToResetPassword(mail);
+        User user = getUserByMailToResetPassword(mail);
 
         String resetToken = generateResetPasswordToken(user);
 
@@ -343,9 +343,9 @@ public class ClientController {
     }
 
     @Transactional
-    private user getUserByMailToResetPassword(String mail) throws UserNotExistsException {
+    private User getUserByMailToResetPassword(String mail) throws UserNotExistsException {
 
-        user user = userService.findByMail(mail);
+        User user = userService.findByMail(mail);
 
         if(user == null)
             throw new UserNotExistsException("User with mail " + mail + " is not found.", mail);
@@ -354,7 +354,7 @@ public class ClientController {
     }
 
     @Transactional
-    private String generateResetPasswordToken(user user){
+    private String generateResetPasswordToken(User user){
         String resetToken = UUID.randomUUID().toString();
         userService.updateResetPasswordToken(resetToken, user);
         return resetToken;
@@ -379,7 +379,7 @@ public class ClientController {
 
         validatePasswordsBeforeResetting(password, confirmedPassword);
 
-        user user = userService.findByResetPasswordToken(token);
+        User user = userService.findByResetPasswordToken(token);
 
         userService.updatePassword(user, password, confirmedPassword);
 

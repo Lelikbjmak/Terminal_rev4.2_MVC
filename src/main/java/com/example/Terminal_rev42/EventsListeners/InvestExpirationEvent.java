@@ -1,20 +1,20 @@
 package com.example.Terminal_rev42.EventsListeners;
 
-import com.example.Terminal_rev42.Entities.investments;
+import com.example.Terminal_rev42.Entities.Investments;
 import org.springframework.context.ApplicationEvent;
 
 public class InvestExpirationEvent extends ApplicationEvent {
 
-    private final investments investments;
+    private final Investments investments;
 
-    public InvestExpirationEvent(investments investments) {
+    public InvestExpirationEvent(Investments investments) {
         super(investments);
 
         this.investments = investments;
 
     }
 
-    public com.example.Terminal_rev42.Entities.investments getInvestments() {
+    public Investments getInvestments() {
         return investments;
     }
 

@@ -1,12 +1,11 @@
 package com.example.Terminal_rev42.SeviceImplementation;
 
 import com.example.Terminal_rev42.Model.Role;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.Repositories.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class UserDetailsPasswordServiceImpl implements UserDetailsPasswordServic
     public UserDetails updatePassword(UserDetails user, String newPassword) {
 
         System.err.println("Update password activated... " + user.getUsername() + ", new pass: " + newPassword);
-        user user1 = userDAO.findByUsername(user.getUsername());
+        User user1 = userDAO.findByUsername(user.getUsername());
         System.err.println("prev pass: " + user1.getPassword());
 
         user1.setPassword(newPassword);
@@ -37,7 +36,7 @@ public class UserDetailsPasswordServiceImpl implements UserDetailsPasswordServic
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));
         }
 
-      return User.withUsername(user1.getUsername()).password(user1.getPassword()).disabled(!user1.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(false).authorities(grantedAuthorities).build();
+      return org.springframework.security.core.userdetails.User.withUsername(user1.getUsername()).password(user1.getPassword()).disabled(!user1.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(false).authorities(grantedAuthorities).build();
     }
 
 

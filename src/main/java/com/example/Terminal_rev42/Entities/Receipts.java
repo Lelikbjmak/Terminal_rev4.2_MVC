@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
-public class receipts {
+public class Receipts {
 
-    public receipts(String type, bill billFrom, bill billTo, BigDecimal summa, String currencyFrom, String currencyTo) {  // for CashTransfer (2 bills take parts)
+    public Receipts(String type, Bill billFrom, Bill billTo, BigDecimal summa, String currencyFrom, String currencyTo) {  // for CashTransfer (2 bills take parts)
         setType(type);
         setBillFrom(billFrom);
         setBillTo(billTo);
@@ -27,7 +27,7 @@ public class receipts {
         date = LocalDate.now();
     }
 
-    public receipts(){
+    public Receipts(){
 
     }
 
@@ -41,12 +41,12 @@ public class receipts {
     @ManyToOne
     @JoinColumn(name = "billfrom", referencedColumnName = "card")
     @Valid
-    private bill billFrom;
+    private Bill billFrom;
 
     @ManyToOne
     @JoinColumn(name = "billto", referencedColumnName = "card")
     @Nullable
-    private bill billTo;
+    private Bill billTo;
 
     @Column(length = 5)
     @NotBlank(message = "Currency of executed operation can't be blank.")
@@ -81,20 +81,20 @@ public class receipts {
         this.type = type;
     }
 
-    public bill getBillFrom() {
+    public Bill getBillFrom() {
         return billFrom;
     }
 
-    public void setBillFrom(bill billFrom) {
+    public void setBillFrom(Bill billFrom) {
         this.billFrom = billFrom;
     }
 
     @Nullable
-    public bill getBillTo() {
+    public Bill getBillTo() {
         return billTo;
     }
 
-    public void setBillTo(@Nullable bill billTo) {
+    public void setBillTo(@Nullable Bill billTo) {
         this.billTo = billTo;
     }
 

@@ -1,14 +1,14 @@
 package com.example.Terminal_rev42.EventsListeners;
 
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import org.springframework.context.ApplicationEvent;
 
 public class MailConfirmationEvent extends ApplicationEvent {
 
     private String appUrl;
-    private com.example.Terminal_rev42.Model.user user;
+    private User user;
 
-    public MailConfirmationEvent(user user, String appUrl) {
+    public MailConfirmationEvent(User user, String appUrl) {
 
         super(user);
 
@@ -26,11 +26,11 @@ public class MailConfirmationEvent extends ApplicationEvent {
         this.appUrl = appUrl;
     }
 
-    public com.example.Terminal_rev42.Model.user getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(com.example.Terminal_rev42.Model.user user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

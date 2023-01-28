@@ -1,21 +1,20 @@
 package com.example.Terminal_rev42.SeviceImplementation;
 
 import com.example.Terminal_rev42.Exceptions.UserNotExistsException;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.Repositories.RoleDAO;
 import com.example.Terminal_rev42.Repositories.UserDAO;
-import com.example.Terminal_rev42.Servicies.userService;
+import com.example.Terminal_rev42.Servicies.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 
 @Service
-public class userServiceImpl implements userService {
+public class UserServiceImpl implements UserService {
 
 
     @Autowired
@@ -28,14 +27,14 @@ public class userServiceImpl implements userService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public void save(user user) {
+    public void save(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setRoleset(new HashSet<>(Collections.singletonList(roleDAO.findByRole("ROLE_USER"))));
         userDAO.save(user);
     }
 
     @Override
-    public user findByUsername(String login) {
+    public User findByUsername(String login) {
         return userDAO.findByUsername(login);
     }
 
@@ -45,12 +44,12 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public user findByMail(String mail) {
+    public User findByMail(String mail) {
         return userDAO.findByMail(mail);
     }
 
     @Override
-    public void update(user user) {
+    public void update(User user) {
         userDAO.save(user);
     }
 
@@ -60,8 +59,8 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public user findByResetPasswordToken(String token) throws UserNotExistsException {
-        user user = userDAO.findByResetPasswordToken(token);
+    public User findByResetPasswordToken(String token) throws UserNotExistsException {
+        User user = userDAO.findByResetPasswordToken(token);
         if(user == null)
             throw new UserNotExistsException("User is not found for token " + token + ".", token);
 
@@ -69,7 +68,7 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public void updatePassword(user user, String rawPassword, String confirmedRawPassword) {
+    public void updatePassword(User user, String rawPassword, String confirmedRawPassword) {
         String encodedPassword = bCryptPasswordEncoder.encode(rawPassword);
         user.setPassword(encodedPassword);
         user.setConfirmedpassword(confirmedRawPassword);
@@ -78,13 +77,13 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public void updateResetPasswordToken(String token, user user) {
+    public void updateResetPasswordToken(String token, User user) {
         user.setResetPasswordToken(token);
         userDAO.save(user);
     }
 
     @Override
-    public void lockUser(user user) {
+    public void lockUser(User user) {
 
         user.setTemporalLock(true);
         user.setLockTime(LocalDateTime.now());
@@ -93,7 +92,7 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public void increaseFailedAttempts(user user) {
+    public void increaseFailedAttempts(User user) {
 
         user.setFailedAttempts(user.getFailedAttempts() + 1);
         userDAO.save(user);
@@ -101,7 +100,7 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public void resetFailedAttempts(user user) {
+    public void resetFailedAttempts(User user) {
 
         user.setFailedAttempts(0);
         userDAO.save(user);
@@ -109,7 +108,7 @@ public class userServiceImpl implements userService {
     }
 
     @Override
-    public boolean passwordsMatches(user user) {
+    public boolean passwordsMatches(User user) {
         return user.getPassword().equals(user.getConfirmedpassword());
     }
 

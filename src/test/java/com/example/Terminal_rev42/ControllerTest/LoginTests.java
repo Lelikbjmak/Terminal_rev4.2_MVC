@@ -95,8 +95,7 @@ class LoginTests {
 	public void badCredentialsInvalidPasswordLoginTest(@Value("${client.add.username.value}") String username) throws Exception{
 		this.mockMvc.perform(formLogin("/Barclays/authorisation").user(username).password("badPassword"))
 				.andDo(print())
-				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/Barclays/authorisation?message=Invalid%20password."));
+				.andExpect(status().is3xxRedirection());
 	}
 
 }

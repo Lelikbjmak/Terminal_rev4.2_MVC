@@ -1,7 +1,7 @@
 package com.example.Terminal_rev42.EventsListeners;
 
 import com.example.Terminal_rev42.Model.VerificationToken;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
     private void confirmRegistration(MailConfirmationResendEvent event) {
 
         logger.info("Resending email..." + " to: " + event.getUser().getUsername());
-        user user = event.getUser(); // get user
+        User user = event.getUser(); // get user
         VerificationToken token = event.getToken();  // get users token
 
         tokenService.rebuildExistingToken(token); // extend expiry date to confirm again!

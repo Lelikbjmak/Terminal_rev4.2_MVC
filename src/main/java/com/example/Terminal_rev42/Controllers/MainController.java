@@ -1,11 +1,11 @@
 package com.example.Terminal_rev42.Controllers;
 
-import com.example.Terminal_rev42.Entities.bill;
-import com.example.Terminal_rev42.Entities.investments;
+import com.example.Terminal_rev42.Entities.Bill;
+import com.example.Terminal_rev42.Entities.Investments;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.investServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.InvestServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +30,19 @@ import java.util.Set;
 public class MainController {
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
     private SecurityServiceImpl securityService;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
     private SessionRegistry sessionRegistry;
 
     @Autowired
-    private investServiceImpl investService;
+    private InvestServiceImpl investService;
 
 
     @GetMapping("/reg")
@@ -96,8 +96,8 @@ public class MainController {
     public String getServicePage(Model model, HttpSession httpSession,
            @SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext, HttpServletRequest request){
 
-        Set<bill> bills = billService.AllBillsByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
-        Set<investments> investments = investService.allByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
+        Set<Bill> bills = billService.AllBillsByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
+        Set<Investments> investments = investService.allByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
 
         System.out.println(sessionRegistry.getSessionInformation(httpSession.getId()) + " sess id: " + request.getSession().getId());
 

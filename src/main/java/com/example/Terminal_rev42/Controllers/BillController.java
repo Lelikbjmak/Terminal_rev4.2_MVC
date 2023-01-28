@@ -1,14 +1,14 @@
 package com.example.Terminal_rev42.Controllers;
 
-import com.example.Terminal_rev42.Entities.bill;
-import com.example.Terminal_rev42.Entities.client;
-import com.example.Terminal_rev42.Entities.receipts;
+import com.example.Terminal_rev42.Entities.Bill;
+import com.example.Terminal_rev42.Entities.Client;
+import com.example.Terminal_rev42.Entities.Receipts;
 import com.example.Terminal_rev42.Exceptions.*;
-import com.example.Terminal_rev42.Model.rates;
+import com.example.Terminal_rev42.Model.Rates;
 import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.receiptsServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ReceiptsServiceImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -40,25 +40,25 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Controller
-@RequestMapping("/Barclays/bill")
+@RequestMapping("/Barclays/Bill")
 @SessionAttributes("bills")
 @Validated // to active validation in RequestParams/RequestBody with valid the same
 public class BillController {
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
     private SecurityServiceImpl securityService;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Autowired
-    private receiptsServiceImpl receiptsService;
+    private ReceiptsServiceImpl receiptsService;
 
     @Autowired
-    private rates currencyRates;
+    private Rates currencyRates;
 
     private static final Logger logger = LoggerFactory.getLogger(BillController.class);
 
@@ -88,7 +88,7 @@ public class BillController {
 
         logger.error("Exception BillNotFound is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is not found.", "card", exception.getCard()));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "Bill", "Bill is not found.", "card", exception.getCard()));
 
     }
 
@@ -97,7 +97,7 @@ public class BillController {
 
         logger.error("Exception BillInactive is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is out of validity. Expired date: " + exception.getBill().getValidity(), "card", exception.getBill().getCard()));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "Bill", "Bill is out of validity. Expired date: " + exception.getBill().getValidity(), "card", exception.getBill().getCard()));
 
     }
 
@@ -106,14 +106,14 @@ public class BillController {
 
         logger.error("Exception TemporaryLockedBill is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "bill", "Bill is temporary locked.", "card", exception.getBill().getCard()));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "Bill", "Bill is temporary locked.", "card", exception.getBill().getCard()));
 
     }
 
     @ExceptionHandler(IncorrectBillPinException.class)
     public ResponseEntity<Map<String, String>> handleIncorrectBillPinException(IncorrectBillPinException exception, HttpServletRequest request) {
 
-        bill currentBill = exception.getBill();
+        Bill currentBill = exception.getBill();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -148,7 +148,7 @@ public class BillController {
 
         logger.error("Exception MoneyTransferToTheSameBillException is thrown for: " + request.getSession().getId() + ".");
 
-        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "billTo", "Transfer to the same bill."));
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage(), "billTo", "Transfer to the same Bill."));
 
     }
 
@@ -204,15 +204,15 @@ public class BillController {
     @PostMapping("add")
     @ResponseBody
     @Transactional(propagation = Propagation.REQUIRED)
-    public ResponseEntity<Map<String, String>> registerNewBill(@Valid @RequestBody bill bill, Model model) {
-        client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
-        bill registeredBill = registerNewBill(client, bill);
+    public ResponseEntity<Map<String, String>> registerNewBill(@Valid @RequestBody Bill bill, Model model) {
+        Client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
+        Bill registeredBill = registerNewBill(client, bill);
         logger.info("Bill " + registeredBill.getCard() + " is registered.");
         model.addAttribute("download", "http://localhost:8080/Barclays/bill/card?card=" + bill.getCard());
         return ResponseEntity.ok(Map.of("message", "Card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin." ));
     }
 
-    private bill registerNewBill(client client, bill bill){
+    private Bill registerNewBill(Client client, Bill bill){
         bill.setClient(client);
         billService.save(bill);
         return bill;
@@ -226,20 +226,20 @@ public class BillController {
                   @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa to transfer can't be below zero.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.")
                   @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillNotFoundException, IncorrectBillPinException, BillInactiveException, TemporaryLockedBillException, MoneyTransferToTheSameBillException, NotEnoughLedgerException {
 
-        bill billF = billService.fullBillValidationBeforeOperation(billFrom);
-        bill billT = billService.fullBillValidationBeforeOperation(billTo);
+        Bill billF = billService.fullBillValidationBeforeOperation(billFrom);
+        Bill billT = billService.fullBillValidationBeforeOperation(billTo);
 
         if(billF.equals(billT))
-            throw new MoneyTransferToTheSameBillException("Attempt to transfer money to the same bill (" + billFrom + "), from which money is sending.", billF);
+            throw new MoneyTransferToTheSameBillException("Attempt to transfer money to the same Bill (" + billFrom + "), from which money is sending.", billF);
 
         if (billService.pinAndLedgerValidation(billF, pin, summa)) {
             cashTransferOperation(billF, billT, summa);
-            receipts receipt = getReceiptAfterOperation(getCashTransferOperationType(), billF, billT, summa, billF.getCurrency(), billT.getCurrency());
+            Receipts receipt = getReceiptAfterOperation(getCashTransferOperationType(), billF, billT, summa, billF.getCurrency(), billT.getCurrency());
             return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
         } else return ResponseEntity.internalServerError().body(Map.of("message", "Internal Error. Incorrect Pin."));
     }
 
-    private void cashTransferOperation(bill billFrom, bill billTo, BigDecimal summa){
+    private void cashTransferOperation(Bill billFrom, Bill billTo, BigDecimal summa){
 
         billFrom.setLedger(billFrom.getLedger().subtract(summa.setScale(2, RoundingMode.HALF_UP)));  // - summa from my card
         summa = getOperationSummaForCashTransferAndConvert(billFrom, billTo.getCurrency(), summa);  // obtain summa we must send to recipient (if currency equals -> get the same otherwise get new Summa according to currency rates)
@@ -247,20 +247,22 @@ public class BillController {
         billService.save(billFrom);
     }
 
-    private BigDecimal getOperationSummaForCashTransferAndConvert(bill bill, String currencyTo, BigDecimal summa){
+    private BigDecimal getOperationSummaForCashTransferAndConvert(Bill bill, String currencyTo, BigDecimal summa){
 
         if (!billService.checkCurrencyEquals(currencyTo, bill)) {
         currencyRates.setRate(Rates(bill.getCurrency()));
         Map<String, Double> rates = currencyRates.getRate();  // add currency rates
-        summa = summa.multiply(BigDecimal.valueOf(rates.get(bill.getCurrency().concat(currencyTo))));
+            rates.forEach((k,v) -> System.err.println(k + " " + v));
+            System.err.println("Bill currency: " + bill.getCurrency() + ", currencyTO: " + currencyTo);
+        summa = summa.multiply(BigDecimal.valueOf(rates.get(bill.getCurrency().concat(currencyTo).toUpperCase())));
         }
 
         return summa;
     }
 
-    private receipts getReceiptAfterOperation(String type, bill billFrom, bill billTo, BigDecimal summa, String currencyFrom, String currencyTo){
+    private Receipts getReceiptAfterOperation(String type, Bill billFrom, Bill billTo, BigDecimal summa, String currencyFrom, String currencyTo){
 
-        receipts receipt = new receipts(type, billFrom, billTo, summa, currencyFrom, currencyTo);
+        Receipts receipt = new Receipts(type, billFrom, billTo, summa, currencyFrom, currencyTo);
         System.err.println(receipt);
         receiptsService.save(receipt);  // save receipt
 
@@ -278,16 +280,16 @@ public class BillController {
                                           @RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency,
                                           @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa must be more than 00.00.") BigDecimal summa) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException {
 
-        bill billFrom = billService.fullBillValidationBeforeOperation(cardFrom);
+        Bill billFrom = billService.fullBillValidationBeforeOperation(cardFrom);
 
         depositOperation(billFrom, currency, summa);
 
-        receipts receipt = getReceiptAfterOperation(getDepositOperationType(), billFrom, null, summa, currency, billFrom.getCurrency());
+        Receipts receipt = getReceiptAfterOperation(getDepositOperationType(), billFrom, null, summa, currency, billFrom.getCurrency());
 
         return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
     }
 
-    private BigDecimal getOperationSummaForDepositAndExtradition(bill bill, String currencyTo, BigDecimal summa){
+    private BigDecimal getOperationSummaForDepositAndExtradition(Bill bill, String currencyTo, BigDecimal summa){
 
         if (!billService.checkCurrencyEquals(currencyTo, bill)) {
             currencyRates.setRate(Rates(currencyTo));  // get fresh currency rates
@@ -298,7 +300,7 @@ public class BillController {
         return summa;
     }
 
-    private void depositOperation(bill billFrom, String currency, BigDecimal summa){
+    private void depositOperation(Bill billFrom, String currency, BigDecimal summa){
         summa = getOperationSummaForDepositAndExtradition(billFrom, currency, summa);
         billFrom.setLedger(billFrom.getLedger().add(summa).setScale(2, RoundingMode.HALF_UP));
         billService.save(billFrom);
@@ -311,7 +313,7 @@ public class BillController {
                                   @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa to deposit must be more than 00.00.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.")
                                   @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillNotFoundException, BillInactiveException, TemporaryLockedBillException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        bill billF = billService.fullBillValidationBeforeOperation(billFrom);
+        Bill billF = billService.fullBillValidationBeforeOperation(billFrom);
 
         if(billService.pinAndLedgerValidation(billF, pin, summa)) {
 
@@ -319,7 +321,7 @@ public class BillController {
 
             summa = getOperationSummaForCashTransferAndConvert(billF, currency, summa).setScale(2, RoundingMode.HALF_UP);
 
-            receipts receipt = getReceiptAfterOperation(getConvertOperationType(), billF, null, summa, billF.getCurrency(), currency);
+            Receipts receipt = getReceiptAfterOperation(getConvertOperationType(), billF, null, summa, billF.getCurrency(), currency);
 
             return ResponseEntity.ok(Map.of("message","Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
 
@@ -328,16 +330,16 @@ public class BillController {
     }
 
 
-    private void convertOperation(bill billFrom, BigDecimal summa){
+    private void convertOperation(Bill billFrom, BigDecimal summa){
         billFrom.setLedger(billFrom.getLedger().subtract(summa).setScale(2, RoundingMode.HALF_UP));  // - summa from my card
         billService.save(billFrom);
     }
 
     @GetMapping("receipt")
     @Transactional(propagation = Propagation.REQUIRED)
-    public void downloadReceipt(HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills) throws IOException {
+    public void downloadReceipt(HttpServletResponse response, @SessionAttribute("bills") Set<Bill> bills) throws IOException {
 
-        receipts receipt = receiptsService.findFirstByBillInOrderByIdDesc(bills);
+        Receipts receipt = receiptsService.findFirstByBillInOrderByIdDesc(bills);
 
         File file = new File("Payment #" + receipt.getId() + ".txt");
         file.deleteOnExit();
@@ -369,9 +371,9 @@ public class BillController {
 
     @GetMapping("card")
     @Transactional(propagation = Propagation.REQUIRED)
-    public void downloadCardAndActivate (HttpServletResponse response, @SessionAttribute("bills") Set<bill> bills, @RequestParam(name = "card", required = false) String card, Model model) throws IOException {
+    public void downloadCardAndActivate (HttpServletResponse response, @SessionAttribute("bills") Set<Bill> bills, @RequestParam(name = "card", required = false) String card, Model model) throws IOException {
 
-        bill bill = billService.findByCard(card);
+        Bill bill = billService.findByCard(card);
 
         File file = new File(bill.getCard() + ".txt");
 
@@ -412,11 +414,11 @@ public class BillController {
     @PostMapping("getLedger")
     @ResponseBody
     @Transactional(propagation = Propagation.REQUIRED)
-    public ResponseEntity<Map<String, String>> checkBalance(@RequestParam("bill") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format of card number.")
+    public ResponseEntity<Map<String, String>> checkBalance(@RequestParam("Bill") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format of card number.")
                                       @Size(min = 19, max = 19, message = "Length of card number must comprise 19 symbols.") String card, @RequestParam("pin")  @NotBlank(message = "Pin is mandatory.")
                                       @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") String pin) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException {
 
-        bill bill = billService.fullBillValidationBeforeOperation(card);
+        Bill bill = billService.fullBillValidationBeforeOperation(card);
 
         if (billService.pinValidation(bill, pin)) {
 
@@ -440,13 +442,13 @@ public class BillController {
     public ResponseEntity<Map<String, String>> cashExtradition(@RequestParam("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billFrom,
                                   @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.01", message = "Summa to deposit must be more than 00.01.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        bill bill = billService.fullBillValidationBeforeOperation(billFrom);
+        Bill bill = billService.fullBillValidationBeforeOperation(billFrom);
 
         if (billService.pinAndLedgerValidation(bill, pin, summa)) {
 
             cashExtraditionOperation(bill, summa);
 
-            receipts receipt = getReceiptAfterOperation(getCashExtraditionOperationType(), bill, null, summa, bill.getCurrency(), bill.getCurrency());
+            Receipts receipt = getReceiptAfterOperation(getCashExtraditionOperationType(), bill, null, summa, bill.getCurrency(), bill.getCurrency());
 
             logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
             
@@ -456,7 +458,7 @@ public class BillController {
 
     }
 
-    private void cashExtraditionOperation(bill billFrom, BigDecimal summa){
+    private void cashExtraditionOperation(Bill billFrom, BigDecimal summa){
         billFrom.setLedger(billFrom.getLedger().subtract(summa));
         billService.save(billFrom);
     }

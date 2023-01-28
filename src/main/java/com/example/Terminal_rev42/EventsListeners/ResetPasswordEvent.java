@@ -1,17 +1,17 @@
 package com.example.Terminal_rev42.EventsListeners;
 
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import org.springframework.context.ApplicationEvent;
 
 public class ResetPasswordEvent extends ApplicationEvent {
 
-    private user user;
+    private User user;
 
     private String token;
 
     private String url;
 
-    public ResetPasswordEvent(user user, String token, String url) {
+    public ResetPasswordEvent(User user, String token, String url) {
         super(user);
 
         this.token = token;
@@ -19,11 +19,11 @@ public class ResetPasswordEvent extends ApplicationEvent {
         this.url = url;
     }
 
-    public user getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(com.example.Terminal_rev42.Model.user user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

@@ -1,10 +1,10 @@
 package com.example.Terminal_rev42.ServicesTest;
 
 
-import com.example.Terminal_rev42.Entities.bill;
+import com.example.Terminal_rev42.Entities.Bill;
 import com.example.Terminal_rev42.Exceptions.*;
-import com.example.Terminal_rev42.SeviceImplementation.billServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.clientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -27,17 +28,17 @@ import java.time.LocalDate;
 public class BillServiceImplTest {
 
     @Autowired
-    private billServiceImpl billService;
+    private BillServiceImpl billService;
 
     @Autowired
-    private clientServiceImpl clientService;
+    private ClientServiceImpl clientService;
 
     @Test
-    @DisplayName("Save bill test & activate + encode password.")
+    @DisplayName("Save Bill test & activate + encode password.")
     @Sql(value = "/drop-bill-after-operation.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void saveBill(@Value("${client.add.username.value}") String username, @Value("${bill.type.value1}") String type,
                          @Value("${bill.currency.value1}") String currency, @Value("${bill.pin.code.value}") String pin){
-        bill start = new bill();
+        Bill start = new Bill();
         start.setClient(clientService.findByUser_Username(username));
         start.setType(type);
         start.setCurrency(currency);
@@ -46,8 +47,8 @@ public class BillServiceImplTest {
 
         Assertions.assertEquals(pin, start.getPin());
 
-        bill end = billService.findByCard(start.getCard());
-        Assertions.assertNotNull(end, "Saved bill is null!");
+        Bill end = billService.findByCard(start.getCard());
+        Assertions.assertNotNull(end, "Saved Bill is null!");
 
         billService.encodePasswordAndActivateBill(end);
         Assertions.assertNotEquals(pin, end.getPin());
@@ -74,7 +75,7 @@ public class BillServiceImplTest {
     @Sql(value = "/drop-bill-after-operation.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = "/drop-client-after-billService-test.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void failedAttempts(@Value("${bill.card.number.value}") String card){
-        bill bill = billService.findByCard(card);
+        Bill bill = billService.findByCard(card);
         bill.setFailedAttempts(3);
         Assertions.assertTrue(bill.getFailedAttempts() > 0);
         billService.resetFailedAttempts(bill);
@@ -96,14 +97,14 @@ public class BillServiceImplTest {
 
 
     @Test
-    @DisplayName("Check pin (success &n failed).")
+    @DisplayName("Check pin (success & failed).")
     @Sql(value = "/create-client-before-billService-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/create-bill-before-operations.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/drop-bill-after-operation.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = "/drop-client-after-billService-test.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void pinCheck(@Value("${bill.card.number.value}") String card, @Value("${bill.pin.code.value}") String pin){
         final String incorrectPin = "error";
-        bill bill = billService.findByCard(card);
+        Bill bill = billService.findByCard(card);
         Assertions.assertTrue(billService.checkPin(bill, pin));
         Assertions.assertFalse(billService.checkPin(bill, incorrectPin));
     }
@@ -116,7 +117,7 @@ public class BillServiceImplTest {
     @Sql(value = "/drop-client-after-billService-test.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void currencyCheck(@Value("${bill.card.number.value}") String card, @Value("${bill.currency.value1}") String equalsCurrency,
                               @Value("${bill.currency.value2}") String notEqualsCurrency){
-        bill bill = billService.findByCard(card);
+        Bill bill = billService.findByCard(card);
 
         Assertions.assertTrue(billService.checkCurrencyEquals(equalsCurrency, bill));
         Assertions.assertFalse(billService.checkCurrencyEquals(notEqualsCurrency, bill));
@@ -161,7 +162,7 @@ public class BillServiceImplTest {
 
         final String incorrectPin = "error";
 
-        bill bill = billService.findByCard(correctBill);
+        Bill bill = billService.findByCard(correctBill);
 
         Assertions.assertTrue(billService.pinAndLedgerValidation(bill, pin, correctSumma));
 
@@ -183,7 +184,9 @@ public class BillServiceImplTest {
     @Sql(value = "/drop-client-after-billService-test.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void unlockTemporaryLockedBill(@Value("${bill.temporary.locked.card.number.value}") String temporaryLockedBill) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
-        bill bill = billService.findByCard(temporaryLockedBill);
+        Bill bill = billService.findByCard(temporaryLockedBill);
+        bill.setLockTime(LocalDateTime.of(2022, 10, 10, 10, 10,10));
+        billService.save(bill);
         Assertions.assertTrue(bill.isTemporalLock());
         billService.unlockCard(bill);
         Assertions.assertFalse(bill.isTemporalLock());

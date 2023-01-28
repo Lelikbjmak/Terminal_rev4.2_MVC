@@ -1,6 +1,6 @@
 package com.example.Terminal_rev42.Entities;
 
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Model.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,9 +17,9 @@ import java.util.Set;
 
 
 @Entity
-public class client implements Serializable {
+public class Client implements Serializable {
 
-    public client(){}
+    public Client(){}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,15 +52,15 @@ public class client implements Serializable {
     private Date birth;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many bills
-    private Set<bill> bills = new HashSet<>();
+    private Set<Bill> bills = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     @Valid
-    private user user;
+    private User user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")  // 1 client has many invests
-    private Set<investments> investments = new HashSet<>();
+    private Set<Investments> investments = new HashSet<>();
 
     public long getId() {
         return id;
@@ -102,27 +102,27 @@ public class client implements Serializable {
         this.birth = birth;
     }
 
-    public Set<bill> getBills() {
+    public Set<Bill> getBills() {
         return bills;
     }
 
-    public void setBills(Set<bill> bills) {
+    public void setBills(Set<Bill> bills) {
         this.bills = bills;
     }
 
-    public user getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(user user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public Set<investments> getInvestments() {
+    public Set<Investments> getInvestments() {
         return investments;
     }
 
-    public void setInvestments(Set<investments> investments) {
+    public void setInvestments(Set<Investments> investments) {
         this.investments = investments;
     }
 

@@ -1,8 +1,8 @@
 package com.example.Terminal_rev42.EventsListeners;
 
-import com.example.Terminal_rev42.Entities.bill;
-import com.example.Terminal_rev42.Entities.investments;
-import com.example.Terminal_rev42.Model.user;
+import com.example.Terminal_rev42.Entities.Bill;
+import com.example.Terminal_rev42.Entities.Investments;
+import com.example.Terminal_rev42.Model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -31,9 +31,9 @@ public class BillAndInvestValidityEventListener {
     @Transactional
     public void handleNotifyAboutBillRapidExpirationEvent(BillValidityExpirationEvent event){
 
-        bill bill = event.getBill();
+        Bill bill = event.getBill();
 
-        user user = bill.getClient().getUser();
+        User user = bill.getClient().getUser();
         String recipientAddress = user.getMail();
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();  // create mime message -> use html docs
@@ -44,7 +44,7 @@ public class BillAndInvestValidityEventListener {
                 "<a align='left' href = 'http://localhost:8080/Barclays'><img class='logomenu1' alt='Barclays Logo' src='https://www.vectorlogo.zone/logos/barclays/barclays-ar21.png' style='width: 230px; height: 115px; margin-top: -45px; display:block;'></a>" +
                 "<p align='left' style='border:none;padding:0; padding-bottom: 25px; padding-left: 25px; margin:0; background-color:#ffffff;color:#000000;font-size:28px;font-family:\"helvetica\",\"arial\",sans-serif!important;font-weight:400;'>Bill expiration date.\n" +
                 "</p>" +
-                "<div><p align='left' style='border:none; margin-bottom: 60px; padding-left: 25px; background-color:#ffffff;color:#000000;font-size:16px;font-family:\"helvetica\",\"arial\",sans-serif!important;font-weight:400;'>Dear " + "<i>"+ user.getUsername() + "</i>" + ", your bill " + "<b>" + bill.getCard() + " <i>" + bill.getCurrency() + "</i>" + "</b> " + "(" +bill.getType() + ")" + " will be expired in " + event.getDays() + " days (" + bill.getValidity() + ")" + ".<br>Please withdraw all funds from check to beware confusing situations." +
+                "<div><p align='left' style='border:none; margin-bottom: 60px; padding-left: 25px; background-color:#ffffff;color:#000000;font-size:16px;font-family:\"helvetica\",\"arial\",sans-serif!important;font-weight:400;'>Dear " + "<i>"+ user.getUsername() + "</i>" + ", your Bill " + "<b>" + bill.getCard() + " <i>" + bill.getCurrency() + "</i>" + "</b> " + "(" +bill.getType() + ")" + " will be expired in " + event.getDays() + " days (" + bill.getValidity() + ")" + ".<br>Please withdraw all funds from check to beware confusing situations." +
                 "</p></div>\n" +
                 "\n" +
                 "\n" +
@@ -88,16 +88,16 @@ public class BillAndInvestValidityEventListener {
             throw new RuntimeException(e);
         }
 
-        logger.info(IMPORTANT, "Notification about expiration date of bill has sent to " + user.getUsername() + ".");
+        logger.info(IMPORTANT, "Notification about expiration date of Bill has sent to " + user.getUsername() + ".");
     }
 
     @EventListener
     @Transactional
     public void handleNotifyAboutBillIsOutOfValidityEvent(BillValidityExpirationEvent event){
 
-        bill bill = event.getBill();
+        Bill bill = event.getBill();
 
-        user user = bill.getClient().getUser();
+        User user = bill.getClient().getUser();
         String recipientAddress = user.getMail();
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();  // create mime message -> use html docs
@@ -108,7 +108,7 @@ public class BillAndInvestValidityEventListener {
                         "<a align='left' href = 'http://localhost:8080/Barclays'><img class='logomenu1' alt='Barclays Logo' src='https://www.vectorlogo.zone/logos/barclays/barclays-ar21.png' style='width: 230px; height: 115px; margin-top: -45px; display:block;'></a>" +
                         "<p align='left' style='border:none;padding:0; padding-bottom: 25px; padding-left: 25px; margin:0; background-color:#ffffff;color:#000000;font-size:28px;font-family:\"helvetica\",\"arial\",sans-serif!important;font-weight:400;'>Bill expiration date.\n" +
                         "</p>" +
-                        "<div><p align='left' style='border:none; margin-bottom: 60px; padding-left: 25px; background-color:#ffffff;color:#000000;font-size:16px;font-family:\"helvetica\",\"arial\",sans-serif!important;font-weight:400;'>Dear " + "<i>"+ user.getUsername() + "</i>" + ", your bill " + "<b>" + bill.getCard() + " <i>" + bill.getCurrency() + "</i>" + "</b> " + "(" +bill.getType() + ")" + " was expired, validity " + bill.getValidity() + ".<br>Your card is inactive, all transactions are halted. " +
+                        "<div><p align='left' style='border:none; margin-bottom: 60px; padding-left: 25px; background-color:#ffffff;color:#000000;font-size:16px;font-family:\"helvetica\",\"arial\",sans-serif!important;font-weight:400;'>Dear " + "<i>"+ user.getUsername() + "</i>" + ", your Bill " + "<b>" + bill.getCard() + " <i>" + bill.getCurrency() + "</i>" + "</b> " + "(" +bill.getType() + ")" + " was expired, validity " + bill.getValidity() + ".<br>Your card is inactive, all transactions are halted. " +
                         "</p></div>\n" +
                         "\n" +
                         "\n" +
@@ -153,7 +153,7 @@ public class BillAndInvestValidityEventListener {
         }
 
 
-        logger.info(IMPORTANT, "Notification about expiration date of bill has sent to " + user.getUsername() + ".");
+        logger.info(IMPORTANT, "Notification about expiration date of Bill has sent to " + user.getUsername() + ".");
     }
 
 
@@ -161,9 +161,9 @@ public class BillAndInvestValidityEventListener {
     @Transactional
     public void handleNotifyEventOutOfValidityInvests(InvestExpirationEvent event){
 
-        investments investments = event.getInvestments();
+        Investments investments = event.getInvestments();
 
-        user user = investments.getClient().getUser();
+        User user = investments.getClient().getUser();
         String recipientAddress = user.getMail();
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();  // create mime message -> use html docs
