@@ -8,11 +8,14 @@ import com.example.Terminal_rev42.Repositories.VerificationTokenRepository;
 import com.example.Terminal_rev42.Servicies.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.UUID;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class VerificationTokenServiceImpl implements VerificationTokenService {
 
     @Autowired

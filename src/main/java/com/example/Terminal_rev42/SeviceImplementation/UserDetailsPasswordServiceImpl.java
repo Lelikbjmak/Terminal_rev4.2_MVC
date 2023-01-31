@@ -9,11 +9,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Service("UserDetailsPasswordServiceImpl")
+@Transactional(propagation = Propagation.REQUIRED)
 public class UserDetailsPasswordServiceImpl implements UserDetailsPasswordService {
 
 

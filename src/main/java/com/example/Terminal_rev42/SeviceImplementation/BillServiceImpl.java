@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 @Service
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED)
 public class BillServiceImpl implements BillService {
 
     @Autowired

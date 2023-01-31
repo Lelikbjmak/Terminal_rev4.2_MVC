@@ -6,10 +6,13 @@ import com.example.Terminal_rev42.Repositories.ReceiptsRepository;
 import com.example.Terminal_rev42.Servicies.ReceiptsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class ReceiptsServiceImpl implements ReceiptsService {
 
     @Autowired
