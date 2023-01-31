@@ -49,7 +49,7 @@ public class UserController {
     }
 
     private boolean validationBeforePasswordChanging(String newPass, String confirmedPass) throws PasswordAndConfirmedPasswordNotMatchException {
-        if(newPass.compareTo(confirmedPass) > 0)
+        if(newPass.equals(confirmedPass))
             return true;
         else throw new PasswordAndConfirmedPasswordNotMatchException("Passwords don't match.", newPass,
                 confirmedPass);
