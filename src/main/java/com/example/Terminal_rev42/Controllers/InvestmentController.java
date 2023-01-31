@@ -41,7 +41,7 @@ import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-@Controller
+@RestController
 @RequestMapping("/Barclays/service/holdings")
 @SessionAttributes(value = {"bills", "invests"})
 @Validated // to active validation in RequestParams/RequestBody with valid the same
@@ -93,8 +93,6 @@ public class InvestmentController {
 
 
     @GetMapping("PercentageForFixed")
-    @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public <S,D> ResponseEntity<Map<S, D>> getPercentageForInvest(@RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency, @RequestParam("term") @Digits(integer = 2, fraction = 0, message = "Invalid Format. Must be Integer value.") @Min(value = 6, message = "Term can't be less than 6 month.") @Max(value = 36, message = "Term can't be greater than 36 month.") int term) {
 
         if (currency.equalsIgnoreCase("byn")) {
@@ -164,8 +162,6 @@ public class InvestmentController {
 
 
     @PostMapping("HoldCash")
-    @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)  // cash payment
     public ResponseEntity<Map<String, String>> applyHoldCashPayment(@RequestBody ObjectNode objectNode) throws CurrencyIsNotSupportedOrBlankException, IncorrectSummaException {
 
         Investments investment = objectMapper.convertValue(objectNode.get("investment"), Investments.class);  // throw exception if not valid
@@ -217,8 +213,6 @@ public class InvestmentController {
 
 
     @PostMapping("HoldCard")
-    @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)  // with card payment
     public ResponseEntity<Map<String, String>> applyHoldCardPayment(@RequestBody ObjectNode objectNode) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
         Investments investment = objectMapper.convertValue(objectNode.get("investment"), Investments.class);  // simultaneously with validation
@@ -244,8 +238,6 @@ public class InvestmentController {
 
 
     @PostMapping("/holdingInfo")
-    @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public Map<String, String> getHoldingInfo(@RequestParam("holdingId") long holdingId) throws InvestmentIsNotFound {
 
         Optional<Investments> optionalInvestments = investService.findById(holdingId);

@@ -5,12 +5,12 @@ import com.example.Terminal_rev42.EventsListeners.MailConfirmationEvent;
 import com.example.Terminal_rev42.EventsListeners.MailConfirmationResendEvent;
 import com.example.Terminal_rev42.EventsListeners.ResetPasswordEvent;
 import com.example.Terminal_rev42.Exceptions.*;
-import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.Model.User;
-import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
-import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
+import com.example.Terminal_rev42.Model.VerificationToken;
 import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.VerificationTokenServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,10 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +33,10 @@ import javax.validation.Validator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/Barclays/client")
@@ -68,7 +68,6 @@ public class ClientController {
 
     @PostMapping("/add")
     @ResponseBody
-    @Transactional
     public ResponseEntity<Map<String, String>> registerClient(HttpServletRequest request, @RequestBody ObjectNode objectNode) throws UserAlreadyExistsException, ClientAlreadyExistsException, JsonProcessingException, PasswordAndConfirmedPasswordNotMatchException {
 
         User user = getUserToRegister(objectNode);
@@ -86,16 +85,13 @@ public class ClientController {
 
     }
 
-    @Transactional
     private User getUserToRegister(ObjectNode objectNode) throws JsonProcessingException {
         return objectMapper.treeToValue(objectNode.get("user"), User.class);
     }
 
-    @Transactional
     private Client getClientToRegister(ObjectNode objectNode) throws JsonProcessingException {
         return objectMapper.treeToValue(objectNode.get("client"), Client.class);
     }
-    @Transactional
     private void validateUserAndClientEntityBeforeRegistration(User user, Client client) throws UserAlreadyExistsException, ConstraintViolationException, ClientAlreadyExistsException, PasswordAndConfirmedPasswordNotMatchException {
 
         Set<ConstraintViolation<Object>> violations = validator.validate(user);
@@ -137,7 +133,6 @@ public class ClientController {
 
     @PostMapping("/resendConfirmation")
     @ResponseBody
-    @Transactional
     public ResponseEntity<Map<String, String>> resendConfirmationPostRequest(HttpServletRequest request, @RequestParam("username") @NotBlank(message = "Provided username to resend verification link is empty.")
     @Size(min = 4, max = 20, message = "Username must contain at least 4 symbols, less than 20.") String username) throws UserNotExistsException {
 
@@ -156,7 +151,6 @@ public class ClientController {
 
     }
 
-    @Transactional
     private User getUserToResendVerificationLink(String username) throws UserNotExistsException {
 
         User user = userService.findByUsername(username);
@@ -166,7 +160,6 @@ public class ClientController {
         return user;
     }
 
-    @Transactional
     private VerificationToken getVerificationTokenForUserToResendVerificationLink(@Valid User user) throws VerificationTokenIsNotFoundException {
         return tokenService.findByUser(user);
     }
@@ -183,7 +176,6 @@ public class ClientController {
         return "redirect:/Barclays/success?token=" + token;
     }
 
-    @Transactional
     private User getUserToConfirmRegistration(@Valid VerificationToken token) throws VerificationTokenIsNotFoundException {
 
         User user = token.getUser();
@@ -195,7 +187,6 @@ public class ClientController {
         return user;
     }
 
-    @Transactional
     private void verifyUserWithVerificationToken(@Valid User user, @Valid VerificationToken verificationToken){
 
         user.setEnabled(true);
@@ -259,7 +250,6 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "E-mail has sent."));
     }
 
-    @Transactional
     private User getUserByMailToResetPassword(String mail) throws UserNotExistsException {
 
         User user = userService.findByMail(mail);
@@ -270,13 +260,11 @@ public class ClientController {
         return user;
     }
 
-    @Transactional
     private String generateResetPasswordToken(User user){
         String resetToken = UUID.randomUUID().toString();
         userService.updateResetPasswordToken(resetToken, user);
         return resetToken;
     }
-    @Transactional
     private String generatePasswordResetUrl(HttpServletRequest request, String resetToken){
         String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         return url + "/Barclays/client/resetPassword?token=" + resetToken;
@@ -289,7 +277,6 @@ public class ClientController {
 
     @PostMapping("/resetPassword")
     @ResponseBody
-    @Validated
     public ResponseEntity<Map<String, String>> resetPassword(@RequestParam(name = "token") @NotBlank(message = "Token is mandatory to execute password reset.") String token, @NotBlank(message = "Password can't be blank.") @Size(min = 8, max = 30, message = "Password must contain at least 8 symbols, less than 30.")
     @RequestParam("password") String password, @NotBlank(message = "Password can't be blank.") @Size(min = 8, max = 30, message = "Password must contain at least 8 symbols, less than 30.")
     @RequestParam("confirmedPassword") String confirmedPassword) throws UserNotExistsException, PasswordAndConfirmedPasswordNotMatchException {
@@ -303,7 +290,6 @@ public class ClientController {
         return ResponseEntity.ok(Map.of("message", "Password Successfully updated!"));
     }
 
-    @Transactional
     private void validatePasswordsBeforeResetting(String password, String confirmedPassword) throws PasswordAndConfirmedPasswordNotMatchException {
 
         if(!password.equals(confirmedPassword))

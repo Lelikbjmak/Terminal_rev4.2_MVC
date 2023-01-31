@@ -86,7 +86,6 @@ public class BillController {
 
     @PostMapping("add")
     @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity<Map<String, String>> registerNewBill(@Valid @RequestBody Bill bill, Model model) {
         Client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
         Bill registeredBill = registerNewBill(client, bill);
@@ -103,7 +102,6 @@ public class BillController {
 
     @PostMapping("cashTransfer")
     @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity<Map<String, String>> cashTransfer(@RequestParam ("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billFrom,
                   @RequestParam("billTo") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billTo,
                   @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa to transfer can't be below zero.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.")
@@ -157,7 +155,6 @@ public class BillController {
 
 
     @PostMapping("deposit")
-    @Transactional(propagation = Propagation.REQUIRED)
     @ResponseBody
     public ResponseEntity<Map<String, String>> deposit(@RequestParam ("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String cardFrom,
                                           @RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency,
@@ -191,7 +188,6 @@ public class BillController {
 
     @PostMapping("convert")
     @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity<Map<String, String>> convert(@RequestParam("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format of card number.") String billFrom, @RequestParam("currency") @NotBlank(message = "Currency can't be blank.") String currency,
                                   @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa to deposit must be more than 00.00.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.")
                                   @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillNotFoundException, BillInactiveException, TemporaryLockedBillException, IncorrectBillPinException, NotEnoughLedgerException {
@@ -219,7 +215,6 @@ public class BillController {
     }
 
     @GetMapping("receipt")
-    @Transactional(propagation = Propagation.REQUIRED)
     public void downloadReceipt(HttpServletResponse response, @SessionAttribute("bills") Set<Bill> bills) throws IOException {
 
         Receipts receipt = receiptsService.findFirstByBillInOrderByIdDesc(bills);
@@ -253,7 +248,6 @@ public class BillController {
     }
 
     @GetMapping("card")
-    @Transactional(propagation = Propagation.REQUIRED)
     public void downloadCardAndActivate (HttpServletResponse response, @SessionAttribute("bills") Set<Bill> bills, @RequestParam(name = "card", required = false) String card, Model model) throws IOException {
 
         Bill bill = billService.findByCard(card);
@@ -296,7 +290,6 @@ public class BillController {
 
     @PostMapping("getLedger")
     @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity<Map<String, String>> checkBalance(@RequestParam("Bill") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format of card number.")
                                       @Size(min = 19, max = 19, message = "Length of card number must comprise 19 symbols.") String card, @RequestParam("pin")  @NotBlank(message = "Pin is mandatory.")
                                       @Digits(integer = 4, fraction = 0, message = "Pin must contain 4 digits.") String pin) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException {
@@ -321,7 +314,6 @@ public class BillController {
 
     @PostMapping("cashExtradition")
     @ResponseBody
-    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity<Map<String, String>> cashExtradition(@RequestParam("billFrom") @NotBlank(message = "Card number can't be blank.") @Pattern(regexp = "^(\\d{4}\\s){3}\\d{4}$", message = "Not valid format.") String billFrom,
                                   @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.01", message = "Summa to deposit must be more than 00.01.") BigDecimal summa, @RequestParam("pin") @NotBlank(message = "Pin is mandatory.") @Pattern(regexp = "^\\d{4}$", message = "Not valid format of pin.") String pin) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException, IncorrectBillPinException, NotEnoughLedgerException {
 
