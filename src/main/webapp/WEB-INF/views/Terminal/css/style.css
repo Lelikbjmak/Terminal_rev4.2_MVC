@@ -2261,3 +2261,71 @@ color: rgba(114, 114, 114, 1);
 #currtime1{
 color: rgba(96, 96, 96, 1);
 }
+
+
+#profile {
+    background: url(/Terminal/pics/storm-8.jpg) no-repeat center center fixed #000;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100%;
+}
+
+ul.sidebar-menu {
+    margin-top: 80px;
+    padding: 0;
+    max-width: 200px;
+    list-style: none;
+    list-style-type: none;
+}
+.sidebar-menu li a span {
+  margin-right: 20px;
+  color: white;
+}
+.sidebar-menu li a  {
+  background-color: rgba(0,0,0,0.8);
+  border-right: 1px solid #0096f4;
+  padding: 20px 25px;
+  display: block;
+  text-decoration: none;
+  color: white;
+}
+.sidebar-menu li a:hover  {
+  background-color: rgba(3, 161, 252, 0.6);
+  padding: 20px 25px;
+  display: block;
+  text-decoration: none;
+  color: white;
+}
+li.have-children ul {
+  padding: 0px;
+}
+li.have-children ul li a {
+  background-color: rgba(0,0,0,0.6);
+  padding-left: 62px;
+}
+li.have-children ul li a:hover {
+  color: #fff;
+  background-color: rgba(70, 190, 252, 0.5);
+  padding-left: 62px;
+}
+li.have-children, li {
+  position: relative;
+}
+.have-children span::after {
+  position: absolute;
+  right: 30px;
+  content: "\f054";
+  color: #fff;
+  transition: all .5s;
+}
+li.active.have-children span::after {
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.sidebar-menu .have-children > ul {
+    display: none;
+}
