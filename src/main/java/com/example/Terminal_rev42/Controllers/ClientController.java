@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -111,7 +112,7 @@ public class ClientController {
         clientService.checkClientNotExistsByNameAndPassport(client.getName(), client.getPassport());
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     private void registerNewUser(@Valid Client client, @Valid User user){
 
         user.setClient(client);
@@ -122,7 +123,6 @@ public class ClientController {
 
     }
 
-    @Transactional
     private void sendVerificationMailForRegistration(HttpServletRequest request, User user){
 
         String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();

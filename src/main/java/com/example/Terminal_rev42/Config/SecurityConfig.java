@@ -56,7 +56,7 @@ public class SecurityConfig{
 //                .antMatchers("/Barclays/admin/**")
 //                .hasAnyRole("ADMIN")
 
-                .antMatchers("/Barclays/Bill/**", "/Barclays/service/**")
+                .antMatchers("/Barclays/Bill/**", "/Barclays/service/**, /Barclays/user/**")
                 .hasAnyRole("USER", "ADMIN")
 
 
