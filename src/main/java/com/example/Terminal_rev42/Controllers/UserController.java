@@ -2,15 +2,19 @@ package com.example.Terminal_rev42.Controllers;
 
 import com.example.Terminal_rev42.Exceptions.IncorrectPasswordException;
 import com.example.Terminal_rev42.Exceptions.PasswordAndConfirmedPasswordNotMatchException;
-import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.SeviceImplementation.UserDetailsPasswordServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @Controller
@@ -22,6 +26,18 @@ public class UserController {
 
     @Autowired
     private UserDetailsPasswordServiceImpl userDetailsPasswordService;
+
+    @Autowired
+    private SessionRegistry sessionRegistry;
+
+    private static final Logger logger = LoggerFactory.getLogger("UserController");
+    @GetMapping
+    public String getProfilePage(@SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext,
+                                 HttpSession httpSession, HttpServletRequest request){
+        System.out.println(sessionRegistry.getSessionInformation(httpSession.getId()));
+        logger.info("Service: (SecurityContext) - " + securityContext.getAuthentication().getName());
+        return "profile";
+    }
 
     @PostMapping("checkPassword")
     @ResponseBody
@@ -42,13 +58,13 @@ public class UserController {
     @ResponseBody
     public Map<String, String> changePassword(@RequestBody Map<String, String> passwords,
                                               @SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext) throws PasswordAndConfirmedPasswordNotMatchException, IncorrectPasswordException {
-
+        System.out.println("CHANGEME");
         String newPassword = passwords.get("newPassword");
         String confirmedNewPassword = passwords.get("confirmedNewPassword");
         UserDetails user = (UserDetails) securityContext.getAuthentication().getPrincipal();
 
         if (validationBeforePasswordChanging(newPassword, confirmedNewPassword, securityContext)) {
-            userDetailsPasswordService.updatePassword(user, newPassword);
+            //userDetailsPasswordService.updatePassword(user, newPassword);
             return Map.of("message", "Password successfully changed!");
         }
 
