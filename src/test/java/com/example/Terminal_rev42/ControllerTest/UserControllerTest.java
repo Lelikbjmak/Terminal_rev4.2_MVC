@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -85,6 +86,23 @@ public class UserControllerTest {
     @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "testUser")
+    public void failedChangePasswordsNotMatch(@Value("${client.add.password.value.to}") String currentPassword) throws Exception {
+
+        String notMatch= "{\"oldPassword\" : \"" + currentPassword + "\", \"newPassword\" : \"22222222\", \"confirmedNewPassword\" : \"22221111\"}";
+
+        mockMvc.perform(post("/Barclays/user/changePassword")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(notMatch))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
     public void successfullyCheckPassword(@Value("${client.add.password.value.to}") String currentPassword) throws Exception {
 
         String passwords = "{\"oldPassword\" : \"" + currentPassword + "\"}";
@@ -110,4 +128,16 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
+    public void getUserPage() throws Exception {
+
+        mockMvc.perform(get("/Barclays/user"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
