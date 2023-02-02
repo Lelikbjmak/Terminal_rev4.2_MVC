@@ -21,7 +21,7 @@
 
         <div class="curruser">
             <span id="logg" th:if="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}"><a href="/Barclays/authorisation" class="sign">Sign in</a></span>
-            <span th:unless="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}" th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span>
+            <a href="/Barclays/user" id="prfl"><span th:unless="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}" th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span></a>
             <br>
             <span th:unless="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName() == 'anonymousUser'}"><a href="/logout" class="signout">Log out</a></span>
         </div>

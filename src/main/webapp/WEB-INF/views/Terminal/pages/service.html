@@ -20,7 +20,7 @@
             <a href="/Barclays"><img class="logomenu1" src="/Terminal/logo/BarclaysPLC.png"></a>
 
             <div class="curruser">
-                <span th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span>
+                <a href="/Barclays/user" id="prfl"><span th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span></a>
                 <br>
                 <span><a href="/logout" class="signout">Log out</a></span>
             </div>
