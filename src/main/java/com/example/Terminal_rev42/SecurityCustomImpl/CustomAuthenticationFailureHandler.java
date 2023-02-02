@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -60,6 +62,18 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             logger.error("User: " + user.getUsername() + " is locked due to 3 failed attempts. Lock time: " + user.getLockTime());
             return true;
         }
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+            if(user.getFailedAttempts() == 0){
+                cancel();
+            }
+            userService.resetFailedAttempts(user);
+            }
+        };
+
+        new Timer().schedule(task, 1000 * 60 * 60 * 6);  // after 6 hours of inactive reset failed Attempts after unsuccessful sign in
 
         return false;
     }
