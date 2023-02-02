@@ -24,7 +24,7 @@
             <a href="/Barclays"><img class="logomenu1" src="/Terminal/logo/BarclaysPLC.png"></a>
 
             <div class="curruser">
-                <span th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span>
+                <a href="#" id="prfl"><span th:text="${session.SPRING_SECURITY_CONTEXT.getAuthentication().getName()}"></span></a>
                 <br>
                 <span><a href="/logout" class="signout">Log out</a></span>
             </div>
@@ -65,7 +65,31 @@
 
 
 <div>
-    <form id="resetPassword1" style="">
+    <form id="resetPassword" style="opacity: 0%; margin-top: -23%; z-index: 0; position: relative;">
+        <br>
+        <br>
+        <label for="currentPassword">Confirm password</label>
+        <br>
+
+        <div class="r2">
+            <input type="password" id="currentPassword" placeholder="********" onkeyup="checkParams1()">
+            <i class="fa-regular fa-eye-slash" id="togglePassword3"></i>
+            <br>
+            <small></small>
+        </div>
+
+        <div id="message1"></div>
+        <div class="fa-lg"><i class="fas fa-circle-notch fa-spin"></i></div>
+        <input type="submit" value="Check" disabled style="margin-top: 25px;">
+        <br>
+        <a onclick="closeCheckPasswordForm();" style="text-decoration:none;">close</a>
+    </form>
+</div>
+
+
+
+<div>
+    <form id="resetPassword1" style="opacity: 0%; margin-top: -31%; z-index: 0;">
         <br>
 
         <label for="pass">Change password</label>
@@ -91,7 +115,8 @@
 
         <input type="submit" value="Change password" disabled>
         <br>
-        <a href="/Barclays/authorisation">Back to login page</a>
+        <a onclick="closeChangePasswordForm();" style="text-decoration:none;">close</a>
+
     </form>
 </div>
 
