@@ -140,4 +140,52 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
+    public void successChangeUsername() throws Exception {
+
+        String login = "{\"newLogin\" : \"newTestLogin\"}";
+
+        mockMvc.perform(post("/Barclays/user/changeUsername")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(login))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
+    public void failedChangeUsernameNotValid() throws Exception {
+
+        String login = "{\"newLogin\" : \"nn\"}";
+
+        mockMvc.perform(post("/Barclays/user/changeUsername")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(login))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
+    public void failedChangeUsernameAlreadyTaken(@Value("${client.add.username.value}") String username) throws Exception {
+
+        String login = "{\"newLogin\" : \"" + username + "\"}";
+        System.out.println(login);
+
+        mockMvc.perform(post("/Barclays/user/changeUsername")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(login))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
 }
