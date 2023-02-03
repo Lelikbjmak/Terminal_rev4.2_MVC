@@ -6,21 +6,48 @@ var changePasswordLink = document.querySelector(".sidebar-menu li:nth-child(2) u
 
 var checkPasswordForm = document.querySelector("#resetPassword");
 
-var form = document.getElementById("resetPassword1");
+var changePasswordForm = document.getElementById("resetPassword1");
 
 changePasswordLink.addEventListener('click', function(){
-$('#resetPassword').css({'opacity':'100%', 'zIndex':'10', 'margin-top': '-23%'});
+    closeOtherOpenTabs();
+    $('#resetPassword').css({'opacity':'100%', 'zIndex':'3'});
 });
 
 function closeCheckPasswordForm(){
-$('#resetPassword')[0].reset();
-$('#resetPassword').css({'opacity':'0%', 'zIndex':'0'});
+    $("#message1").text('');
+    $('#resetPassword')[0].reset();
+    $('#resetPassword').css({'opacity':'0%', 'zIndex':'0'});
+    removeSuccessAndErrorAttributes();
 }
 
 function closeChangePasswordForm(){
-$('#resetPassword1')[0].reset();
-$('#resetPassword1').css({'opacity':'0%', 'zIndex':'0'});
+    $("#message").text('');
+    $('#resetPassword1')[0].reset();
+    $('#resetPassword1').css({'opacity':'0%', 'zIndex':'0'});
+    removeSuccessAndErrorAttributes();
 }
+
+function closeOtherOpenTabs(){
+    var tabs = document.getElementsByClassName('profForm');
+    for(var i = 0; i < tabs.length; i++){
+        tabs[i].style.opacity = '0%';
+        tabs[i].style.zIndex = '0';
+    }
+}
+
+function removeSuccessAndErrorAttributes(){
+    const rr = document.getElementsByClassName('r2 success');
+    const rrr = document.getElementsByClassName('r2 error');
+
+    for (let r of rrr) {
+          r.classList.remove('error');
+        }
+
+    for (let r of rr) {
+          r.classList.remove('success');
+        }
+}
+
 
 function checkParams() {
 
@@ -121,7 +148,7 @@ checkPasswordForm.addEventListener('submit', (e) => {
     e.preventDefault();
     if(check1()){
         $("#message1").text('');
-        $('.fa-lg').css({'opacity':'100%'});
+        $('#resetPassword .fa-lg').css({'opacity':'100%'});
         document.querySelector("#resetPassword input[type='submit']").setAttribute('disabled', 'disabled');
 
         var currPassword = $("#currentPassword").val().trim();
@@ -138,18 +165,14 @@ checkPasswordForm.addEventListener('submit', (e) => {
             processData: false,
             success: function(data, textStatus, jqXHR){
 
-                setTimeout(() => {
                 $("#message1").text(data.message);
                 $("#message1").css("color", "rgba(0, 0, 0, 0.6)");
-                $('.fa-lg').css({'opacity':'0%'});
-                document.querySelector("#resetPassword1 input[type='submit']").removeAttribute('disabled');
-                form.reset();
-                }, 2000);
+                $('#resetPassword .fa-lg').css({'opacity':'0%'});
 
                 setTimeout(() => {
-                  $('#resetPassword').css({'opacity':'0%', 'zIndex':'0', 'margin-top': '-23%'});
-                  $('#resetPassword1').css({'opacity':'100%', 'zIndex':'3', 'margin-top': '-37%'});
-                }, 3500);
+                    closeCheckPasswordForm();
+                    $('#resetPassword1').css({'opacity':'100%', 'zIndex':'3'});
+                }, 2000);
 
             },
             error: function( jqXHR, textStatus, errorThrown ){
@@ -173,31 +196,28 @@ checkPasswordForm.addEventListener('submit', (e) => {
                     msg = 'Uncaught Error. ' + data.message;
                 }
 
-                setTimeout(() => {
-
                 if('password' in data){
                     us = document.getElementById("currentPassword");
                     us.parentElement.classList.remove('success');
                     setErrorFor(us, data.password);
                 }
 
-                $('.fa-lg').css({'opacity':'0%'});
-                document.querySelector("#resetPassword1 input[type='submit']").removeAttribute('disabled');
-                }, 2000);
+                $('#resetPassword .fa-lg').css({'opacity':'0%'});
+                document.querySelector("#resetPassword input[type='submit']").removeAttribute('disabled');
             }
         });
     }
 });
 
 
-form.addEventListener('submit', (e) => {
+changePasswordForm.addEventListener('submit', (e) => {
 
     e.preventDefault();
 
     if(check()){
 
        $("#message").text('');
-       $('.fa-lg').css({'opacity':'100%'});
+       $('#resetPassword1 .fa-lg').css({'opacity':'100%'});
        document.querySelector("#resetPassword1 input[type='submit']").setAttribute('disabled', 'disabled');
 
        var password = $("#pass").val().trim();
@@ -215,12 +235,15 @@ form.addEventListener('submit', (e) => {
             data: JSON.stringify(passwords),
             processData: false,
             success: function(data, textStatus, jqXHR){
-                setTimeout(() => {
+
                 $("#message").text(data.message);
                 $("#message").css("color", "rgba(0, 0, 0, 0.6)");
-                $('.fa-lg').css({'opacity':'0%'});
+                $('#resetPassword1 .fa-lg').css({'opacity':'0%'});
                 document.querySelector("#resetPassword1 input[type='submit']").removeAttribute('disabled');
-                form.reset();
+                changePasswordForm.reset();
+
+                setTimeout(() => {
+                    closeChangePasswordForm();
                 }, 2000);
             },
             error: function( jqXHR, textStatus, errorThrown ){
@@ -244,7 +267,6 @@ form.addEventListener('submit', (e) => {
                     msg = 'Uncaught Error. ' + data.message;
                 }
 
-                setTimeout(() => {
                 if('confirmedPassword' in data){
                     us = document.getElementById("confPass");
                     us.parentElement.classList.remove('success');
@@ -259,16 +281,14 @@ form.addEventListener('submit', (e) => {
 
                 $("#message").text(msg);
                 $("#message").css("color", "rgba(255, 0, 0, 0.37)");
-                $('.fa-lg').css({'opacity':'0%'});
+                $('#resetPassword1 .fa-lg').css({'opacity':'0%'});
                 document.querySelector("#resetPassword1 input[type='submit']").removeAttribute('disabled');
-                }, 2000);
             }
         });
     }
 
 
 });
-
 
 
 const togglePassword1 = document.querySelector("#togglePassword1");
