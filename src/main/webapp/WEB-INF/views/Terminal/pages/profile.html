@@ -65,7 +65,30 @@
 
 
 <div>
-    <form id="resetPassword" style="opacity: 0%; margin-top: -23%; z-index: 0; position: relative;">
+    <form class="profForm" id="updateLogin">
+        <br>
+        <br>
+        <label for="username">Change Username</label>
+        <br>
+
+        <div class="r2">
+            <input type="text" id="username" placeholder="new username" onkeyup="checkUsernameParams();">
+            <br>
+            <small></small>
+        </div>
+
+        <div id="message2"></div>
+        <div class="fa-lg"><i class="fas fa-circle-notch fa-spin"></i></div>
+        <input type="submit" value="Check" disabled style="margin-top: 25px;">
+        <br>
+        <a onclick="closeChangeUsernameForm();" style="text-decoration:none;">close</a>
+    </form>
+    <script src="/Terminal/js/changeUsername.js"></script>
+</div>
+
+
+<div>
+    <form class="profForm" id="resetPassword" style="opacity: 0%; margin-top: -32%; z-index: 0; position: relative;">
         <br>
         <br>
         <label for="currentPassword">Confirm password</label>
@@ -89,7 +112,7 @@
 
 
 <div>
-    <form id="resetPassword1" style="opacity: 0%; margin-top: -31%; z-index: 0;">
+    <form class="profForm" id="resetPassword1" style="opacity: 0%; margin-top: -34.5%; z-index: 0; position: relative;">
         <br>
 
         <label for="pass">Change password</label>
@@ -120,9 +143,10 @@
     </form>
 </div>
 
+
 <script src="/Terminal/js/changePassword.js"></script>
 
-<footer class="footer-distributed" id="support" style="position: relative; bottom: 0;">
+<footer class="footer-distributed" id="support" style="position: relative; bottom: 0; margin-top: 50px;">
 
     <div class="footer-left">
 
