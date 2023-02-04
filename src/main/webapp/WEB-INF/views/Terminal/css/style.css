@@ -2058,6 +2058,100 @@ transition-duration: 0.5s;
 color: #0096f4;
 }
 
+
+.profForm {
+width: 550px;
+height: 490px;
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+margin-top: 15%;
+background-color: rgba(255, 255, 255, 0.8);
+z-index: 2;
+opacity: 100%;
+transition-property: z-index, opacity;
+transition-duration: 0.5s, 1s;
+}
+
+
+.profForm label{
+text-transform: uppercase;
+font-size: 24px;
+color: rgba(41, 41, 41, 1);
+}
+
+
+.profForm input{
+background-color: transparent;
+border: none;
+margin-top: 20px;
+border-bottom: 2px solid #0096f4;
+width: 400px;
+height: 60px;
+font-size: 21px;
+text-align: center;
+color: #385983;
+}
+
+
+.profForm div small{
+}
+
+.profForm input:focus{
+border-bottom: 2px solid rgba(0, 200, 244, 1);
+}
+
+.profForm input[type='submit']{
+margin-top: 40px;
+margin-bottom: 30px;
+background-color: #0096f4;
+color: black;
+}
+
+.profForm input[type='submit']:hover{
+background-color : rgba(0, 200, 244, 1);
+cursor: pointer;
+}
+
+.profForm input[type='submit']:disabled:hover{
+background-color : #0096f4  ;
+cursor: default;
+}
+
+.profForm .r2.success input{
+border-bottom: 2px solid rgba(0, 225, 244, 1);
+}
+
+.profForm .r2.error input{
+border-bottom: 2px solid rgba(255, 0, 0, 0.37);
+}
+
+.profForm .fa-lg{
+opacity: 0%;
+margin:0px;
+text-align: center;
+}
+
+.profForm .r2 i{
+font-size: 19px;
+position: absolute;
+margin-top: 40px;
+margin-left: -25px;
+}
+
+.profForm a{
+text-decoration: none;
+font-size: 18px;
+color: #0096f4;
+}
+
+.profForm a:hover{
+cursor: pointer;
+color: rgba(0, 200, 244, 1);
+}
+
+
+
 #resetPassword{
 width: 550px;
 height: 415px;
@@ -2068,7 +2162,8 @@ margin-top: 15%;
 background-color: rgba(255, 255, 255, 0.8);
 z-index: 3;
 opacity: 100%;
-
+transition-property: z-index, opacity;
+transition-duration: 0.5s, 1s;
 }
 
 #resetPassword label{
@@ -2118,19 +2213,13 @@ color: #0096f4;
 }
 
 #resetPassword a:hover{
+cursor: pointer;
 color: rgba(0, 200, 244, 1);
 }
 
-#resetPassword div{
-padding-top: 13px;
-text-align: left;
-padding-left: 80px;
-color: rgba(0,0,0,0.6);
-}
 
 .fa-lg{
 opacity: 0%;
-margin-left: 185px;
 }
 
 
@@ -2148,9 +2237,10 @@ margin-right: auto;
 text-align: center;
 margin-top: 15%;
 background-color: rgba(255, 255, 255, 0.8);
-z-index: 3;
+z-index: 2;
 opacity: 100%;
-
+transition-property: z-index, opacity;
+transition-duration: 0.5s, 1s;
 }
 
 
@@ -2213,9 +2303,9 @@ text-align: center;
 }
 
 #resetPassword1 .r2 i{
+color: black;
 font-size: 19px;
 position: absolute;
-margin-top: 40px;
 margin-left: -25px;
 }
 
@@ -2225,9 +2315,53 @@ font-size: 18px;
 color: #0096f4;
 }
 
+#resetPassword1 a:hover{
+cursor: pointer;
+color: rgba(0, 200, 244, 1);
+}
+
+#resetPassword .r2 i{
+color: black;
+font-size: 19px;
+margin-left: -30px;
+}
+
+#resetPassword .r2.success input{
+border-bottom: 2px solid rgba(0, 225, 244, 1);
+}
+
+#resetPassword .r2.error input{
+border-bottom: 2px solid rgba(255, 0, 0, 0.37);
+}
+
+#resetPassword #message1{
+margin-top: 15px;
+text-align: center;
+}
+
+#resetPassword .r2 small{
+margin-top: 15px;
+text-align: center;
+}
+
+
 #togglePassword {
 cursor: pointer;
 }
+
+#togglePassword1 {
+cursor: pointer;
+}
+
+#togglePassword2 {
+cursor: pointer;
+}
+
+#togglePassword3 {
+margin-top: 60px;
+cursor: pointer;
+}
+
 
 #hld{
 height: 550px;
@@ -2328,4 +2462,60 @@ li.active.have-children span::after {
 }
 .sidebar-menu .have-children > ul {
     display: none;
+}
+
+#prfl{
+text-decoration: none;
+color:  #0096f4;
+transition-duration: 0.5s, 1s;
+}
+
+#prfl:hover{
+color: #6debfc;
+text-shadow: 1px 2px 5px #0096f4;
+transition-property: color, text-shadow;
+transition-duration: 0.5s, 1s;
+transition-timing-function: ease-in-out;
+}
+
+#updateLogin {
+opacity: 0;
+z-index: 0;
+height: 400px;
+position: relative;
+margin-top: -22%;
+}
+
+
+#personalInfo {
+height: 715px;
+position: relative;
+z-index: 0;
+margin-top: -39%;
+opacity: 0;
+}
+
+#personalInfo button{
+background-color: transparent;
+margin-left: 85%;
+border: none;
+}
+
+
+#personalInfo button i{
+font-size: 20px;
+color: #0096f4;
+}
+
+#personalInfo button i:hover{
+cursor: pointer;
+}
+
+#personalInfo input:disabled{
+color: grey;
+border-bottom: 2px solid grey;
+}
+
+#personalInfo input[type='submit']:disabled{
+color: black;
 }
