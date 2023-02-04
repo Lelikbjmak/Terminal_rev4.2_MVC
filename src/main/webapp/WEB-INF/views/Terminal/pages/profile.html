@@ -146,6 +146,49 @@
 
 <script src="/Terminal/js/changePassword.js"></script>
 
+
+<div>
+    <form class="profForm" id="personalInfo">
+        <br>
+        <button type="button"><i class="fa-solid fa-pen-to-square"></i></button>
+        <br>
+        <label>Personal information</label>
+        <br>
+
+        <div class="r2">
+            <input type="text" placeholder="full name" onkeyup="checkPersonalDataParams();" disabled>
+            <br>
+            <small></small>
+        </div>
+
+        <div class="r2">
+            <input type="text" placeholder="passport" disabled>
+            <br>
+            <small>immutable field</small>
+        </div>
+
+        <div class="r2">
+            <input type="text" placeholder="phone" onkeyup="checkPersonalDataParams();" disabled>
+            <br>
+            <small></small>
+        </div>
+
+        <div class="r2">
+            <input type="date" placeholder="bday" disabled>
+            <br>
+            <small>immutable field</small>
+        </div>
+
+        <div id="message3"></div>
+        <div class="fa-lg"><i class="fas fa-circle-notch fa-spin"></i></div>
+        <input type="submit" value="Update" disabled style="margin-top: 25px;">
+        <br>
+        <a onclick="closePersonalInfoForm();" style="text-decoration:none;">close</a>
+    </form>
+    <script src="/Terminal/js/userPersonalInfo.js"></script>
+</div>
+
+
 <footer class="footer-distributed" id="support" style="position: relative; bottom: 0; margin-top: 50px;">
 
     <div class="footer-left">
