@@ -36,7 +36,7 @@ public class Client implements Serializable {
     @Column(name = "phone")
     @Length(min = 7, message = "Phone number is too short.")
     @Length(max = 16, message = "Phone number is too long.")
-    @Pattern(regexp = "\\d{7,16}", message = "Not valid format.")
+    @Pattern(regexp = "^(\\+?)\\d{7,16}$", message = "Not valid format.")
     private String phone;
 
     @Column(name = "passport")
