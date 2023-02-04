@@ -1,5 +1,6 @@
 package com.example.Terminal_rev42.ControllerTest;
 
+import com.example.Terminal_rev42.Entities.Client;
 import com.example.Terminal_rev42.Model.User;
 import com.example.Terminal_rev42.SeviceImplementation.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -187,5 +188,56 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
+    }
+
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
+    public void changePersonalData(@Value("${client.add.username.value}") String username,
+                                   @Value("${client.add.name.value}") String clientName,
+                                   @Value(("${client.add.phone.value}")) String phone) throws Exception {
+
+        Client client = userService.findByUsername(username).getClient();
+
+        Assertions.assertEquals(clientName, client.getName());
+        Assertions.assertEquals(phone, client.getPhone());
+
+        mockMvc.perform(post("/Barclays/user/updatePersonalInfo")
+                        .param("name", "New New New")
+                        .param("phone", "+375291351530"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        Client updatedClient = userService.findByUsername(username).getClient();
+
+        Assertions.assertEquals("New New New", updatedClient.getName());
+        Assertions.assertEquals("+375291351530", updatedClient.getPhone());
+    }
+
+
+    @Test
+    @Sql(value = {"/create-user-before-register.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/drop-user-after-registration.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testUser")
+    public void failedChangePersonalData(@Value("${client.add.username.value}") String username,
+                                   @Value("${client.add.name.value}") String clientName,
+                                   @Value(("${client.add.phone.value}")) String phone) throws Exception {
+
+        Client client = userService.findByUsername(username).getClient();
+
+        Assertions.assertEquals(clientName, client.getName());
+        Assertions.assertEquals(phone, client.getPhone());
+
+        mockMvc.perform(post("/Barclays/user/updatePersonalInfo")
+                        .param("name", "Bs sd")
+                        .param("phone", "34d"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        Client updatedClient = userService.findByUsername(username).getClient();
+
+        Assertions.assertEquals(clientName, updatedClient.getName());
+        Assertions.assertEquals(phone, updatedClient.getPhone());
     }
 }
