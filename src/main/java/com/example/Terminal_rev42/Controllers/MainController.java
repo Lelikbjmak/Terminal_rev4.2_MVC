@@ -59,16 +59,6 @@ public class MainController {
 
         httpSession.setAttribute("SPRING_SECURITY_CONTEXT", context);
 
-        logger.info("main (securityContext): " + context.getAuthentication().getName() + "\tsession: "  + request.getRequestedSessionId());
-
-        sessionRegistry.refreshLastRequest(httpSession.getId());
-        System.out.print("Principal: ");
-        List<Object> user = sessionRegistry.getAllPrincipals();
-
-        sessionRegistry.getAllPrincipals().forEach(System.out::println);
-        System.out.println("User: ");
-
-        user.forEach(u -> sessionRegistry.getAllSessions(u, true).forEach(p-> System.out.println("User: " + u + ", sessionId: " + p.getSessionId() + ", expired: " + p.isExpired())));
         return "index";
     }
 
@@ -88,7 +78,6 @@ public class MainController {
 
     @GetMapping("/operation")
     public String getOperationsPage(@SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext){
-        logger.info("operation (SecurityContext): " + securityContext.getAuthentication().getName());
         return "Operation";
     }
 
@@ -99,19 +88,14 @@ public class MainController {
         Set<Bill> bills = billService.AllBillsByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
         Set<Investments> investments = investService.allByClientId(clientService.findByUser_Username(securityService.getAuthenticatedUsername()).getId());
 
-        System.out.println(sessionRegistry.getSessionInformation(httpSession.getId()) + " sess id: " + request.getSession().getId());
-
         httpSession.setAttribute("bills", bills);
         httpSession.setAttribute("invests", investments);
-
-        logger.info("Service: (SecurityContext) - " + securityContext.getAuthentication().getName());
 
         return "service";
     }
 
     @GetMapping("/service/holdings")
     public String getHoldingsPage(@SessionAttribute("SPRING_SECURITY_CONTEXT") SecurityContext securityContext){
-        logger.info("holdings (SecurityContext): " + securityContext.getAuthentication().getName());
         return "holdings";
     }
 
@@ -119,7 +103,6 @@ public class MainController {
     @GetMapping("/bad")
     public String getBadEmailConfirmationPage(@RequestParam(value = "token", required = false) String token, Model model,  @RequestParam("ms") String ms){
         model.addAttribute("ms", ms);
-        System.out.println(model.getAttribute("ms"));
         return "bad";
     }
 
