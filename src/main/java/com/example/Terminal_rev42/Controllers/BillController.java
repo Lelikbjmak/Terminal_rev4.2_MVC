@@ -5,10 +5,10 @@ import com.example.Terminal_rev42.Entities.Client;
 import com.example.Terminal_rev42.Entities.Receipts;
 import com.example.Terminal_rev42.Exceptions.*;
 import com.example.Terminal_rev42.Model.Rates;
-import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.BillServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.ClientServiceImpl;
 import com.example.Terminal_rev42.SeviceImplementation.ReceiptsServiceImpl;
+import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,33 +18,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
-@RequestMapping("/Barclays/Bill")
+@RequestMapping("/Barclays/bill")
 @SessionAttributes("bills")
 @Validated // to active validation in RequestParams/RequestBody with valid the same
 public class BillController {
 
+    BillController(@Value("${operations.type.cash.transfer}") String cashTransferOperationType, @Value("${operations.type.deposit}") String depositOperationType,
+                   @Value("${operations.type.convert}") String convertOperationType, @Value("${operations.type.cash.extradition}") String cashExtraditionOperationType,
+                   @Value("${bill.currency.usd}") String usd, @Value("${bill.currency.eur}") String eur,
+                   @Value("${bill.currency.byn}") String byn, @Value("${bill.currency.rub}") String rub){
+        CASH_TRANSFER_OPERATION_TYPE = cashTransferOperationType;
+        DEPOSIT_OPERATION_TYPE = depositOperationType;
+        CONVERT_OPERATION_TYPE = convertOperationType;
+        CASH_EXTRADITION_OPERATION_TYPE = cashExtraditionOperationType;
+    }
     @Autowired
     private BillServiceImpl billService;
 
@@ -62,39 +67,25 @@ public class BillController {
 
     private static final Logger logger = LoggerFactory.getLogger(BillController.class);
 
-    @Value("${operations.type.cash.transfer}")
-    private String cashTransferOperationType;
+    private final String CASH_TRANSFER_OPERATION_TYPE;
 
-    @Value("${operations.type.deposit}")
-    private String depositOperationType;
+    private final String DEPOSIT_OPERATION_TYPE;
 
-    @Value("${operations.type.convert}")
-    private String convertOperationType;
+    private final String CONVERT_OPERATION_TYPE;
 
-    @Value("${operations.type.cash.extradition}")
-    private String cashExtraditionOperationType;
-
-    @Value("${bill.currency.usd}")
-    private String usd;
-    @Value("${bill.currency.eur}")
-    private String eur;
-    @Value("${bill.currency.byn}")
-    private String byn;
-    @Value("${bill.currency.rub}")
-    private String rub;
-
+    private final String CASH_EXTRADITION_OPERATION_TYPE;
 
     @PostMapping("add")
     @ResponseBody
     public ResponseEntity<Map<String, String>> registerNewBill(@Valid @RequestBody Bill bill, Model model) {
         Client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
-        Bill registeredBill = registerNewBill(client, bill);
+        Bill registeredBill = registerBill(client, bill);
         logger.info("Bill " + registeredBill.getCard() + " is registered.");
         model.addAttribute("download", "http://localhost:8080/Barclays/bill/card?card=" + bill.getCard());
         return ResponseEntity.ok(Map.of("message", "Card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin." ));
     }
 
-    private Bill registerNewBill(Client client, Bill bill){
+    private Bill registerBill(Client client, Bill bill){
         bill.setClient(client);
         billService.save(bill);
         return bill;
@@ -115,7 +106,7 @@ public class BillController {
 
         if (billService.pinAndLedgerValidation(billF, pin, summa)) {
             cashTransferOperation(billF, billT, summa);
-            Receipts receipt = getReceiptAfterOperation(getCashTransferOperationType(), billF, billT, summa, billF.getCurrency(), billT.getCurrency());
+            Receipts receipt = getReceiptAfterOperation(CASH_TRANSFER_OPERATION_TYPE, billF, billT, summa, billF.getCurrency(), billT.getCurrency());
             return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
         } else return ResponseEntity.internalServerError().body(Map.of("message", "Internal Error. Incorrect Pin."));
     }
@@ -161,11 +152,8 @@ public class BillController {
                                           @RequestParam("summa") @Positive(message = "Summa can't be negative.") @DecimalMin(value = "00.00", message = "Summa must be more than 00.00.") BigDecimal summa) throws BillInactiveException, TemporaryLockedBillException, BillNotFoundException {
 
         Bill billFrom = billService.fullBillValidationBeforeOperation(cardFrom);
-
         depositOperation(billFrom, currency, summa);
-
-        Receipts receipt = getReceiptAfterOperation(getDepositOperationType(), billFrom, null, summa, currency, billFrom.getCurrency());
-
+        Receipts receipt = getReceiptAfterOperation(DEPOSIT_OPERATION_TYPE, billFrom, null, summa, currency, billFrom.getCurrency());
         return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
     }
 
@@ -200,7 +188,7 @@ public class BillController {
 
             summa = getOperationSummaForCashTransferAndConvert(billF, currency, summa).setScale(2, RoundingMode.HALF_UP);
 
-            Receipts receipt = getReceiptAfterOperation(getConvertOperationType(), billF, null, summa, billF.getCurrency(), currency);
+            Receipts receipt = getReceiptAfterOperation(CONVERT_OPERATION_TYPE, billF, null, summa, billF.getCurrency(), currency);
 
             return ResponseEntity.ok(Map.of("message","Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
 
@@ -323,7 +311,7 @@ public class BillController {
 
             cashExtraditionOperation(bill, summa);
 
-            Receipts receipt = getReceiptAfterOperation(getCashExtraditionOperationType(), bill, null, summa, bill.getCurrency(), bill.getCurrency());
+            Receipts receipt = getReceiptAfterOperation(CASH_EXTRADITION_OPERATION_TYPE, bill, null, summa, bill.getCurrency(), bill.getCurrency());
 
             logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
             
@@ -374,36 +362,4 @@ public class BillController {
         return null;
     }
 
-
-    public String getCashTransferOperationType() {
-        return cashTransferOperationType;
-    }
-
-    public String getDepositOperationType() {
-        return depositOperationType;
-    }
-
-    public String getConvertOperationType() {
-        return convertOperationType;
-    }
-
-    public String getCashExtraditionOperationType() {
-        return cashExtraditionOperationType;
-    }
-
-    public void setUsd(String usd) {
-        this.usd = usd;
-    }
-
-    public void setEur(String eur) {
-        this.eur = eur;
-    }
-
-    public void setByn(String byn) {
-        this.byn = byn;
-    }
-
-    public void setRub(String rub) {
-        this.rub = rub;
-    }
 }
