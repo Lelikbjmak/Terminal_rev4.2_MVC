@@ -166,49 +166,55 @@ public class LoggingControllerAspect {
     }
 
     public String getClientBrowser(HttpServletRequest request) {
+
         final String browserDetails = request.getHeader("User-Agent");
-        final String user = browserDetails.toLowerCase();
 
-        String browser = "";
+        if (browserDetails != null) {
 
-        if (user.contains("msie")) {
+            final String user = browserDetails.toLowerCase();
+            String browser = "";
 
-            String substring = browserDetails.substring(browserDetails.indexOf("MSIE")).split(";")[0];
-            browser = substring.split(" ")[0].replace("MSIE", "IE") + "-" + substring.split(" ")[1];
+            if (user.contains("msie")) {
 
-        } else if (user.contains("safari") && user.contains("version")) {
+                String substring = browserDetails.substring(browserDetails.indexOf("MSIE")).split(";")[0];
+                browser = substring.split(" ")[0].replace("MSIE", "IE") + "-" + substring.split(" ")[1];
 
-            browser = (browserDetails.substring(browserDetails.indexOf("Safari")).split(" ")[0]).split(
-                    "/")[0] + "-" + (browserDetails.substring(browserDetails.indexOf("Version")).split(" ")[0]).split("/")[1];
+            } else if (user.contains("safari") && user.contains("version")) {
 
-        } else if (user.contains("opr") || user.contains("opera")) {
-
-            if (user.contains("opera"))
-                browser = (browserDetails.substring(browserDetails.indexOf("Opera")).split(" ")[0]).split(
+                browser = (browserDetails.substring(browserDetails.indexOf("Safari")).split(" ")[0]).split(
                         "/")[0] + "-" + (browserDetails.substring(browserDetails.indexOf("Version")).split(" ")[0]).split("/")[1];
-            else if (user.contains("opr"))
-                browser = ((browserDetails.substring(browserDetails.indexOf("OPR")).split(" ")[0]).replace("/",
-                        "-")).replace(
-                        "OPR", "Opera");
 
-        } else if (user.contains("chrome")) {
+            } else if (user.contains("opr") || user.contains("opera")) {
 
-            browser = (browserDetails.substring(browserDetails.indexOf("Chrome")).split(" ")[0]).replace("/", "-");
+                if (user.contains("opera"))
+                    browser = (browserDetails.substring(browserDetails.indexOf("Opera")).split(" ")[0]).split(
+                            "/")[0] + "-" + (browserDetails.substring(browserDetails.indexOf("Version")).split(" ")[0]).split("/")[1];
+                else if (user.contains("opr"))
+                    browser = ((browserDetails.substring(browserDetails.indexOf("OPR")).split(" ")[0]).replace("/",
+                            "-")).replace(
+                            "OPR", "Opera");
 
-        } else if ((user.contains("mozilla/7.0")) || (user.contains("netscape6")) || (user.contains("mozilla/4.7")) || (user.contains("mozilla/4.78")) || (user.contains("mozilla/4.08")) || (user.contains("mozilla/3"))) {
+            } else if (user.contains("chrome")) {
 
-            //browser=(userAgent.substring(userAgent.indexOf("MSIE")).split(" ")[0]).replace("/", "-");
-            browser = "Netscape-?";
+                browser = (browserDetails.substring(browserDetails.indexOf("Chrome")).split(" ")[0]).replace("/", "-");
 
-        } else if (user.contains("firefox")) {
-            browser = (browserDetails.substring(browserDetails.indexOf("Firefox")).split(" ")[0]).replace("/", "-");
-        } else if (user.contains("rv")) {
-            browser = "IE";
-        } else {
-            browser = "Unknown, More-Info: " + browserDetails;
+            } else if ((user.contains("mozilla/7.0")) || (user.contains("netscape6")) || (user.contains("mozilla/4.7")) || (user.contains("mozilla/4.78")) || (user.contains("mozilla/4.08")) || (user.contains("mozilla/3"))) {
+
+                //browser=(userAgent.substring(userAgent.indexOf("MSIE")).split(" ")[0]).replace("/", "-");
+                browser = "Netscape-?";
+
+            } else if (user.contains("firefox")) {
+                browser = (browserDetails.substring(browserDetails.indexOf("Firefox")).split(" ")[0]).replace("/", "-");
+            } else if (user.contains("rv")) {
+                browser = "IE";
+            } else {
+                browser = "Unknown, More-Info: " + browserDetails;
+            }
+
+            return browser;
         }
 
-        return browser;
+        return "NONE";
     }
 
 }
