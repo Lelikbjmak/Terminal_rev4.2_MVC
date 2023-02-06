@@ -36,6 +36,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public void registerNewBill(Bill bill) {
+        billRepository.save(bill);
+    }
+
+    @Override
     public Bill findByCard(String card) {
         return billRepository.findByCard(card);
     }

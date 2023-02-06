@@ -11,6 +11,8 @@ public interface BillService {
 
     void save(Bill bill);
 
+    void registerNewBill(Bill bill);
+
     Bill findByCard(String card);
 
     Set<Bill> AllBillsByClientId(long id);
