@@ -80,14 +80,13 @@ public class BillController {
     public ResponseEntity<Map<String, String>> registerNewBill(@Valid @RequestBody Bill bill, Model model) {
         Client client = clientService.findByUser_Username(securityService.getAuthenticatedUsername());
         Bill registeredBill = registerBill(client, bill);
-        logger.info("Bill " + registeredBill.getCard() + " is registered.");
         model.addAttribute("download", "http://localhost:8080/Barclays/bill/card?card=" + bill.getCard());
         return ResponseEntity.ok(Map.of("message", "Card: " + bill.getCard() + " " + bill.getCurrency() + "\nDownload card to find pin." ));
     }
 
     private Bill registerBill(Client client, Bill bill){
         bill.setClient(client);
-        billService.save(bill);
+        billService.registerNewBill(bill);
         return bill;
     }
 
@@ -125,7 +124,6 @@ public class BillController {
         currencyRates.setRate(Rates(bill.getCurrency()));
         Map<String, Double> rates = currencyRates.getRate();  // add currency rates
             rates.forEach((k,v) -> System.err.println(k + " " + v));
-            System.err.println("Bill currency: " + bill.getCurrency() + ", currencyTO: " + currencyTo);
         summa = summa.multiply(BigDecimal.valueOf(rates.get(bill.getCurrency().concat(currencyTo).toUpperCase())));
         }
 
@@ -183,17 +181,13 @@ public class BillController {
         Bill billF = billService.fullBillValidationBeforeOperation(billFrom);
 
         if(billService.pinAndLedgerValidation(billF, pin, summa)) {
-
             convertOperation(billF, summa);
-
             summa = getOperationSummaForCashTransferAndConvert(billF, currency, summa).setScale(2, RoundingMode.HALF_UP);
-
             Receipts receipt = getReceiptAfterOperation(CONVERT_OPERATION_TYPE, billF, null, summa, billF.getCurrency(), currency);
-
             return ResponseEntity.ok(Map.of("message","Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
+        }
 
-        } else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal server error during #convert# operation."));
-
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal server error during #convert# operation."));
     }
 
 
@@ -266,13 +260,7 @@ public class BillController {
         inputStream.close();
         outputStream.close();
 
-
         billService.encodePasswordAndActivateBill(bill);
-
-        if (file.delete()){
-            logger.info("Card: " + card + " is activated. " + LocalDate.now());
-        }
-
     }
 
 
@@ -285,13 +273,9 @@ public class BillController {
         Bill bill = billService.fullBillValidationBeforeOperation(card);
 
         if (billService.pinValidation(bill, pin)) {
-
             BigDecimal ledger = bill.getLedger();
-
             billService.allLatelyInteractedBills(bill.getClient().getId(), 0).forEach(p -> billService.resetFailedAttempts(p));  // pill all failed attempts from interacted bills
-
             return ResponseEntity.ok(Map.of("message","Ledger: " + ledger + " " + billService.findByCard(card).getCurrency()));
-
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal Server error[500]."));
@@ -308,17 +292,13 @@ public class BillController {
         Bill bill = billService.fullBillValidationBeforeOperation(billFrom);
 
         if (billService.pinAndLedgerValidation(bill, pin, summa)) {
-
             cashExtraditionOperation(bill, summa);
-
             Receipts receipt = getReceiptAfterOperation(CASH_EXTRADITION_OPERATION_TYPE, bill, null, summa, bill.getCurrency(), bill.getCurrency());
-
             logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
-            
             return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
+        }
 
-        } else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal server error during #convert# operation."));
-
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(Map.of("message", "Internal server error during #convert# operation."));
     }
 
     private void cashExtraditionOperation(Bill billFrom, BigDecimal summa){
@@ -341,17 +321,11 @@ public class BillController {
 
         if (response.getStatusCode().value() == 200) {
             try {
-                System.out.println("Status: " + response.getStatusCode().value());
                 JSONObject data = (JSONObject) parser.parse(response.getBody());
-
                 JSONObject rates = (JSONObject) data.get("quotes");
-
                 Map<String, Double> currencyrates = new HashMap<>();
-
                 rates.keySet().forEach(p -> currencyrates.put(p.toString(), Double.parseDouble(rates.get(p).toString())));
-
                 return currencyrates;
-
             } catch (ParseException e) {
                 logger.error("Can't parse data!\nCan't obtain currency rates from API");
             }
