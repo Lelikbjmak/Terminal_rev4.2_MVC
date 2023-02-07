@@ -7,6 +7,7 @@ public interface UserService {
 
     void save(User user);
 
+    void registerNewUser(User user);
     User findByUsername(String login);
 
     boolean checkUserExists (String username);

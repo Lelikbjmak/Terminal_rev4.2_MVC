@@ -37,6 +37,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void registerNewUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setRoleset(new HashSet<>(Collections.singletonList(roleDAO.findByRole("ROLE_USER"))));
+        userDAO.save(user);
+    }
+
+    @Override
     public User findByUsername(String login) {
         return userDAO.findByUsername(login);
     }
