@@ -19,7 +19,7 @@ import javax.mail.internet.MimeMessage;
 public class MailConfirmationListener implements ApplicationListener<MailConfirmationEvent> {
 
     @Autowired
-    VerificationTokenServiceImpl tokenService;
+    private VerificationTokenServiceImpl tokenService;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -33,7 +33,7 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
 
     @Transactional
     private void confirmRegistration(MailConfirmationEvent event) {
-        logger.info("Sending email..." + " to: " + event.getUser().getUsername());
+
         User user = event.getUser();
 
         VerificationToken token = tokenService.createVerificationToken(user);
@@ -78,23 +78,16 @@ public class MailConfirmationListener implements ApplicationListener<MailConfirm
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            logger.error("Error in setting MimeMessageHelper to HTML text type!");
             throw new RuntimeException(e);
         }
 
         try {
-
             mimeMessageHelper.setTo(recipientAddress);
             mimeMessageHelper.setSubject("Account Verification");
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            logger.error("Issue in setting recipient and sender of mail: " + recipientAddress);
             throw new RuntimeException(e);
         }
-
-
-        logger.info("email has sent to " + recipientAddress);
-
     }
 }

@@ -37,16 +37,13 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
     @Transactional
     private void confirmRegistration(MailConfirmationResendEvent event) {
 
-        logger.info("Resending email..." + " to: " + event.getUser().getUsername());
         User user = event.getUser(); // get user
         VerificationToken token = event.getToken();  // get users token
 
         tokenService.rebuildExistingToken(token); // extend expiry date to confirm again!
 
-
         String recipientAddress = user.getMail();
         String confirmationUrl = event.getAppUrl() + "/Barclays/client/registrationConfirm?token=" + token.getToken();
-
 
         //SimpleMailMessage email = new SimpleMailMessage(); // if simple message default text
 
@@ -86,7 +83,6 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            logger.error("Error in setting MimeMessageHelper to HTML text type!");
             throw new RuntimeException(e);
         }
 
@@ -97,11 +93,7 @@ public class MailResendListener implements ApplicationListener<MailConfirmationR
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            logger.error("Issue in setting recipient and sender of mail");
             throw new RuntimeException(e);
         }
-
-        logger.info("email has resent to " + recipientAddress + "!");
-
     }
 }

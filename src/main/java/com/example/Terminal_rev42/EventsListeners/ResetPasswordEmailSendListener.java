@@ -24,8 +24,6 @@ public class ResetPasswordEmailSendListener {
     @Transactional
     public void handleResetPasswordEvent(ResetPasswordEvent event){
 
-        logger.info("Sending resetPassword link to: " + event.getUser().getMail());
-
         String recipientAddress = event.getUser().getMail();
         String resetUrl = event.getUrl();
 
@@ -65,22 +63,15 @@ public class ResetPasswordEmailSendListener {
         try {
             mimeMessage.setContent(htmlMsg, "text/html");
         } catch (MessagingException e) {
-            logger.error("Error in setting MimeMessageHelper to HTML text type!");
             throw new RuntimeException(e);
         }
 
         try {
-
             mimeMessageHelper.setTo(recipientAddress);
             mimeMessageHelper.setSubject("Password reset");
             mailSender.send(mimeMessage);
-
         } catch (MessagingException e) {
-            logger.error("Issue in setting recipient and sender of mail");
             throw new RuntimeException(e);
         }
-
-
-        logger.info("reset password link was successfully sent to: " + event.getUser().getMail());
     }
 }
