@@ -7,6 +7,8 @@ public interface ClientService {
 
     void save(Client client);
 
+    void registerNewClient(Client client);
+
     void deleteById(long id);
 
     void deleteByName(String name);
