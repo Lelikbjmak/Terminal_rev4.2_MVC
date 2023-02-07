@@ -80,10 +80,7 @@ public class ClientController {
 
         sendVerificationMailForRegistration(request, user);
 
-        logger.info("User: " + user.getUsername() + "(" + client + ") is registered. Waiting for account verification.");
-
         return ResponseEntity.ok(Map.of("message", "Verification form send to tour e-mail. Confirm to activate your account."));
-
     }
 
     private User getUserToRegister(ObjectNode objectNode) throws JsonProcessingException {
@@ -97,10 +94,12 @@ public class ClientController {
 
         Set<ConstraintViolation<Object>> violations = validator.validate(user);
         Set<ConstraintViolation<Object>> violationsClient = validator.validate(client);
-        violations.addAll(violationsClient);
 
         if(!violations.isEmpty())
             throw new ConstraintViolationException("User is not valid.", violations);
+
+        if(!violationsClient.isEmpty())
+            throw new ConstraintViolationException("Client is not valid.", violationsClient);
 
         if(!userService.passwordsMatches(user)) {
             throw new PasswordAndConfirmedPasswordNotMatchException("Confirmed password doesn't match password.", user.getPassword(), user.getConfirmedpassword());
@@ -118,8 +117,8 @@ public class ClientController {
         user.setClient(client);
         client.setUser(user);
 
-        userService.save(user);
-        clientService.save(client);
+        userService.registerNewUser(user);
+        clientService.registerNewClient(client);
 
     }
 
@@ -236,8 +235,6 @@ public class ClientController {
     @PostMapping("/ForgotPassword")
     @ResponseBody
     public ResponseEntity<Map<String, String>> forgotPasswordSendResetLink(@RequestParam("mail") @NotBlank(message = "Mail can't be blank.") @Email(message = "Not valid format.") String mail, HttpServletRequest request) throws UserNotExistsException {
-
-        logger.info("Forgot password for: " + mail + ".");
 
         User user = getUserByMailToResetPassword(mail);
 
