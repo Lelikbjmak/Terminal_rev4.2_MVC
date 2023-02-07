@@ -161,6 +161,7 @@ recbutton.addEventListener("click", function(){
 
 function savecardfile(){
     let link = document.createElement("a");
+    datafromcardreg = Array.from(document.querySelector('div.message').innerText.matchAll(/(\d{4}\s{1}){4}/gi))[0][0];
     link.setAttribute("href", "http://localhost:8080/Barclays/bill/card?card=" + datafromcardreg);
     link.setAttribute("download", datafromcardreg);
     link.click();

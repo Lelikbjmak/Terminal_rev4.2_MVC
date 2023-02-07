@@ -12,8 +12,6 @@ import com.example.Terminal_rev42.SeviceImplementation.SecurityServiceImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -30,7 +28,6 @@ import javax.validation.constraints.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -64,8 +61,6 @@ public class BillController {
 
     @Autowired
     private Rates currencyRates;
-
-    private static final Logger logger = LoggerFactory.getLogger(BillController.class);
 
     private final String CASH_TRANSFER_OPERATION_TYPE;
 
@@ -137,8 +132,6 @@ public class BillController {
         receiptsService.save(receipt);  // save receipt
 
         billService.allLatelyInteractedBills(billFrom.getClient().getId(), 0).forEach(p -> billService.resetFailedAttempts(p));  // pill all failed attempts from interacted bills if failed attempts < 3 and operation is successfully executed
-        logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
-
         return receipt;
     }
 
@@ -294,7 +287,6 @@ public class BillController {
         if (billService.pinAndLedgerValidation(bill, pin, summa)) {
             cashExtraditionOperation(bill, summa);
             Receipts receipt = getReceiptAfterOperation(CASH_EXTRADITION_OPERATION_TYPE, bill, null, summa, bill.getCurrency(), bill.getCurrency());
-            logger.info("Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished.");
             return ResponseEntity.ok(Map.of("message", "Operation: #" + receipt.getId() + " '" + receipt.getType() + "' is successfully accomplished."));
         }
 
@@ -327,13 +319,12 @@ public class BillController {
                 rates.keySet().forEach(p -> currencyrates.put(p.toString(), Double.parseDouble(rates.get(p).toString())));
                 return currencyrates;
             } catch (ParseException e) {
-                logger.error("Can't parse data!\nCan't obtain currency rates from API");
+                throw new RuntimeException(e);
             }
         }else {
-            logger.error("Error in obtaining currency rates from API. Status: " + response.getStatusCode() + ". " + response.getStatusCode().name());
+            throw new RuntimeException("Can't obtain currency rates from API, Status: " + response.getStatusCode());
         }
 
-        return null;
     }
 
 }
