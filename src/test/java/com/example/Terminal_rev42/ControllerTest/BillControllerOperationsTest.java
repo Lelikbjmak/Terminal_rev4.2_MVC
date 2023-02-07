@@ -40,7 +40,7 @@ public class BillControllerOperationsTest {
     @WithUserDetails(value = "testUser")
     public void successCashTransferTest(@Value("${bill.card.number.value}") String billFrom, @Value("${bill.card.number.value.to}") String billTo,
                                         @Value("${bill.cash.transfer.summa.value}") String summa, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                 .param("billFrom", billFrom)
                 .param("billTo", billTo)
                 .param("pin", pin)
@@ -56,7 +56,7 @@ public class BillControllerOperationsTest {
     @WithUserDetails(value = "testUser")
     public void failedCashTransferBillIsTemporaryLockedTest(@Value("${bill.temporary.locked.card.number.value}") String billFrom, @Value("${bill.card.number.value.to}") String billTo,
                                         @Value("${bill.cash.transfer.summa.value}") String summa, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", pin)
@@ -70,7 +70,7 @@ public class BillControllerOperationsTest {
     @WithUserDetails(value = "testUser")
     public void failedCashTransferBillIsInactiveTest(@Value("${bill.inactive.card.number.value}") String billFrom, @Value("${bill.card.number.value.to}") String billTo,
                                                             @Value("${bill.cash.transfer.summa.value}") String summa, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", pin)
@@ -84,7 +84,7 @@ public class BillControllerOperationsTest {
     @DisplayName("JUnit failed cash transfer p2p test, Bill isn't found.")
     @WithUserDetails(value = "testUser")
     public void failedCashTransferBillIsNotFoundTest(@Value("${bill.cash.transfer.summa.value}") String summa, @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", "8888 8888 8888 8888")
                         .param("billTo", "9999 9999 9999 9999")
                         .param("pin", pin)
@@ -100,7 +100,7 @@ public class BillControllerOperationsTest {
                                                            @Value("${bill.pin.code.value}") String pin) throws Exception {
         String summa = "9999.99";
 
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", pin)
@@ -119,7 +119,7 @@ public class BillControllerOperationsTest {
         String billTo = "aaaa aaaa aaaa aaaa";  // not valid pattern
         String pin = "aasd"; // not valid pattern
 
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", pin)
@@ -134,7 +134,7 @@ public class BillControllerOperationsTest {
     @WithUserDetails(value = "testUser")
     public void failedCashTransferTheSameBillTest(@Value("${bill.card.number.value}") String billFrom, @Value("${bill.cash.transfer.summa.value}") String summa,
                                                   @Value("${bill.pin.code.value}") String pin) throws Exception {
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billFrom)
                         .param("pin", pin)
@@ -151,7 +151,7 @@ public class BillControllerOperationsTest {
 
         String incorrectPin = "0000";
 
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", incorrectPin)
@@ -168,21 +168,21 @@ public class BillControllerOperationsTest {
 
         String incorrectPin = "0000";
 
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", incorrectPin)
                         .param("summa", summa))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", incorrectPin)
                         .param("summa", summa))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/cashTransfer")
+        mockMvc.perform(post("/Barclays/bill/cashTransfer")
                         .param("billFrom", billFrom)
                         .param("billTo", billTo)
                         .param("pin", incorrectPin)
@@ -201,7 +201,7 @@ public class BillControllerOperationsTest {
     public void successDepositTest(@Value("${bill.card.number.value}") String billFrom, @Value("${bill.cash.transfer.summa.value}") String summa,
                                    @Value("${bill.currency.value3}") String currencyFrom) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/deposit")
+        mockMvc.perform(post("/Barclays/bill/deposit")
                         .param("billFrom", billFrom)
                         .param("currency", currencyFrom)
                         .param("summa", summa))
@@ -221,14 +221,14 @@ public class BillControllerOperationsTest {
 
         String blankBillFrom = "";
 
-        mockMvc.perform(post("/Barclays/Bill/deposit")
+        mockMvc.perform(post("/Barclays/bill/deposit")
                         .param("billFrom", InvalidFormatBillFrom)
                         .param("currency", blankCurrency)
                         .param("summa", invalidSumma))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/deposit")
+        mockMvc.perform(post("/Barclays/bill/deposit")
                         .param("billFrom", blankBillFrom)
                         .param("currency", blankCurrency)
                         .param("summa", invalidSumma))
@@ -243,7 +243,7 @@ public class BillControllerOperationsTest {
     public void failedDepositBilNotExistsTest(@Value("${bill.not.exists.card.number.value}") String notExistsCardNumber, @Value("${bill.cash.transfer.summa.value}") String summa,
                                               @Value("${bill.currency.value3}") String currencyFrom) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/deposit")
+        mockMvc.perform(post("/Barclays/bill/deposit")
                         .param("billFrom", notExistsCardNumber)
                         .param("currency", currencyFrom)
                         .param("summa", summa))
@@ -257,7 +257,7 @@ public class BillControllerOperationsTest {
     public void failedDepositBillIsInactiveTest(@Value("${bill.inactive.card.number.value}") String billTo, @Value("${bill.cash.transfer.summa.value}") String summa,
                                                 @Value("${bill.currency.value3}") String currencyFrom) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/deposit")
+        mockMvc.perform(post("/Barclays/bill/deposit")
                         .param("billFrom", billTo)
                         .param("currency", currencyFrom)
                         .param("summa", summa))
@@ -271,7 +271,7 @@ public class BillControllerOperationsTest {
     public void failedDepositBillIsTemporaryLockedTest(@Value("${bill.temporary.locked.card.number.value}") String billTo, @Value("${bill.cash.transfer.summa.value}") String summa,
                                                        @Value("${bill.currency.value3}") String currencyFrom) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/deposit")
+        mockMvc.perform(post("/Barclays/bill/deposit")
                         .param("billFrom", billTo)
                         .param("currency", currencyFrom)
                         .param("summa", summa))
@@ -286,7 +286,7 @@ public class BillControllerOperationsTest {
     public void successConvertTest(@Value("${bill.card.number.value}") String billFrom, @Value("${bill.cash.transfer.summa.value}") String summa,
                                    @Value("${bill.currency.value3}") String currencyFrom, @Value("${bill.pin.code.value}") String pin) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyFrom)
                         .param("summa", summa)
@@ -310,7 +310,7 @@ public class BillControllerOperationsTest {
 
         String notValidPin = "aaaa";
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", blankBillFrom)
                         .param("currency", blankCurrencyFrom)
                         .param("summa", summaBelowZero)
@@ -318,7 +318,7 @@ public class BillControllerOperationsTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", notValidBillFrom)
                         .param("currency", blankCurrencyFrom)
                         .param("summa", summaBelowZero)
@@ -326,7 +326,7 @@ public class BillControllerOperationsTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", notValidBillFrom)
                         .param("currency", blankCurrencyFrom)
                         .param("summa", summaBelowZero)
@@ -343,7 +343,7 @@ public class BillControllerOperationsTest {
     public void failedConvertBillIsTemporaryLockedTest(@Value("${bill.temporary.locked.card.number.value}") String billFrom, @Value("${bill.cash.transfer.summa.value}") String summa,
                                                        @Value("${bill.currency.value3}") String currencyTo, @Value("${bill.pin.code.value}") String pin) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -358,7 +358,7 @@ public class BillControllerOperationsTest {
     public void failedConvertBillIsInactiveTest(@Value("${bill.inactive.card.number.value}") String billFrom, @Value("${bill.currency.value3}") String currencyTo,
                                                      @Value("${bill.cash.transfer.summa.value}") String summa, @Value("${bill.pin.code.value}") String pin) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -376,7 +376,7 @@ public class BillControllerOperationsTest {
 
         String nonexistentBill = "0988 7777 7777 7777";
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", nonexistentBill)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -393,7 +393,7 @@ public class BillControllerOperationsTest {
 
         String summaExcludedLedger = "9999.00";
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summaExcludedLedger)
@@ -410,7 +410,7 @@ public class BillControllerOperationsTest {
 
         String incorrectPin = "0000";
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -428,7 +428,7 @@ public class BillControllerOperationsTest {
 
         String incorrectPin = "0000";
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -436,7 +436,7 @@ public class BillControllerOperationsTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -444,7 +444,7 @@ public class BillControllerOperationsTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/Barclays/Bill/convert")
+        mockMvc.perform(post("/Barclays/bill/convert")
                         .param("billFrom", billFrom)
                         .param("currency", currencyTo)
                         .param("summa", summa)
@@ -464,7 +464,7 @@ public class BillControllerOperationsTest {
     public void successCashExtraditionTest(@Value("${bill.card.number.value}") String billFrom, @Value("${bill.cash.transfer.summa.value}") String summa,
                                            @Value("${bill.pin.code.value}") String pin) throws Exception {
 
-        mockMvc.perform(post("/Barclays/Bill/cashExtradition")
+        mockMvc.perform(post("/Barclays/bill/cashExtradition")
                         .param("billFrom", billFrom)
                         .param("summa", summa)
                         .param("pin", pin))
