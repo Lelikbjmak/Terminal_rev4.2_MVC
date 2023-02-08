@@ -55,11 +55,9 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     private boolean userLockedValidation(User user){
 
         userService.increaseFailedAttempts(user);
-        logger.error("User: " + user.getUsername() + ", failed attempts: " + user.getFailedAttempts());
 
         if(user.getFailedAttempts() == User.MAX_FAILED_ATTEMPTS){
             userService.lockUser(user);
-            logger.error("User: " + user.getUsername() + " is locked due to 3 failed attempts. Lock time: " + user.getLockTime());
             return true;
         }
 

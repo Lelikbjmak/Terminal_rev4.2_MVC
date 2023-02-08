@@ -26,8 +26,6 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
     @Autowired
     private UserDAO userDAO;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserDetailedServiceImpl.class);
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -44,10 +42,7 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));
         }
 
-
         UserDetails user1 = org.springframework.security.core.userdetails.User.withUsername(user.getUsername()).password(user.getPassword()).disabled(!user.isEnabled()).accountExpired(false).credentialsExpired(false).accountLocked(user.isTemporalLock()).authorities(grantedAuthorities).build();
-
-        logger.info("User: " + username + " is logging...");
 
         return user1;
     }
@@ -57,14 +52,12 @@ public class UserDetailedServiceImpl implements UserDetailsService  {
 
         if(LocalDateTime.now().isAfter(user.getLockTime().plusDays(User.LOCK_TIME_DURATION))){
 
-            logger.info("User: " + user.getUsername() + " is unlocked after temporal lock.");
             user.setTemporalLock(false);
             user.setLockTime(null);
             user.setFailedAttempts(0);
 
             userDAO.save(user);
-
         }
-
     }
+
 }
